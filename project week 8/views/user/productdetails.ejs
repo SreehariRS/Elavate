@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= products.name %></title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+        <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script> -->
+        <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+        <style>
+            /* Your CSS styles here */
+            @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap");
+
+            * {
+                box-sizing: border-box;
+                padding: 0;
+                margin: 0;
+                font-family: "Open Sans", sans-serif;
+            }
+
+            body {
+                line-height: 1.5;
+            }
+
+            .card-wrapper {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+
+            img {
+                width: 100%;
+                display: block;
+            }
+
+            .img-display {
+                overflow: hidden;
+            }
+
+            .img-showcase {
+                display: flex;
+                width: 100%;
+                transition: all 0.5s ease;
+            }
+
+            .img-showcase img {
+                min-width: 100%;
+            }
+
+            .img-select {
+                display: flex;
+            }
+
+            .img-item {
+                margin: 0.3rem;
+            }
+
+            .img-item:nth-child(1),
+            .img-item:nth-child(2),
+            .img-item:nth-child(3) {
+                margin-right: 0;
+            }
+
+            .img-item:hover {
+                opacity: 0.8;
+            }
+
+            .product-content {
+                padding: 2rem 1rem;
+            }
+
+            .product-title {
+                font-size: 3rem;
+                text-transform: capitalize;
+                font-weight: 700;
+                position: relative;
+                color: #12263a;
+                margin: 1rem 0;
+            }
+
+            .product-title::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                height: 4px;
+                width: 80px;
+                background: #12263a;
+            }
+
+            .product-link {
+                text-decoration: none;
+                text-transform: uppercase;
+                font-weight: 400;
+                font-size: 0.9rem;
+                display: inline-block;
+                margin-bottom: 0.5rem;
+                background: #256eff;
+                color: #fff;
+                padding: 0 0.3rem;
+                transition: all 0.5s ease;
+            }
+
+            .product-link:hover {
+                opacity: 0.9;
+            }
+
+            .product-rating {
+                color: #ffc107;
+            }
+
+            .product-rating span {
+                font-weight: 600;
+                color: #252525;
+            }
+
+            .product-price {
+                margin: 1rem 0;
+                font-size: 1rem;
+                font-weight: 700;
+            }
+
+            .product-price span {
+                font-weight: 400;
+            }
+
+            .last-price span {
+                color: #f64749;
+                text-decoration: line-through;
+            }
+
+            .new-price span {
+                color: #256eff;
+            }
+
+            .product-detail h2 {
+                text-transform: capitalize;
+                color: #12263a;
+                padding-bottom: 0.6rem;
+            }
+
+            .product-detail p {
+                font-size: 0.9rem;
+                padding: 0.3rem;
+                opacity: 0.8;
+            }
+
+            .product-detail ul {
+                margin: 1rem 0;
+                font-size: 0.9rem;
+            }
+
+            .product-detail ul li {
+                margin: 0;
+                list-style: none;
+                background: url(https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/checked.png)
+                    left center no-repeat;
+                background-size: 18px;
+                padding-left: 1.7rem;
+                margin: 0.4rem 0;
+                font-weight: 600;
+                opacity: 0.9;
+            }
+
+            .product-detail ul li span {
+                font-weight: 400;
+            }
+
+            .purchase-info {
+                margin: 1.5rem 0;
+            }
+
+            .purchase-info input,
+            .purchase-info .btn {
+                border: 1.5px solid #ddd;
+                border-radius: 25px;
+                text-align: center;
+                padding: 0.45rem 0.8rem;
+                outline: 0;
+                margin-right: 0.2rem;
+                margin-bottom: 1rem;
+            }
+
+            .purchase-info input {
+                width: 60px;
+            }
+
+            .purchase-info .btn {
+                cursor: pointer;
+                color: #fff;
+            }
+
+            .purchase-info .btn:first-of-type {
+                background: #256eff;
+            }
+
+            .purchase-info .btn:last-of-type {
+                background: #f64749;
+            }
+
+            .purchase-info .btn:hover {
+                opacity: 0.9;
+            }
+
+            .social-links {
+                display: flex;
+                align-items: center;
+            }
+
+            .social-links a {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                color: #000;
+                border: 1px solid #000;
+                margin: 0 0.2rem;
+                border-radius: 50%;
+                text-decoration: none;
+                font-size: 0.8rem;
+                transition: all 0.5s ease;
+            }
+
+            .social-links a:hover {
+                background: #000;
+                border-color: transparent;
+                color: #fff;
+            }
+
+            @media screen and (min-width: 992px) {
+                .card {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    grid-gap: 1.5rem;
+                }
+
+                .card-wrapper {
+                    height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .product-imgs {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+
+                .product-content {
+                    padding-top: 0;
+                }
+            }
+            /* Color Changes */
+            body {
+                background-color: #f8f9fa; /* Change background color */
+            }
+
+            .product-title::after {
+                background: #000000; /* Change title underline color */
+            }
+
+            .product-link {
+                background: #ff5722; /* Change link background color */
+            }
+
+            .product-link:hover {
+                background: #ff7043; /* Change link hover background color */
+            }
+
+            .product-rating {
+                color: #fdd835; /* Change rating color */
+            }
+
+            .last-price span {
+                color: #e53935; /* Change last price color */
+            }
+
+            /* Border Radius and Box Shadow */
+            .card {
+                border-radius: 15px; /* Adjust border radius for cards */
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Add box shadow to cards */
+            }
+
+            .product-imgs {
+                border-radius: 15px; /* Adjust border radius for product images container */
+                overflow: hidden; /* Ensure overflow is hidden for rounded corners */
+            }
+
+            .img-item {
+                border-radius: 8px; /* Adjust border radius for image items */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow to image items */
+            }
+
+            .purchase-info input,
+            .purchase-info .btn {
+                border-radius: 20px; /* Adjust border radius for input and button */
+            }
+
+            /* Additional Styles */
+            .product-detail h2 {
+                border-bottom: 2px solid #4caf50; /* Add border bottom to detail section headers */
+            }
+
+            .social-links a {
+                background-color: #4caf50; /* Change social link background color */
+                border-color: #4caf50; /* Change social link border color */
+            }
+
+            .social-links a:hover {
+                background: #388e3c; /* Change social link hover background color */
+            }
+            .img-showcase {
+                position: relative;
+                overflow: hidden;
+            }
+
+            #productImage {
+                width: 100%; /* Ensure the image fills its container */
+                transition: transform 0.2s; /* Add smooth transition effect */
+            }
+
+            #productImage.zoomed {
+                transform: scale(1.5); /* Zoom the image by scaling */
+                z-index: 999; /* Ensure the zoomed image appears on top */
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 0;
+            }
+            @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
+            * {
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                padding-top: 56px; /* Adjust based on the height of your navbar */
+                font-family: "Poppins", sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f5;
+                /* display: flex; */
+            }
+
+            .navbar {
+                background-color: #ffffff; /* White background */
+                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Box shadow for subtle depth */
+                width: 100%;
+                position: fixed;
+                position: relative;
+            }
+            */ .navbar-brand {
+                padding: 0.5rem 2rem;
+                margin-right: 2rem;
+            }
+
+            .navbar-logo {
+                width: 50px;
+                height: auto;
+            }
+
+            .navbar-toggler-icon {
+                background-color: #1a63ab; /* Dark Gray color for toggler icon */
+            }
+
+            .navbar-nav {
+                margin-left: auto; /* Adjusted to move items to the right */
+            }
+
+            .nav-item {
+                margin-left: 1.5rem;
+            }
+
+            .nav-link {
+                color: #000000; /* Dark Gray color for nav links */
+                font-weight: bold;
+                transition: color 0.3s ease-in-out;
+            }
+
+            .nav-link:hover {
+                color: #060606; /* Red color on hover */
+            }
+
+            .profile-icon {
+                background-color: #bc050500; /* Red color for profile icon background */
+                color: #a61414; /* White color for the icon */
+                border-radius: 50%;
+                padding: 5px;
+                font-size: 1.2rem;
+                transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+            }
+
+            .profile-icon:hover {
+                background-color: #ed0b0b00; /* Dark Gray color on hover */
+                color: #15ba29; /* White color on hover */
+            }
+
+            .dropdown-menu {
+                background-color: #2c2b2b; /* White background for dropdown menu */
+            }
+
+            .dropdown-item {
+                color: #ffffff; /* Dark Gray color for dropdown items */
+                font-weight: bold;
+                transition: color 0.3s ease-in-out;
+            }
+
+            .dropdown-item:hover {
+                color: #f60505; /* Red color on hover */
+            }
+
+            .product-heading {
+                text-align: center;
+                padding-left: 22px;
+            }
+            .product-heading h2 {
+                margin-top: 150px;
+                font-weight: 700;
+            }
+
+            .navbar.fixed-top {
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 1000;
+            }
+
+            .navMAin {
+                margin-top: 56px; /* Adjusted to account for the fixed-top navbar height */
+            }
+            .section-padding {
+                padding: 100px 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main class="navMAin">
+            <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <img src="/img/logo.png" alt="Logo" class="navbar-logo" />
+                    </a>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/forhim">For Him</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/forher">For Her</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a
+                                    class="nav-link profile-icon"
+                                    href="#"
+                                    id="navbarDropdownMenuLink"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Wishlist</a>
+                                    <a class="dropdown-item" href="/CartView">Cart</a>
+                                    <a class="dropdown-item" href="/login">Login</a>
+                                    <a class="dropdown-item" href="/signout">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </main>
+
+        <div class="card-wrapper">
+            <div class="card">
+                <!-- card left -->
+                <div class="product-imgs">
+                    <div class="img-display">
+                        <div class="img-showcase">
+                            <!-- Display the product image -->
+                            <img src="<%= products.productImages[0] %>" alt="<%= products.name %>" id="productImage" />
+                        </div>
+                    </div>
+                </div>
+                <!-- card right -->
+                <div class="product-content">
+                    <h2 class="product-title"><%= products.name %></h2>
+                    <a href="#" class="product-link">Visit ELAVATE Store</a>
+                    <div class="product-rating">
+                        <!-- You can display product rating here if available -->
+                    </div>
+                    <div class="product-price">
+                        <p class="new-price">New Price: <span>₹<%= products.price %> </span></p>
+                    </div>
+                    <div class="product-detail">
+                        <!-- Display product details -->
+                        <h2>About This Item:</h2>
+                        <p><%= products.description %></p>
+                        <ul>
+                            <li>Available: <span><%= products.stock > 0 ? 'In Stock' : 'Out of Stock' %></span></li>
+                            <li>Category: <span><%= products.category %></span></li>
+                            <!-- You can add more details here -->
+                        </ul>
+                    </div>
+
+                    <div class="displayNone" style="display: none" data-user-id="<%=loggedInUserEmail%>"></div>
+
+                    <div class="purchase-info">
+                        <input type="number" min="1" value="1" id="quantityInput" readonly />
+                        <button type="button" class="btn" id="addToCartBtn" dataa-user-id="<%= products._id %>">
+                            Add to Cart <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Handle scenario where user is not logged in -->
+                    <!-- <div class="purchase-info">
+                            <p>Please log in to add items to your cart.</p>
+                         
+                        </div> -->
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.getElementById("addToCartBtn").addEventListener("click", function () {
+                const productId = "<%= products._id %>"; // Assuming products._id is the product ID
+                console.log(productId);
+                const quantity = document.getElementById("quantityInput").value;
+                const stock = "<%= products.stock %>";
+                console.log(stock); // Assuming products.stock is the product stock
+                const maxQuantity = "<%= products.stock %>"; // Assuming maxQuantity represents the maximum available quantity
+
+                if (stock <= 0) {
+                    // Show a SweetAlert indicating that the product is out of stock
+                    Swal.fire({
+                        title: "Out of Stock",
+                        text: "This product is currently out of stock.",
+                        icon: "error",
+                    });
+                } else if (quantity > maxQuantity) {
+                    // Show a SweetAlert indicating that the maximum quantity has been reached
+                    Swal.fire({
+                        title: "Maximum Quantity Reached",
+                        text: "You cannot add more of this product to your cart.",
+                        icon: "warning",
+                    });
+                } else {
+                    const userId = this.getAttribute("dataa-user-id");
+                    // Add logic to navigate to the cart page with the product ID, quantity, and user ID
+                    window.location.href = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
+                }
+            });
+
+            // Get the product image element
+            const productImage = document.getElementById("productImage");
+
+            // Add event listeners for mouse enter and leave events
+            productImage.addEventListener("mouseenter", () => {
+                // Add the 'zoomed' class when the mouse enters the image
+                productImage.classList.add("zoomed");
+            });
+
+            productImage.addEventListener("mouseleave", () => {
+                // Remove the 'zoomed' class when the mouse leaves the image
+                productImage.classList.remove("zoomed");
+            });
+
+            // Calculate the zoomed area based on the mouse position
+            productImage.addEventListener("mousemove", (event) => {
+                const { offsetX, offsetY, target } = event;
+                const { offsetWidth: width, offsetHeight: height } = target;
+                const xPos = (offsetX / width) * 100;
+                const yPos = (offsetY / height) * 100;
+
+                // Update the transform origin to zoom at the mouse position
+                productImage.style.transformOrigin = `${xPos}% ${yPos}%`;
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Delivery Address Form</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f0f0f0;
+            }
+            #form-wrapper {
+                background-color: #fff;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                position: relative;
+                width: 500px;
+            }
+            .container {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: center;
+                align-items: center;
+            }
+            .form-group {
+                flex: 1;
+                margin-right: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+            }
+            input[type="text"],
+            input[type="tel"],
+            input[type="number"],
+            select,
+            textarea {
+                width: calc(100% - 16px); /* Adjusted width to account for padding */
+                padding: 8px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc; /* Added border */
+                border-radius: 4px; /* Added border-radius */
+            }
+            .button {
+                background-color: #1b1c1b;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                cursor: pointer;
+                border-radius: 4px; /* Added border-radius */
+            }
+            .close-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-size: 20px;
+            }
+            #form-wrapper h2 {
+                text-align: center;
+                margin-bottom: 20px; /* Added margin to separate the heading from the form */
+            }
+        </style>
+    </head>
+    <body>
+        <div id="form-wrapper">
+            <h2>Add New Address</h2>
+            <span class="close-icon" onclick="closeForm()">×</span>
+            <div class="container">
+                <form action="/addAddress" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <!-- Display the user's email in the input field -->
+                        <input type="email" id="email" name="email" value="<%=userDAta.email%>" readonly>
+                    </div>
+                    <div class="form-group" id="addressType">
+                        <label for="landmark">Address type</label>
+                        <select name="addressType"> 
+                            <option value="home">Home</option>
+                            <option value="work">Work</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country/Region</label>
+                        <input type="text" id="country" name="country" placeholder="Enter your country" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="mobileNumber">Mobile number</label>
+                        <input type="number" id="mobileNumber" name="mobileNumber" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">Pincode (6 digits [0-9])</label>
+                        <input type="number" id="pincode" name="pincode" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="flat">Flat, House no., Building, Company, Apartment</label>
+                        <input type="text" id="flat" name="flat" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="area">district</label>
+                        <input type="text" id="district" name="district" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" required />
+                    </div>
+                    <button type="submit" class="button">Submit</button>
+                </form>
+            </div>
+        </div>
+        
+    
+        <script>
+            function closeForm() {
+                document.getElementById("form-wrapper").style.display = "none";
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var form = document.querySelector('form');
+                var errorMessageContainer = document.createElement('div');
+                errorMessageContainer.classList.add('error-message');
+                form.appendChild(errorMessageContainer);
+    
+                form.addEventListener('submit', function (event) {
+                    var inputs = form.querySelectorAll('input:not([type="submit"]), select');
+                    var errorMessage = '';
+    
+                    for (var i = 0; i < inputs.length; i++) {
+                        if (inputs[i].value.trim() === '') {
+                            errorMessage = 'Please fill in all fields';
+                            event.preventDefault(); // Prevent form submission
+                            break;
+                        }
+                    }
+    
+                    errorMessageContainer.textContent = errorMessage;
+                });
+            });
+        </script>
+    </body>
+    
+</html>

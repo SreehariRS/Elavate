@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/stylesheet/admin/addproduct.css">
+</head>
+<body>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />  
+<nav class="sidebar">
+      <header>
+        <div class="image-text">
+          <span class="image">
+            <img src="/img/logo.png" alt="logo" />
+          </span>
+          <div class="text header-text">
+            <span class="main">ELAVATE</span>
+            <br>
+            <span class="sub">make your smell</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <ul class="menu-links">
+            <li class="nav-link">
+              <a href="/admin/dashboard">
+                <i class="bx bx-home-alt icons"></i>
+                <span class="text nav-text">Dashboard</span>
+              </a>
+            </li>
+            <!-- Other menu items -->
+            <li class="nav-link">
+              <a href="/admin/customers">
+                <i class="bx bx-bar-chart-alt-2 icons"></i>
+                <span class="text nav-text">User</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/productlist">
+                <i class="bx bx-bell icons"></i>
+                <span class="text nav-text">product</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/order">
+                <i class="bx bx-pie-chart-alt icons"></i>
+                <span class="text nav-text">order</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/category">
+                <i class="bx bx-heart icons"></i>
+                <span class="text nav-text">Category</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-wallet-alt icons"></i>
+                <span class="text nav-text">coupon</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+          </ul>
+        </div>
+
+        <div class="bottom-content">
+          <li class="nav-link">
+            <a href="#">
+              <i class="bx bx-log-out icons"></i>
+              <span class="text nav-text">Log Out</span>
+            </a>
+          </li>
+        </div>
+      </div>
+    </nav>
+
+
+  <div class="addproductcontainer">
+    <h1>Add Product</h1>
+
+    <form action="/admin/addproduct"  id="addProductForm" method="POST" enctype="multipart/form-data">
+
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="name" required>
+
+        <!-- <label for="productModel">Product Model:</label>
+        <input type="text" id="productModel" name="model" required> -->
+
+        
+        <label for="productDescription">Product Description:</label>
+        <textarea id="productDescription" name="description" required></textarea>
+
+        <label for="productCategory">Product Category:</label>
+        <select id="productCategory" name="category" required>
+            <% categories.forEach(category => { %>
+                <option value="<%= category %>"><%= category%></option>
+            <% }); %>
+            
+        </select>
+
+       
+        <label for="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" name="price" min="0" step="0.01" required>
+
+      
+        <!-- <label for="productRating">Product Rating:</label>
+        <input type="number" id="productRating" name="rating" min="0" max="5" step="0.1" required> -->
+
+    
+        <label for="productStock">Product Stock:</label>
+        <input type="number" id="productStock" name="stock" required>
+
+        
+        
+        <label for="productImages" id="productImagesLabel">Product Images:</label>
+        <input type="file" id="productImages" name="productImages" accept="image/*" multiple required>
+        <div id="imagePreviews"></div> <!-- Container for image previews -->
+        <span id="selectedImagesPlaceholder">No files selected</span>
+        
+
+       
+        <button type="submit">Add Product</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('productImages').addEventListener('change', function () {
+    const imagePreviews = document.getElementById('imagePreviews');
+    imagePreviews.innerHTML = ''; // Clear previous previews
+
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const preview = document.createElement('div');
+            preview.classList.add('image-preview');
+
+            const image = document.createElement('img');
+            image.src = e.target.result;
+            image.classList.add('preview-image');
+            preview.appendChild(image);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function () {
+                preview.remove(); // Remove the preview when delete button is clicked
+            });
+            preview.appendChild(deleteButton);
+
+            imagePreviews.appendChild(preview);
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
+
+document.getElementById('addProductForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Validation
+    const productName = document.getElementById('productName').value.trim();
+    const productDescription = document.getElementById('productDescription').value.trim();
+    const productPrice = parseFloat(document.getElementById('productPrice').value);
+    const productStock = parseInt(document.getElementById('productStock').value);
+    const productImages = document.getElementById('productImages').files;
+
+    // Regular expressions for validation
+    const nameRegex = /^[a-zA-Z ]+$/; // Only letters and spaces allowed
+    const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/; // Alphanumeric, spaces, and common punctuation allowed
+
+    // Check for empty product name
+    if (productName === '') {
+        alert('Please enter a product name.');
+        return;
+    }
+
+    // Check if product name contains only letters and spaces
+    if (!nameRegex.test(productName)) {
+        alert('Product name should contain only letters and spaces.');
+        return;
+    }
+
+    // Check if product description is empty or contains invalid characters
+    if (!productDescription || !descriptionRegex.test(productDescription)) {
+        alert('Please enter a valid product description.');
+        return;
+    }
+
+    // Check for negative stock
+    if (productStock < 0) {
+        alert('Stock should be a positive number.');
+        return;
+    }
+
+    // Check if price is not a number or negative
+    if (isNaN(productPrice) || productPrice <= 0) {
+        alert('Please enter a valid product price.');
+        return;
+    }
+
+    // Check if images are selected
+    if (productImages.length === 0) {
+        alert('Please select at least one image.');
+        return;
+    }
+
+    // Check file types for images
+    for (let i = 0; i < productImages.length; i++) {
+        const fileName = productImages[i].name;
+        const fileType = fileName.split('.').pop().toLowerCase();
+        if (!['jpeg', 'jpg', 'png', 'gif', 'webp'].includes(fileType)) {
+            alert('Please select only image files (JPEG, JPG, PNG, GIF, webp).');
+            return;
+        }
+    }
+
+    // If all validations pass, proceed with form submission
+    const formData = new FormData(this);
+
+    fetch('/admin/addproduct', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Product added successfully:', data);
+        window.location.href = '/admin/productlist';
+    })
+    .catch(error => {
+        console.error('Error adding product:', error);
+    });
+});
+
+</script>
+
+</body>
+</html>
+
+            
+
+       

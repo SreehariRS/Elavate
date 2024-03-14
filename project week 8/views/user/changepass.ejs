@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+
+    <style>
+          body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 360px;
+            margin: 130px auto;
+            padding: 32px;
+            border-radius: 18px;
+            box-shadow: 0px 0px 10px rgba(124, 249, 0, 0.212);
+            background-color: #f9f9f9;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .container.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .container.fade-out {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        button {
+            background-color: #030303;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease; /* Adding animation for button */
+        }
+
+        button:hover {
+            background-color: #313331;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 7px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 25px;
+            color: #020000;
+        }
+
+        form {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #1a1a1a;
+        }
+
+        input[type="password"] {
+            width: calc(100% - 20px); /* Adjusting for padding */
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #cecece;
+        }
+
+        input[type="submit"] {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px;
+            width: 100%;
+            background-color: #191919;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+       
+        #passwordMatchError {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Animation for success message */
+        .success-message {
+            color: #08f634;
+            text-align: center;
+            font-size: large;
+            animation: slideUp 0.5s ease;
+        }
+        /* Keyframes for success message animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <span class="close-btn" onclick="closeContainer()">x</span>
+    <form action="/changepass" method="POST" onsubmit="return validateForm()">
+       
+        
+        <h1>Change Password</h1>
+
+        <% if (locals.error) { %>
+            <div class="error-message"><%= locals.error %></div>
+        <% } %>
+
+        <label for="currentPassword">Current Password:</label>
+        <input type="password" id="currentPassword" name="currentPassword" required>
+
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+
+        <label for="confirmPassword">Confirm New Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <br>
+
+        <div id="passwordMatchError">Passwords do not match!</div>
+        <% if (locals.successMessage) { %>
+            <div class="success-message"><%= locals.successMessage %></div>
+        <% } %>
+        
+        <% if (locals.wrong) { %>
+            <div class="in-exs" style="text-align: center; font-size: large;"><%= locals.wrong %></div>
+        <% } %>
+        <br>
+        <button type="submit">Change Password</button>
+    </form>
+</div>
+
+<script>
+    function validateForm() {
+        var newPassword = document.getElementById("newPassword").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (newPassword !== confirmPassword) {
+            document.getElementById("passwordMatchError").style.display = "block";
+            return false;
+        }
+
+        return true;
+    }
+
+    window.onload = function() {
+        document.getElementById("container").classList.add("active");
+    };
+
+    function closeContainer() {
+        var container = document.getElementById('container');
+        container.classList.remove('active');
+        setTimeout(function() {
+            container.style.display = 'none';
+        }, 500); // Delay hiding the container to match the animation duration
+
+        // Redirect to root URL
+        window.location.href = "/";
+    }
+</script>
+
+</body>
+</html>

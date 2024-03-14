@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>home page</title>
+       
+        <link rel="stylesheet" href="/css/bootstrap.css" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script> -->
+        <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+         <link rel="stylesheet" href="/stylesheet/user/homepage.css" />
+    </head>
+    <body>
+ <style>
+    #flashMessageContainer {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+
+    /* Style for popup message */
+    .alert {
+        background-color: #f44336;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        position: relative;
+        display: inline-block;
+    }
+
+    .alert.show {
+        opacity: 1;
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+        from {
+            transform: translateY(-50px);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateY(0);
+        }
+        to {
+            transform: translateY(-50px);
+        }
+    }
+
+    /* Applying Animation */
+    .alert.slideIn {
+        animation: slideIn 0.5s forwards;
+    }
+
+    .alert.slideOut {
+        animation: slideOut 0.5s forwards;
+    }
+</style>
+      <main class="navMain">
+    <nav class="navbar navbar-expand-lg navbar-light  fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/img/logo.png" alt="Logo" class="navbar-logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/forhim">For Him</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/forher">For Her</a>
+                    </li>
+                </ul>
+                <form class="form-inline ml-auto">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-icon">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="search-icon"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link profile-icon" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="/profile/<%= userId %>">Profile</a>
+                            <!-- <li><a href="profile">profile </a></li> -->
+                            <a class="dropdown-item" href="/address">Wishlist</a>
+                            <a class="dropdown-item" href="/CartView">Cart</a>
+                            <a class="dropdown-item" href="/login">Login</a>
+                            <a class="dropdown-item" href="/signout">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</main>
+
+    <div id="flashMessageContainer">
+        <% if (typeof errorMessage !== 'undefined' && errorMessage.length > 0) { %>
+            <div id="flashMessage" class="alert slideIn show">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+    </div>
+        <!-- carousel.. -->
+
+        <!-- Carousel wrapper -->
+<div id="carouselMaterialStyle" class="carousel slide carousel-fade" data-mdb-ride="carousel" data-mdb-carousel-init>
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+
+  <!-- Inner -->
+  <div class="carousel-inner rounded-5 shadow-4-strong">
+    <!-- Single item -->
+    <div class="carousel-item active">
+      <img src="/img/car3.webp" class="d-block w-100" alt="Sunset Over the City" />
+      <div class="carousel-caption d-none d-md-block">
+        <h5>ELACATE YOUR SMELLL</h5>
+        <p>explore your smell</p>
+      </div>
+    </div>
+
+    <!-- Single item -->
+    <div class="carousel-item">
+      <img src="/img/ca2.jpg" class="d-block w-100" alt="Canyon at Night" />
+      <div class="carousel-caption d-none d-md-block">
+        <h5>ELAVATE YOUR SMELL</h5>
+        <p>select your fragrance</p>
+      </div>
+    </div>
+
+    <!-- Single item -->
+    <div class="carousel-item">
+      <img src="/img/login 3.jpg" class="d-block w-100" alt="Cliff Above a Stormy Sea" />
+      <div class="carousel-caption d-none d-md-block">
+        <h5>ELAVATE YOUR SMELL</h5>
+        <p>we make what you want</p>
+      </div>
+    </div>
+  </div>
+  <!-- Controls -->
+  <button class="carousel-control-prev" type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+        <!-- product lists -->
+
+        <div class="product-container">
+            <% products.forEach(product => { %>
+                <a href="/display/<%= product.id %>">
+                    <div class="product-card">
+                        <div class="product-tumb">
+                            <img src="<%= product.productImages[0] %>" alt="<%= product.name %>" />
+                        </div>
+                        <div class="product-details">
+                            <span class="product-catagory"><%= product.category %></span>
+                            <h4><a href=""><%= product.name %></a></h4>
+                            <p><%= product.description %></p>
+                            <div class="product-bottom-details">
+                                <div class="product-price">
+                                    <% if (product.oldPrice) { %>
+                                        <small><%= product.oldPrice %></small>
+                                    <% } %>
+                                    <%= product.price %>
+                                </div>
+                                <div class="product-links">
+                                    <a href="#"><i class="fa fa-heart"></i></a>
+                                    <!-- Update the anchor tag with the shopping cart icon to include data attributes for productId and quantity -->
+                                    <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"><i class="fa fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <% if (product.stock <= 0) { %>
+                    <!-- SweetAlert indicating that the product is out of stock -->
+                    <script>
+                        Swal.fire({
+                            title: 'Out of Stock',
+                            text: 'This product "<%= product.name %>" is currently out of stock.',
+                            icon: 'error'
+                        });
+                    </script>
+                <% } %>
+            <% }); %>
+            
+        </div>
+
+        
+
+        <section id="About" class="about-section-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-12">
+                        <div class="about-img">
+                            <img src="/img/men5.webp" alt="" class="img-fluid" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-12 col-12 ps-lg-5 mt-md-5">
+                        <div class="about-text">
+                            <h2>We Provide Best Quality <br />perfume</h2>
+                            <p>
+                                For more than 30 years, Westlake Development Group has been the choice for custom-built
+                                homes in the Pacific Northwest. Our Portland home builders are proud to offer beautiful
+                                results and a successful design and build experience for homebuyers just like you. Turn to
+                                the experts at Westlake for all your custom home building and steep slope construction
+                                needs.
+                            </p>
+                            <a href="#" class="btn btn-warning">buy now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+       
+        <script src="/js/bootstrap.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    
+
+        <script>
+            // Function to hide the flash message after 2 seconds
+            function hideFlashMessage() {
+                var flashMessage = document.getElementById("flashMessage");
+                if (flashMessage) {
+                    flashMessage.style.display = "none";
+                }
+            }
+        
+            // Call hideFlashMessage function after 2 seconds if the flash message exists
+            var errorMessage = "<%= errorMessage %>";
+            if (typeof errorMessage !== 'undefined' && errorMessage.length > 0) {
+                setTimeout(hideFlashMessage, 2000);
+            }
+        </script>
+
+        <script>
+           document.querySelectorAll('#addToCartIcon').forEach(icon => {
+    icon.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default anchor tag behavior
+
+        const productId = this.getAttribute('data-product-id'); // Get the product ID from data-product-id attribute
+        const quantity = this.getAttribute('data-quantity'); // Get the quantity from data-quantity attribute
+        const userId = '<%= userId %>'; // Get the userId from the EJS template
+
+        // Find the closest product card element
+        const productCard = this.closest('.product-card');
+        
+        // Get the stock of the product from the product card
+        const stock = productCard.getAttribute('data-stock');
+
+        if (parseInt(stock) <= 0) {
+            // Show a SweetAlert indicating that the product is out of stock
+            Swal.fire({
+                title: 'Out of Stock',
+                text: 'This product is currently out of stock.',
+                icon: 'error'
+            });
+        } else {
+            // Construct the URL for the cart page with the product ID, quantity, and user ID
+            const url = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
+            // Navigate to the constructed URL
+            window.location.href = url;
+        }
+    });
+});
+
+        </script>
+        
+        
+        
+        
+    </body>
+</html>

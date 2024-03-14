@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user profile</title>
+    <link rel="stylesheet" href="/stylesheet/user/user.css">
+    <script src="https://kit.fontawesome.com/197a2eac2f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy5x25EJwo0pm6d4Zvu25/TfMIqE2t9nq" crossorigin="anonymous">
+<!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+    
+</head>
+<body>
+    <!-- <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />   -->
+    
+
+    
+  
+    
+
+    
+
+    
+    <div class="container">
+        <div class="main-body">
+      
+            <div class="row gutters-sm">
+        
+                <!-- User Profile Card -->
+<!-- User Profile Card -->
+<div class="col-md-4 mb-3">
+  <div class="card">
+      <div class="card-body d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-center text-center">
+              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+              <div class="mt-3">
+                  <h2><%= user.firstname %></h2>
+                  <p><%= user.email %></p>
+              </div>
+          </div>
+          <div>
+            <a href="/orderhistory"> <button class="btn btn-primary btn-order">Order</button></a> 
+              <a href="/address"><button class="btn btn-primary btn-address">Address</button></a> 
+          </div>
+      </div>
+  </div>
+</div>
+
+    
+                <!-- User Details Card -->
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Full Name</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <%= user.firstname %>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <button class="btn btn-primary mr-3" onclick="openModal()">
+                                        <i class="icofont-ui-edit"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Address Card -->
+                <div class="col-md-12 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Address</h5>
+                            <% if (user && user.addresses && user.addresses.length> 0) { %>
+                              <% user.addresses.forEach((address, index)=> { %>
+                                    <p class="card-text">
+                                      <label class="labels">Address <%= index + 1 %></label>
+                                      <%= address.addressType %>,<%= address.country %>,"<%= address.mobileNumber %>,<%= address.pincode %>,<%= address.flat %>,<%= address.district %>,<%= address.state %>
+                                    </p>
+                                    <% }); %>
+                                    <% } else { %>
+                                <p class="card-text">No address found.</p>
+                                <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+            </div>
+        </div>
+        <!-- Add this HTML code to your page where you want the modal to appear -->
+        <div id="editprofile" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit Profile</h2>
+            <div class="modal-body">
+              <form id="editProfileForm" action="/editprofile/<%= user._id %>" method="post">
+                <label for="newName">New Name:</label>
+                <input type="text" id="newName" class="form-control" name="newName" value="<%= user.firstname %>">
+           
+            </div>
+            <div class="modal-footer">
+             
+              <button type="submit" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
+            </form> 
+            </div>
+          </div>
+        </div>
+        
+        <!-- Include your custom CSS styles -->
+        <style>
+          .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+          .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: #f8f9fa; /* Light gray background color */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  }
+
+  .modal-body {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+
+  input.form-control {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ced4da; /* Bootstrap default border color */
+    border-radius: 5px;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
+ 
+
+  .btn-dark {
+    background-color: #343a40; /* Dark gray background color */
+    color: #fff; /* White text color */
+    border: 1px solid #343a40; /* Matching border color */
+  }
+
+  .btn-dark:hover {
+    background-color: #23272b; /* Darker gray on hover */
+    border: 1px solid #23272b; /* Matching border color on hover */
+  }
+
+
+  .modal-footer .btn-primary {
+  background-color: #007bff; /* Set the background color to a primary color */
+  color: #fff; /* Set text color to white */
+  border: none; /* Remove the border */
+  padding: 10px 20px; /* Add padding for better appearance */
+  border-radius: 4px; /* Add border-radius for rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+/* Hover effect */
+.modal-footer .btn-primary:hover {
+  background-color: #0056b3; /* Darken the color on hover */
+}
+
+/* Active/focus effect */
+.modal-footer .btn-primary:active, .modal-footer .btn-primary:focus {
+  outline: none; /* Remove the default focus outline */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a box shadow on focus */
+}
+
+          /* Add your own additional styling as needed */
+        </style>
+        
+        <script>
+          // Add this JavaScript code to your page to handle modal functionality
+          function openModal() {
+            document.getElementById('editprofile').style.display = 'flex';
+          }
+        
+          function closeModal() {
+            document.getElementById('editprofile').style.display = 'none';
+          }
+        
+          function saveChanges() {
+            // Add your logic here to save the changes to the name
+            var newName = document.getElementById('newName').value;
+            console.log('New Name:', newName);
+        
+            // Close the modal after saving changes
+            closeModal();
+          }
+        </script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy5x25EJwo0pm6d4Zvu25/TfMIqE2t9nq" crossorigin="anonymous"></script>
+</body>
+</html>

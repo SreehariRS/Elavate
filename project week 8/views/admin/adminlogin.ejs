@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/stylesheet/admin/adminlogin.css">
+</head>
+<body>
+    <div id="algn">
+        <div id="container">
+            <p class="head">Admin Login</p>
+            <form action="/admin/login" method="post" class="input-container" onsubmit="return validateForm()">
+                <label for="username">User Name</label>
+                <br>
+                <input type="text" id="name" name="adminName" placeholder="Enter username" class="inpt" required>
+                <br>
+                <label for="password">Password</label>
+                <br>
+                <input type="password" id="password" name="password" placeholder="Enter password" class="inpt" required>
+                <br>
+                <button type="submit" class="btn">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            var usernameInput = document.getElementById('username');
+            var passwordInput = document.getElementById('password');
+
+            var usernameValue = usernameInput.value.trim(); // Trim to remove leading/trailing spaces
+            var passwordValue = passwordInput.value.trim();
+
+            // Check if username and password are not empty
+            if (usernameValue === '' || passwordValue === '') {
+                alert('Please enter both username and password.');
+                return false;
+            }
+
+            // If all validations pass, the form will be submitted
+            return true;
+        }
+    </script>
+</body>
+</html>

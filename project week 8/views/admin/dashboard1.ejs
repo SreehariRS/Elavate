@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard</title>
+    <link rel="stylesheet" href="/stylesheet/admin/dashboard1.css">
+   
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />  
+    <main>
+<nav class="sidebar">
+      <header>
+        <div class="image-text">
+          <span class="image">
+            <img src="/img/logo.png" alt="logo" />
+          </span>
+          <div class="text header-text">
+            <span class="main">ELAVATE</span>
+            <br>
+            <span class="sub">make your smell</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <ul class="menu-links">
+            <li class="nav-link">
+              <a href="/admin/dashboard">
+                <i class="bx bx-home-alt icons"></i>
+                <span class="text nav-text">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/customers">
+                <i class="bx bx-bell icons"></i>
+                <span class="text nav-text">User</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/productlist">
+                <i class="bx bx-bar-chart-alt-2 icons"></i>
+                <span class="text nav-text">Product</span>
+              </a>
+            </li>
+            
+            <li class="nav-link">
+              <a href="/admin/order">
+                <i class="bx bx-pie-chart-alt icons"></i>
+                <span class="text nav-text">order</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/category">
+                <i class="bx bx-heart icons"></i>
+                <span class="text nav-text">Category</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-wallet-alt icons"></i>
+                <span class="text nav-text">coupon</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bottom-content">
+          <li class="nav-link">
+            <a href="#">
+              <i class="bx bx-log-out icons"></i>
+              <span class="text nav-text">Log Out</span>
+            </a>
+          </li>
+          
+          </li>
+        </div>
+      </div>
+    </nav>
+    <!-- dashboard -->
+    <section>
+        <div class="center1">
+            
+            <h2>Monthly sales</h2>
+            <br>
+            <h4>25,000/-</h4>
+            <br>
+            <h5>profit by 29%</h5>
+        </div>
+        <div class="center1">
+            <h2>Weekly order</h2>
+            <br>
+            <h4>8600</h4>
+            <br>
+            <h5>decreased by 35%</h5>
+
+        </div>
+    </section>
+
+    <!-- graph report -->
+    <section>
+       
+        <div class="center2">
+            <h2>Monthly Sales</h2>
+            <canvas id="monthlyChart" width="400" height="200"></canvas>
+        </div>
+
+       
+        <div class="center2">
+            <h2>Yearly Sales</h2>
+            <canvas id="yearlyChart" width="400" height="200"></canvas>
+        </div>
+    </section>
+    
+
+    </main>
+
+
+<script>
+    // Sample data for the charts
+    const monthlyData = [12000, 15000, 18000, 22000, 25000];
+    const yearlyData = [150000, 180000, 200000, 250000, 300000];
+
+    // Get chart elements
+    const monthlyChart = document.getElementById('monthlyChart').getContext('2d');
+    const yearlyChart = document.getElementById('yearlyChart').getContext('2d');
+
+    // Function to create a line chart
+    const createLineChart = (context, data, label, color) => {
+        new Chart(context, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'black' // Set legend text color to white
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'black' // Set x-axis label text color to white
+                        },
+                        grid: {
+                            color: 'white' // Set color of x-axis grid lines to white
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'white' // Set y-axis label text color to white
+                        },
+                        grid: {
+                            color: 'white' // Set color of y-axis grid lines to white
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+    createLineChart(monthlyChart, monthlyData, 'Monthly Sales', 'rgba(0, 123, 255, 1)');
+    createLineChart(yearlyChart, yearlyData, 'Yearly Sales', 'rgba(40, 167, 69, 1)');
+</script>
+
+
+</body>
+</html>

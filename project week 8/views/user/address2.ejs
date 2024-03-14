@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <style>
+        #address-form {
+    font-family: Arial, sans-serif;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+}
+
+#address-form p {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#address-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#address-form input[type="text"],
+#address-form input[type="tel"],
+#address-form select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#address-form input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#address-form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+    </style>
+    <div id="address-form">
+        <p>Add Address</p>
+        <form id="editaddress"  method="post" action="/addressedit/<%=address.id%>">
+            <label for="address-type">Address type:</label><br>
+            <select id="address-type" name="address-type">
+                <option value="home" <%= address.addressType === 'home' ? 'selected' : '' %>>Home</option>
+                <option value="work" <%= address.addressType === 'work' ? 'selected' : '' %>>Work</option>
+                <!-- Add more address types here if needed -->
+            </select><br>
+            <label for="country">Country/Region:</label>
+            <input type="text" id="country" name="country" value="<%= address.country %>">
+
+            <label for="mobile-number">Mobile number:</label>
+            <input type="tel" id="mobile-number" name="mobile-number"  value="<%= address.mobileNumber %>">
+
+            <label for="pincode">Pincode (6 digits [0-9]):</label>
+            <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}"  value="<%= address.pincode %>">
+
+            <label for="flat">Flat, House no., Building, Company, Apartment:</label>
+            <input type="text" id="flat" name="flat"  value="<%= address.flat %>">
+
+            <label for="district">District:</label>
+            <input type="text" id="district" name="district"  value="<%= address.district %>">
+
+            <label for="state">State:</label><br>
+            <input type="text" id="state" name="state"  value="<%= address.state %>"><br>
+
+            <input type="submit" value="Save Address">
+        </form>
+    </div>
+</body>
+</html>
