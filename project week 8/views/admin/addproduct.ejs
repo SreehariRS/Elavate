@@ -4,13 +4,298 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/stylesheet/admin/addproduct.css">
+    <link rel="stylesheet" href="stylesheet/admin/addproduct.css">
 </head>
 <body>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  font-family: "Poppins", "sans-sarif";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-color: #ffffff;
+  --sidebar-color: #000000;
+  --primary-color: #f4f2f2;
+  --primary-color-light: #f4f2f2;
+  --text-color: #ffffff;
+ 
+
+  --trans-02: all 0.2s ease;
+  --trans-03: all 0.3s ease;
+  --trans-04: all 0.4s ease;
+  --trans-04: all 0.5s ease;
+}
+
+body {
+  height: 100vh;
+  background-color: var(--body-color);
+  transition: var(--trans-02);
+}
+
+.sidebar .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  /* transition: var(--trans-04); */
+  white-space: unset;
+  opacity: 1;
+}
+
+.sidebar .image {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0px;
+  height: 100%;
+  width: 250px;
+  background-color: var(--sidebar-color);
+  padding: 10px 14px;
+  transition: var(--trans-02);
+}
+
+.sidebar header {
+  position: relative;
+}
+.sidebar .image-text img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  align-items: center;
+}
+
+.header .image-text .header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .main {
+  font-weight: 600;
+}
+
+.header-text .sub {
+  margin-top: -2px;
+}
+
+
+.sidebar li {
+  height: 50px;
+  /* background-color: red; */
+  margin-top: 10px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar li .icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  font-size: 20px;
+}
+.sidebar li .icons,
+.sidebar li .text {
+  color: var(--text-color);
+  transition: var(--trans-03);
+}
+
+.sidebar li a {
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding-right: 50px;
+  border-radius: 6px;
+  transition: var(--trans-04);
+  text-align: left;
+}
+
+.sidebar li a:hover {
+  background: var(--primary-color);
+}
+.sidebar li a:hover .icons,
+.sidebar li a:hover .text {
+  color: var(--dark-color);
+}
+
+.sidebar .menu-bar {
+  height: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+    @media only screen and (max-width: 768px) {
+/* Adjust sidebar width for smaller screens */
+.sidebar {
+    width: 200px;
+}
+
+/* Adjust other styles as needed for smaller screens */
+}
+
+/* Add more responsive styles as needed */
+
+/* General styles */
+
+body {
+font-family: "Poppins", "sans-serif";
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+.addproductcontainer {
+max-width: 800px;
+margin: 0 auto;
+padding: 20px;
+background-color: #fff;
+border-radius: 8px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+text-align: center;
+color: #333;
+}
+
+label {
+font-weight: bold;
+display: block;
+margin-bottom: 5px;
+}
+
+input,
+textarea,
+select {
+width: 100%;
+padding: 10px;
+margin-top: 5px;
+margin-bottom: 15px;
+box-sizing: border-box;
+border: 1px solid #ccc;
+border-radius: 10px;
+font-size: 16px;
+}
+
+button {
+margin: 0 auto;
+display: block;
+width: 50%; /* Adjust as needed */
+background-color: #101110;
+color: #fff;
+padding: 10px 20px;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+font-size: 16px;
+box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+#productImagesLabel {
+margin-top: 10px;
+}
+
+#selectedImagePlaceholder {
+margin-top: 5px;
+display: block;
+}
+
+.image-preview {
+display: inline-block;
+margin-right: 10px;
+}
+
+.preview-image {
+max-width: 100px; /* Adjust the maximum width as needed */
+max-height: 100px; /* Adjust the maximum height as needed */
+border: 1px solid #ccc; /* Add a border for better visibility */
+}
+
+.delete-button {
+display: block;
+margin-top: 5px;
+background-color: #ff0000; /* Red color for delete button */
+color: #fff; /* White text color */
+border: none;
+padding: 5px 10px;
+border-radius: 5px;
+cursor: pointer;
+width: 70px;
+}
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  button {
+    margin-left: 34%;
+    width: 32%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sidebar {
+    width: 150px;
+  }
+
+  button {
+    margin-left: 30%;
+    width: 40%;
+  }
+}
+/* CSS for hiding sidebar when collapsed class is added */
+.sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+</style>
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />  
+    <div class="toggle-sidebar">
+      <i class="bx bx-menu toggle-icon"></i>
+    </div>
 <nav class="sidebar">
       <header>
         <div class="image-text">
@@ -72,7 +357,7 @@
 
         <div class="bottom-content">
           <li class="nav-link">
-            <a href="#">
+            <a href="/admin/login">
               <i class="bx bx-log-out icons"></i>
               <span class="text nav-text">Log Out</span>
             </a>
@@ -129,9 +414,43 @@
         <button type="submit">Add Product</button>
     </form>
 </div>
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
 <script>
-    document.getElementById('productImages').addEventListener('change', function () {
+  // JavaScript for automatically toggling sidebar visibility
+  const toggleButton = document.querySelector('.toggle-sidebar');
+  const sidebar = document.querySelector('.sidebar');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('hidden');
+    toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+  }
+  
+  function checkViewportWidth() {
+    if (window.innerWidth <= 1300) {
+      sidebar.classList.add('hidden');
+      toggleButton.style.display = 'block';
+    } else {
+      sidebar.classList.remove('hidden');
+      toggleButton.style.display = 'none';
+    }
+  }
+  
+  toggleButton.addEventListener('click', function() {
+    toggleSidebar();
+  });
+  
+  // Check viewport width initially and on resize
+  checkViewportWidth();
+  window.addEventListener('resize', checkViewportWidth);
+  
+  </script>
+<script>
+   document.getElementById('productImages').addEventListener('change', function () {
     const imagePreviews = document.getElementById('imagePreviews');
     imagePreviews.innerHTML = ''; // Clear previous previews
 
@@ -147,6 +466,18 @@
             image.classList.add('preview-image');
             preview.appendChild(image);
 
+            const cropper = new Cropper(image, {
+                aspectRatio: 1, // You can adjust the aspect ratio as needed
+                viewMode: 2, // Set the view mode (0, 1, 2, 3)
+                movable: true,
+                zoomable: true,
+                rotatable: true,
+                scalable: true,
+                minCropBoxWidth: 50, // Minimum width of the crop box
+                minCropBoxHeight: 50, // Minimum height of the crop box
+                autoCropArea: 1, // Automatically create a crop box that covers the entire preview
+            });
+
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-button');
             deleteButton.textContent = 'Delete';
@@ -161,6 +492,7 @@
         reader.readAsDataURL(file);
     });
 });
+
 
 document.getElementById('addProductForm').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -178,37 +510,37 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
 
     // Check for empty product name
     if (productName === '') {
-        alert('Please enter a product name.');
+      swal('Please enter a product name.');
         return;
     }
 
     // Check if product name contains only letters and spaces
     if (!nameRegex.test(productName)) {
-        alert('Product name should contain only letters and spaces.');
+      swal('Product name should contain only letters and spaces.');
         return;
     }
 
     // Check if product description is empty or contains invalid characters
     if (!productDescription || !descriptionRegex.test(productDescription)) {
-        alert('Please enter a valid product description.');
+      swal('Please enter a valid product description.');
         return;
     }
 
     // Check for negative stock
     if (productStock < 0) {
-        alert('Stock should be a positive number.');
+      swal('Stock should be a positive number.');
         return;
     }
 
     // Check if price is not a number or negative
     if (isNaN(productPrice) || productPrice <= 0) {
-        alert('Please enter a valid product price.');
+      swal('Please enter a valid product price.');
         return;
     }
 
     // Check if images are selected
     if (productImages.length === 0) {
-        alert('Please select at least one image.');
+      swal('Please select at least one image.');
         return;
     }
 
@@ -217,13 +549,30 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
         const fileName = productImages[i].name;
         const fileType = fileName.split('.').pop().toLowerCase();
         if (!['jpeg', 'jpg', 'png', 'gif', 'webp'].includes(fileType)) {
-            alert('Please select only image files (JPEG, JPG, PNG, GIF, webp).');
+          swal('Please select only image files (JPEG, JPG, PNG, GIF, webp).');
             return;
         }
     }
 
     // If all validations pass, proceed with form submission
     const formData = new FormData(this);
+
+ // Iterate through each cropped image and append it to formData
+ const croppedImages = [];
+ document.querySelectorAll('.preview-image').forEach((image, index) => {
+        const cropper = image.cropper;
+        if (cropper) {
+            cropper.getCroppedCanvas().toBlob(function (blob) {
+                // Append the cropped image blob to formData
+                formData.append(`croppedImage${index}`, blob, `croppedImage${index}.jpg`);
+            });
+        }
+    });
+
+    // Append the cropped image data to formData
+    croppedImages.forEach((croppedData, index) => {
+        formData.append(`croppedImage${index}`, croppedData);
+    });
 
     fetch('/admin/addproduct', {
         method: 'POST',
@@ -245,6 +594,8 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
 });
 
 </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
 </body>
 </html>

@@ -4,220 +4,519 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dashboard</title>
-    <link rel="stylesheet" href="/stylesheet/admin/editproduct.css">
+    <link rel="stylesheet" href="stylesheet/admin/editproduct.css">
 </head>
 <body>
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />  
+  <style>
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  font-family: "Poppins", "sans-sarif";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-color: #ffffff;
+  --sidebar-color: #000000;
+  --primary-color: #f4f2f2;
+  --primary-color-light: #f4f2f2;
+  --text-color: #ffffff;
+ 
+
+  --trans-02: all 0.2s ease;
+  --trans-03: all 0.3s ease;
+  --trans-04: all 0.4s ease;
+  --trans-04: all 0.5s ease;
+}
+
+body {
+  height: 100vh;
+  background-color: var(--body-color);
+  transition: var(--trans-02);
+}
+
+.sidebar .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  white-space: unset;
+  opacity: 1;
+}
+
+.sidebar .image {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0px;
+  height: 100%;
+  width: 250px;
+  background-color: var(--sidebar-color);
+  padding: 10px 14px;
+  transition: var(--trans-02);
+}
+
+.sidebar header {
+  position: relative;
+}
+
+.sidebar .image-text img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  align-items: center;
+}
+
+.header .image-text .header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .main {
+  font-weight: 600;
+}
+
+.header-text .sub {
+  margin-top: -2px;
+}
+
+.sidebar li {
+  height: 50px;
+  margin-top: 10px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar li .icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  font-size: 20px;
+}
+
+.sidebar li .icons,
+.sidebar li .text {
+  color: var(--text-color);
+  transition: var(--trans-03);
+}
+
+.sidebar li a {
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding-right: 50px;
+  border-radius: 6px;
+  transition: var(--trans-04);
+  text-align: left;
+}
+
+.sidebar li a:hover {
+  background: var(--primary-color);
+}
+
+.sidebar li a:hover .icons,
+.sidebar li a:hover .text {
+  color: var(--dark-color);
+}
+
+.sidebar .menu-bar {
+  height: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.editproductcontainer {
+  font-family: 'Arial', sans-serif;
+  max-width: 800px;
+  margin: 1px auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+button {
+  margin-left: 37%;
+  width: 30%;
+  background-color: #000000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#productImageLabel {
+  margin-top: 10px;
+}
+
+#selectedImagePlaceholder {
+  margin-top: 5px;
+  display: block;
+}
+
+.image-preview {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.preview-image {
+  max-width: 100px;
+  max-height: 100px;
+  border: 1px solid #ccc;
+}
+
+.delete-button {
+  display: block;
+  margin-top: 5px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 70%;
+}
+
+.not-available {
+    background-color: #ffe5e5;
+    color: #b71c1c;
+    padding: 15px;
+    margin: 20px 0;
+    border: 2px solid #ff5252;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  button {
+    margin-left: 34%;
+    width: 32%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sidebar {
+    width: 150px;
+  }
+
+  button {
+    margin-left: 30%;
+    width: 40%;
+  }
+}
+/* CSS for hiding sidebar when collapsed class is added */
+.sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+
+</style>
+
+<link
+  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+  rel="stylesheet"
+/>  
+<!-- Add a toggle button -->
+<div class="toggle-sidebar">
+  <i class="bx bx-menu toggle-icon"></i>
+</div>
+
 <nav class="sidebar">
-      <header>
-        <div class="image-text">
-          <span class="image">
-            <img src="/img/logo.png" alt="logo" />
-          </span>
-          <div class="text header-text">
-            <span class="main">ELAVATE</span>
-            <br>
-            <span class="sub">make your smell</span>
-          </div>
-        </div>
-      </header>
-
-      <div class="menu-bar">
-        <div class="menu">
-          <ul class="menu-links">
-            <li class="nav-link">
-              <a href="/admin/dashboard">
-                <i class="bx bx-home-alt icons"></i>
-                <span class="text nav-text">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/customers">
-                <i class="bx bx-bar-chart-alt-2 icons"></i>
-                <span class="text nav-text">User</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/productlist">
-                <i class="bx bx-bell icons"></i>
-                <span class="text nav-text">product</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/order">
-                <i class="bx bx-pie-chart-alt icons"></i>
-                <span class="text nav-text">order</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/category">
-                <i class="bx bx-heart icons"></i>
-                <span class="text nav-text">Category</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="#">
-                <i class="bx bx-wallet-alt icons"></i>
-                <span class="text nav-text">coupon</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="bottom-content">
-          <li class="nav-link">
-            <a href="#">
-              <i class="bx bx-log-out icons"></i>
-              <span class="text nav-text">Log Out</span>
-            </a>
-          </li>
-          
-          </li>
-        </div>
+  <header>
+    <div class="image-text">
+      <span class="image">
+        <img src="/img/logo.png" alt="logo" />
+      </span>
+      <div class="text header-text">
+        <span class="main">ELAVATE</span>
+        <br>
+        <span class="sub">make your smell</span>
       </div>
-    </nav>
+    </div>
+  </header>
 
+  <div class="menu-bar">
+    <div class="menu">
+      <ul class="menu-links">
+        <li class="nav-link">
+          <a href="/admin/dashboard">
+            <i class="bx bx-home-alt icons"></i>
+            <span class="text nav-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/customers">
+            <i class="bx bx-bar-chart-alt-2 icons"></i>
+            <span class="text nav-text">User</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/productlist">
+            <i class="bx bx-bell icons"></i>
+            <span class="text nav-text">product</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/order">
+            <i class="bx bx-pie-chart-alt icons"></i>
+            <span class="text nav-text">order</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/category">
+            <i class="bx bx-heart icons"></i>
+            <span class="text nav-text">Category</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="#">
+            <i class="bx bx-wallet-alt icons"></i>
+            <span class="text nav-text">coupon</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="bottom-content">
+      <li class="nav-link">
+        <a href="/admin/login">
+          <i class="bx bx-log-out icons"></i>
+          <span class="text nav-text">Log Out</span>
+        </a>
+      </li>
+    </div>
+  </div>
+</nav>
 
 <div class="editproductcontainer">
   <h1>Edit Product</h1>
-
+  <% if (prod) { %>
   <form action="/admin/editproduct/<%= prod._id %>" id="editProductForm" method="POST" enctype="multipart/form-data">
+    <label for="productName">Product Name:</label>
+    <input type="text" id="productName" name="name" value="<%= prod.name %>" required>
 
-      <label for="productName">Product Name:</label>
-      <input type="text" id="productName" name="name" value="<%= prod.name %>" required>
+    <label for="productDescription">Product Description:</label>
+    <textarea id="productDescription" name="description" required><%= prod.description %></textarea>
 
-      <label for="productDescription">Product Description:</label>
-      <textarea id="productDescription" name="description" required><%= prod.description %></textarea>
+    <label for="productCategory">Product Category:</label>
+    <select id="productCategory" name="category" required>
+        <% categories.forEach(category => { %>
+            <option value="<%= category %>" <%= prod.category === category ? 'selected' : '' %>><%= category %></option>
+        <% }); %>
+    </select>
 
-      <label for="productCategory">Product Category:</label>
-      <select id="productCategory" name="category" required>
-          <% categories.forEach(category => { %>
-              <option value="<%= category %>" <%= prod.category === category ? 'selected' : '' %>><%= category %></option>
-          <% }); %>
-      </select>
+    <label for="productPrice">Product Price:</label>
+    <input type="number" id="productPrice" name="price" min="0" step="0.01" value="<%= prod.price %>" required>
+    
 
-      <label for="productPrice">Product Price:</label>
-      <input type="number" id="productPrice" name="price" min="0" step="0.01" value="<%= prod.price %>" required>
+    <label for="offerprice">Offer Price:</label>
+    <input type="number" id="offerprice" name="offerprice" min="0" step="0.01" value="<%= prod.offerprice %>" >
 
-      <label for="productStock">Product Stock:</label>
-      <input type="number" id="productStock" name="stock" value="<%= prod.stock %>" required>
 
-      <!-- Inside the form -->
-<label for="productImages" id="productImagesLabel">Product Images:</label>
-<input type="file" id="productImages" name="productImages" accept="image/*" multiple>
-<div id="imagePreviews">
-    <% prod.productImages.forEach(image => { %>
-        <div class="image-preview">
-            <img src="<%= image %>" alt="Product Image" class="preview-image">
-            <button class="delete-button">Delete</button>
-        </div>
-    <% }); %>
-</div>
-<!-- Rest of your form -->
- <!-- Container for image previews -->
-      <span id="selectedImagesPlaceholder">No files selected</span>
+    <label for="productStock">Product Stock:</label>
+    <input type="number" id="productStock" name="stock" value="<%= prod.stock %>" required>
 
-      <button type="submit">Edit Product</button>
+    <label for="productImages" id="productImagesLabel">Product Images:</label>
+    <input type="file" id="productImages" name="productImages" accept="image/*" multiple>
+    <div id="imagePreviews">
+        <% prod.productImages.forEach(image => { %>
+            <div class="image-preview">
+                <img src="<%= image %>" alt="Product Image" class="preview-image">
+                <button class="delete-button">Delete</button>
+            </div>
+        <% }); %>
+    </div>
+
+    <span id="selectedImagesPlaceholder">No files selected</span>
+
+    <button type="submit">Edit Product</button>
   </form>
+  <% } else { %>
+    <div class="not-available">
+        <p>Product not available</p>
+    </div>
+  <% } %>
 </div>
-
 <script>
-  document.getElementById('editProductForm').addEventListener('submit', function (event) {
-    event.preventDefault();
+// JavaScript for automatically toggling sidebar visibility
+const toggleButton = document.querySelector('.toggle-sidebar');
+const sidebar = document.querySelector('.sidebar');
 
-    // Get the values of name, description, price, and stock
-    const nameInput = document.getElementById('productName');
-    const descriptionInput = document.getElementById('productDescription');
-    const priceInput = document.getElementById('productPrice');
-    const stockInput = document.getElementById('productStock');
+function toggleSidebar() {
+  sidebar.classList.toggle('hidden');
+  toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+}
 
-    const name = nameInput.value.trim();
-    const description = descriptionInput.value.trim();
-    const price = parseFloat(priceInput.value);
-    const stock = parseInt(stockInput.value);
+function checkViewportWidth() {
+  if (window.innerWidth <= 1300) {
+    sidebar.classList.add('hidden');
+    toggleButton.style.display = 'block';
+  } else {
+    sidebar.classList.remove('hidden');
+    toggleButton.style.display = 'none';
+  }
+}
 
-    // Regular expressions for validation
-    const nameRegex = /^[a-zA-Z ]+$/; // Only letters and spaces allowed
-    const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/; // Alphanumeric, spaces, and common punctuation allowed
-
-    // Check if name contains only letters and spaces
-    if (!nameRegex.test(name)) {
-        alert('Product name should contain only letters and spaces.');
-        return;
-    }
-
-    // Check if description is empty or contains invalid characters
-    if (!description || !descriptionRegex.test(description)) {
-        alert('Please enter a valid product description.');
-        return;
-    }
-
-    // Check if price or stock is negative or zero
-    if (price <= 0 || stock < 0) {
-        alert("Price and stock should be positive numbers.");
-        return;
-    }
-
-    // Proceed with form submission if validation passes
-    const formData = new FormData(this);
-    const formAction = this.getAttribute('action');
-
-    fetch(formAction, {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Product edited successfully:', data);
-        window.location.href = '/admin/productlist';
-    })
-    .catch(error => {
-        console.error('Error editing product:', error);
-    });
+toggleButton.addEventListener('click', function() {
+  toggleSidebar();
 });
 
+// Check viewport width initially and on resize
+checkViewportWidth();
+window.addEventListener('resize', checkViewportWidth);
 
-  document.getElementById('productImages').addEventListener('change', function () {
-      const imagePreviews = document.getElementById('imagePreviews');
-
-      Array.from(this.files).forEach(file => {
-          const reader = new FileReader();
-
-          reader.onload = function (e) {
-              const preview = document.createElement('div');
-              preview.classList.add('image-preview');
-
-              const image = document.createElement('img');
-              image.src = e.target.result;
-              image.classList.add('preview-image');
-              preview.appendChild(image);
-
-              const deleteButton = document.createElement('button');
-              deleteButton.classList.add('delete-button');
-              deleteButton.textContent = 'Delete';
-              deleteButton.addEventListener('click', function () {
-                  preview.remove(); // Remove the specific preview when delete button is clicked
-              });
-              preview.appendChild(deleteButton);
-
-              imagePreviews.appendChild(preview);
-          };
-
-          reader.readAsDataURL(file);
-      });
-  });
 </script>
+<script>
+document.getElementById('editProductForm').addEventListener('submit', function (event) {
+  event.preventDefault();
 
+  const nameInput = document.getElementById('productName');
+  const descriptionInput = document.getElementById('productDescription');
+  const priceInput = document.getElementById('productPrice');
+  const stockInput = document.getElementById('productStock');
 
+  const name = nameInput.value.trim();
+  const description = descriptionInput.value.trim();
+  const price = parseFloat(priceInput.value);
+  const stock = parseInt(stockInput.value);
 
+  const nameRegex = /^[a-zA-Z ]+$/;
+  const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/;
 
+  if (!nameRegex.test(name)) {
+      alert('Product name should contain only letters and spaces.');
+      return;
+  }
+
+  if (!description || !descriptionRegex.test(description)) {
+      alert('Please enter a valid product description.');
+      return;
+  }
+
+  if (price <= 0 || stock < 0) {
+      alert("Price and stock should be positive numbers.");
+      return;
+  }
+
+  const formData = new FormData(this);
+  const formAction = this.getAttribute('action');
+
+  fetch(formAction, {
+      method: 'POST',
+      body: formData,
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log('Product edited successfully:', data);
+      window.location.href = '/admin/productlist';
+  })
+  .catch(error => {
+      console.error('Error editing product:', error);
+  });
+});
+
+document.getElementById('productImages').addEventListener('change', function () {
+    const imagePreviews = document.getElementById('imagePreviews');
+
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const preview = document.createElement('div');
+            preview.classList.add('image-preview');
+
+            const image = document.createElement('img');
+            image.src = e.target.result;
+            image.classList.add('preview-image');
+            preview.appendChild(image);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function () {
+                preview.remove();
+            });
+            preview.appendChild(deleteButton);
+
+            imagePreviews.appendChild(preview);
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
+</script>
 </body>
 </html>

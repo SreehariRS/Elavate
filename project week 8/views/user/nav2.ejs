@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.3/components/navbars/navbar-3/assets/css/navbar-3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-vCXzsT4ig2rxLysXHB2Km+tGloKZLtX92C0hOzFqSUZzA9T//k3xIiC2Q6jOMgXTsFVYJqo7jzLtUKm1/+i7eQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body>
+    <style>
+        /* Add this CSS for responsive styles */
+@media screen and (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+  }
+  
+  .nav-item {
+    margin-bottom: 10px;
+  }
+  
+  .navbar-toggler {
+    display: block;
+  }
+  
+  .collapse {
+    display: none;
+  }
+  
+  .collapsed .collapse {
+    display: block;
+  }
+}
+
+.input-container {
+ position: relative;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ width: 100%;
+}
+
+.form-control {
+ width: 80%; /* Adjust as needed */
+ height: 30px; /* Adjust as needed */
+ padding: 5px; /* Adjust as needed */
+ border: 1px solid #ccc; /* Adjust as needed */
+ border-radius: 4px; /* Adjust as needed */
+}
+
+.close-icon {
+ position: absolute;
+ right: 10px; /* Adjust as needed */
+ top: 50%;
+ transform: translateY(-50%);
+ background: transparent;
+ border: none;
+ cursor: pointer;
+}
+
+/* Style for the close icon */
+.close-icon:hover {
+ color: red; /* Change the color on hover */
+}
+
+/* Focus effect */
+.form-control:focus {
+ border-color: #555; /* Change border color on focus */
+}
+.filter-btn {
+        background-color: #151515; 
+        color: #fff;
+        border: 1px solid #000; 
+        border-radius: 10px; 
+        padding: 8px 16px; 
+        margin: 3px; 
+        cursor: pointer; 
+        text-decoration: none; 
+        display: inline-block; 
+        font-size: 12px; 
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+        animation: buttonPulse 10s infinite alternate; 
+    }
+    
+    .filter-btn:hover {
+        color: rgb(0, 0, 0);
+        background-color: #000000; 
+        border-color: #181717; 
+        animation: none; 
+    }
+    @keyframes buttonPulse {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.1);
+        }
+    }
+    
+    /* Initially hide the dropdown menu */
+    .filter-menu {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+    width: 140px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    
+    /* Show the dropdown menu with animation */
+    .filter-menu.show {
+        display: block;
+        animation: dropDownItems 0.4s ease forwards;
+    }
+    
+    /* Animation keyframes for dropping down the items one by one */
+    @keyframes dropDownItems {
+        0% {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .filter-menu button {
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        border: none;
+        outline: none;
+    }
+    
+    .filter-menu button:hover {
+        background-color: #ddd;
+    }
+    
+    /* Apply animation delay to each button */
+    .filter-menu button:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+    .filter-menu button:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    /* Add more nth-child selectors for additional buttons */
+    
+    #filterButton {
+        width: 100px;
+        /* Add your specific styles here */
+        background-color: #000000; /* Orange background */
+        color: #fff; /* White text color */
+        border: 2px solid #ffffff; /* Orange border */
+    }
+    
+    #filterButton:hover {
+        background-color: #3e3b39; /* Lighter orange on hover */
+        border-color: #2e2c2b; /* Lighter border color on hover */
+    }
+ 
+
+    </style>
+    <!-- Header -->
+<header id="header-demo">
+    <nav class="navbar navbar-expand-md bg-body-tertiary bsb-navbar-3">
+      <div class="container">
+        <ul class="navbar-nav">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#!" data-bs-toggle="offcanvas" data-bs-target="#bsbSidebar1" aria-controls="bsbSidebar1">
+              <i class="bi-filter-left fs-3 lh-1"></i>
+            </a>
+          </li>
+        </ul>
+        <a class="navbar-brand" href="/">
+          <img src="/img/Elavate.png" class="img-fluid" alt="BootstrapBrain Logo" width="135" height="44">
+        </a>
+        
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#bsbNavbar" aria-controls="bsbNavbar" aria-label="Toggle Navigation">
+          <i class="bi bi-three-dots"></i>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="bsbNavbar">
+            
+          <ul class="navbar-nav bsb-dropdown-menu-responsive ms-auto align-items-center">
+ 
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="position-relative pt-1">
+                    <span class="category-icon">Category</span>
+
+                  </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-md-end bsb-dropdown-sm bsb-dropdown-animation bsb-fadeIn">
+                  <div>
+                    <h6 class="dropdown-header fs-7 text-center">catrgory</h6>
+                  </div>
+                  <div>
+                    <hr class="dropdown-divider mb-0">
+                  </div>
+                  <div class="list-group list-group-flush">
+                    <a href="/forhim" class="list-group-item list-group-item-action" aria-current="true">
+                      <div class="row g-0 align-items-center">
+                      
+                        <div class="col-10">
+                          <div class="ps-3">
+                            <div class="fs-7">FOR HIM</div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="/forher" class="list-group-item list-group-item-action" aria-current="true">
+                      <div class="row g-0 align-items-center">
+                       
+                        <div class="col-10">
+                          <div class="ps-3">
+                            <div class="fs-7">FOR HER</div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+              
+                
+                  </div>
+              
+                </div>
+              </li>
+
+              
+              <li class="nav-item dropdown">
+                <a id="cartLink" class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" aria-expanded="false">
+                    <span class="position-relative pt-1">
+                      <i class="fas fa-shopping-cart"></i>
+                        <!-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    9
+                    <span class="visually-hidden">New Chats</span>
+                  </span> -->
+                    </span>
+                </a>
+            </li>
+
+            
+            <li class="nav-item dropdown">
+              <a id="wishlist-link" class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="position-relative pt-1">
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                  </span>
+              </a>
+          </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="/img/logo.png" width="35" height="35" class="img-fluid rounded-circle" alt="Luke Reeves">
+              </a>
+              <ul class="dropdown-menu dropdown-menu-md-end bsb-dropdown-animation bsb-fadeIn">
+                <li>
+                  <h6 class="dropdown-header fs-7 text-center">Welcome to elavate</h6>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a href="#" class="dropdown-item" aria-current="true">
+                    <div class="row g-0 align-items-center">
+                      <div class="col-3">
+                        <img src="/img/logo.png" width="55" height="55" class="img-fluid rounded-circle" alt="Luke Reeves">
+                      </div>
+                      <div class="col-9">
+                        <div class="ps-3">
+                          <div class="text-secondary mt-1 fs-7">Premium Account</div>
+                          <div class="text-secondary mt-1 fs-7">sreehari373@gmail.com</div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" id="viewProfile">
+                      <span>
+                          <i class="bi bi-person-fill me-2"></i>
+                          <span class="fs-7">View Profile</span>
+                      </span>
+                  </a>
+              </li>
+                <li>
+                  <a class="dropdown-item" href="/orderhistory">
+                    <span>
+                      <i class="bi bi-bell-fill me-2"></i>
+                      <span class="fs-7">my orders</span>
+                    </span>
+                  </a>
+                </li>
+                <!-- <li>
+                  <hr class="dropdown-divider">
+                </li> -->
+             
+             
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item text-center" href="/signout">
+                    <span>
+                      <span class="fs-7">Log Out</span>
+                    </span>
+                  </a>
+                 
+                </li>
+                <li>
+                    <a class="dropdown-item text-center" href="/login">
+                        <span>
+                          <span class="fs-7">Log In</span>
+                        </span>
+                      </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+
+  <!-- <div id="flashMessageContainer">
+    <% if (typeof errorMessage !== 'undefined' && errorMessage.length > 0) { %>
+        <div id="flashMessage" class="alert slideIn show">
+            <%= errorMessage %>
+        </div>
+    <% } %>
+</div> -->
+  <!-- Aside -->
+  <aside class="bsb-sidebar-1 offcanvas offcanvas-start" tabindex="-1" id="bsbSidebar1" aria-labelledby="bsbSidebarLabel1">
+    <div class="offcanvas-header">
+     <h5 class="offcanvas-title" id="bsbSidebarLabel1">Elavate</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body">
+     
+      <div class="filter-container">
+        <button class="filter-btn" id="filterButton">Options</button>
+        <div class="filter-menu">
+            <a href="/address"><button class="filter-btn" id="sortByPriceLowToHigh">address</button></a>
+           <a href="/"> <button class="filter-btn" id="sortByPriceHighToLow">home</button></a>
+            <a href="/profile">
+                <button class="filter-btn" id="sortByAlphabeticalAZ">profile</button>
+            </a>
+            <a href="/orderhistory">
+                <button class="filter-btn" id="sortByAlphabeticalZA">My Orders</button>
+            </a>
+        </div>  
+    </div>
+   
+ 
+    </div>
+  </aside>
+  <script>
+    document.getElementById("wishlist-link").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevents the default action of the link
+        window.location.href = "/wishlistpage"; // Redirects to /wishlistpage
+    });
+</script>
+
+<script>
+  // Assuming you have access to the necessary data to construct the cart URL
+  var cartURL = "/CartView"; // Replace this with the actual URL of your cart page
+
+  // Dynamically update the href attribute of the cart link
+  document.getElementById("cartLink").href = cartURL;
+</script>
+<script>
+document.getElementById('clearInput').addEventListener('click', function() {
+    window.location.reload();
+});
+
+ </script>
+ <script>
+    // JavaScript for handling toggles
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".navbar-toggler").forEach(function(toggler) {
+    toggler.addEventListener("click", function() {
+      var target = document.querySelector(this.getAttribute("data-bs-target"));
+      target.classList.toggle("collapsed");
+    });
+  });
+});
+
+ </script>
+  <script>
+    document.getElementById("filterButton").addEventListener("click", function () {
+        var filterMenu = document.querySelector(".filter-menu");
+        filterMenu.classList.toggle("show");
+    });
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.addEventListener("click", function (event) {
+        if (!event.target.matches("#filterButton")) {
+            var filterMenus = document.querySelectorAll(".filter-menu");
+            filterMenus.forEach(function (filterMenu) {
+                if (filterMenu.classList.contains("show")) {
+                    filterMenu.classList.remove("show");
+                }
+            });
+        }
+    });
+</script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

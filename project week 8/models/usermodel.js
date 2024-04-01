@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema({
     confirmPassword: { type: String },
     isBlocked: { type: Boolean },
     addresses: [addressSchema],
+    referralCode:{type: String},
+    referredCode:{type: String}
+
 });
 
 module.exports = mongoose.model('User', userSchema);

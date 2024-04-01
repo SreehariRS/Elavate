@@ -5,6 +5,9 @@ const category = require('../models/category')
 const db = require("../config/dbconnect")
 const orders = require("../models/order")
 const errorMessage = require("connect-flash")
+const product2 = require("../models/product");
+const user2 = require("../models/usermodel");
+const AdminCoupon = require("../models/coupon");
 
 
 
@@ -12,16 +15,17 @@ const errorMessage = require("connect-flash")
 
 
 
- 
 
-
-
-const login = async (req, res) => {
-    if (req.session.admin) res.redirect("/admin/dashboard1");
-    else res.render("admin/adminlogin");
+const login = (req, res) => {
+  console.log(req.session, "session");
+  if (req.session.admin) {
+    res.redirect("/admin/dashboard");
+  } else {
+    // res.redirect('/admin/dashboard')
+    res.render("admin/adminlogin");
+    //res.render("admin/dashboard")
+  }
 };
-
-
 
 
 const loginpost = async (req, res) => {
@@ -56,6 +60,19 @@ const loginpost = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+const logoutadmin = (req, res) => {
+ 
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+    }
+   
+    res.redirect("/admin/login");
+  
+  });
+
 };
 
 const dashboard1 = (req, res) => {
@@ -129,22 +146,32 @@ const deleteproduct = async (req, res) => {
 const editproduct = async (req, res) => {
     try {
         const id = req.params.Id;
-        console.log("fjhfjhfjhfjhfjhfjhfjhfjhfh",id); // Make sure you're using the correct parameter name
-        // const categories = await Category.distinct("name");
+        console.log("Product ID:", id); // Ensure you're getting the correct ID
+        // Fetch categories
         const categories = await category.distinct("name");
-
+        
+        // Find the product by ID
         const prod = await product.findOne({ _id: id });
-        res.render("admin/editproduct", { prod, categories }); // Pass prod and categories to the render function
+
+        // Check if product exists
+        // if (!prod) {
+        //     return res.status(404).send("Product not available");
+        // }
+
+        // Render the editproduct view with product and categories data
+        res.render("admin/editproduct", { prod, categories });
     } catch (error) {
-        console.log(error);
+        console.error("Error editing product:", error);
+        res.status(500).send("Internal Server Error");
     }
 };
+
 
 const editproductpost = async (req, res) => {
     try {
         const { productId } = req.params;
 
-        const { name, description, category, price, stock } = req.body; 
+        const { name, description, category, price, stock,offerprice } = req.body; 
 
         let productImages = [];
 
@@ -163,6 +190,7 @@ const editproductpost = async (req, res) => {
         existingProduct.description = description;
         existingProduct.category = category;
         existingProduct.price = price;
+        existingProduct.offerprice = offerprice;
         existingProduct.stock = stock;
         existingProduct.productImages = productImages;
 
@@ -240,35 +268,36 @@ const deletecateg = async (req,res)=>{
 
 const editcateg = async (req, res) => {
     try {
+       
         const catid = req.params.id;
         const newValue = req.body.categoryName;
-
+        
+         
         // Find the category to be updated
-        const categoryToUpdate = await category.findById(catid);
+        const categoryToUpdate = await category.findOne({_id:catid});
         if (!categoryToUpdate) {
-            return res.status(404).send("Category not found");
+            return res.status(404).json({ error: 'Category not found' });
         }
 
         // If the category name is being updated, check if the new name already exists
-        if (newValue !== categoryToUpdate.name) {
-            const existingCategory = await category.findOne({ name: newValue });
-            if (existingCategory) {
-                return res.status(400).json({ error: 'Category already exists' });
-            }
+        const existingCategory = await category.findOne({name:newValue });
+        if (existingCategory) {
+            return res.status(400).json({ messege: 'Category already exists' });
         }
+
 
         // Update the category name
         categoryToUpdate.name = newValue;
-        const updatedCategory = await categoryToUpdate.save();
-       console.log("in the category edit 263")
-        res.redirect('/admin/category/');
         
-       
+        const updatedCategory = await categoryToUpdate.save();
+        console.log("Category updated successfully");
+        res.status(200).json({ success: true, message: 'Category updated successfully' });
     } catch (error) {
         console.error("Error updating category:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 
 
@@ -353,11 +382,440 @@ const order = async (req, res) => {
   };
 
 
+  const generateSalesReport = async () => {
+    try {
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items",
+        },
+        {
+          $lookup: {
+            from: "product",
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo",
+        },
+        {
+          $lookup: {
+            from: "coupons",
+            localField: "items.couponId",
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            date: { $first: "$date" },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.name",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: 1,
+            totalSales: 1,
+            discountValue: 1,
+            products: 1,
+          },
+        },
+      ]);
+      // console.log(salesReport);
+      
 
+      return salesReport;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  generateSalesReport();
+  
+
+  const sales = async (req, res) => {
+    try {
+      if (req.session.admin) {
+        res.render("admin/adminlogin");
+      } else {
+        // Fetch sales report data dynamically
+        const orderData = await orders.find();
+        
+        console.log(orderData);
+        let totalAmount = 0;
+        const totalOrders = orderData.length;
+
+        console.log(totalOrders);
+        const user = await user2.find().count();
+        const product = await product2.find().count();
+        orderData.forEach((order) => {
+          totalAmount += order.totalprice;
+        });
+  
+
+        
+
+        const data = {
+          totalAmount,
+          user,
+          product,
+          totalOrders,
+        };
+
+        const salesReport = await orders.find().populate('items.productId').exec();
+
+        
+       
+        res.render("admin/salesReport", { salesReport, data });
+
+       
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  
+  const salesRep = async (req, res) => {
+    try {
+      const salesReport = await orders.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+
+      
+  
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  const filterSales = async (req, res) => {
+    try {
+      const filterType = req.body.filterType;
+  
+      if (!filterType) {
+        return res
+          .status(400)
+          .json({ message: "filterType is missing in the request" });
+      }
+  
+      let filterQuery;
+  
+      if (filterType === "day") {
+        // Filter for a single day
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+  
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+  
+        filterQuery = {
+          date: {
+            $gte: startOfDay,
+            $lt: endOfDay,
+          },
+        };
+      } else if (filterType === "week") {
+        // Filter for the current week
+        const startOfWeek = new Date();
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Start from the beginning of the week (Sunday)
+  
+        const endOfWeek = new Date();
+        endOfWeek.setHours(23, 59, 59, 999);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // End at the end of the week (Saturday)
+  
+        filterQuery = {
+          date: {
+            $gte: startOfWeek,
+            $lt: endOfWeek,
+          },
+        };
+      } else if (filterType === "month") {
+        // Filter for the current month
+        const startOfMonth = new Date();
+        startOfMonth.setHours(0, 0, 0, 0);
+        startOfMonth.setDate(1);
+  
+        const endOfMonth = new Date();
+        endOfMonth.setHours(23, 59, 59, 999);
+        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+        endOfMonth.setDate(0);
+  
+        filterQuery = {
+          date: {
+            $gte: startOfMonth,
+            $lt: endOfMonth,
+          },
+        };
+      } else if (filterType === "year") {
+        // Filter for the current year
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+        const endOfYear = new Date(
+          new Date().getFullYear(),
+          11,
+          31,
+          23,
+          59,
+          59,
+          999
+        );
+  
+        filterQuery = {
+          date: {
+            $gte: startOfYear,
+            $lt: endOfYear,
+          },
+        };
+      } else {
+        return res.status(400).json({ message: "Invalid filterType" });
+      }
+  
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items",
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product",
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo",
+        },
+        {
+          $lookup: {
+            from: "coupons",
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+      //console.log(salesReport);
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  const filterSalesByDate = async (req, res) => {
+    try {
+      const selectedDate = req.body.selectedDate;
+  
+      if (!selectedDate) {
+        return res.status(400).json({ message: "Please provide a valid date." });
+      }
+  
+      // Construct the start and end of the selected date
+      const startOfSelectedDate = new Date(selectedDate);
+      startOfSelectedDate.setHours(0, 0, 0, 0);
+  
+      const endOfSelectedDate = new Date(selectedDate);
+      endOfSelectedDate.setHours(23, 59, 59, 999);
+  
+      const filterQuery = {
+        date: {
+          $gte: startOfSelectedDate,
+          $lt: endOfSelectedDate,
+        },
+      };
+  
+      // Use the same aggregation pipeline as in your existing filterSales function
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items", // Unwind the items array
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product", // The name of the products collection
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo", // Unwind the productInfo array
+        },
+        {
+          $lookup: {
+            from: "coupons", // The name of the coupons collection
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+  
+      //console.log(salesReport);
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  const filterByDateRange = async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body;
+      console.log(startDate, endDate);
+  
+      // Construct the filter query with date range
+      const filterQuery = {
+        date: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+  
+      // Add your logic to query the database for sales data within the specified date range
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items", // Unwind the items array
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product", // The name of the products collection
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo", // Unwind the productInfo array
+        },
+        {
+          $lookup: {
+            from: "coupons", // The name of the coupons collection
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+      // console.log("Start and End",salesReport);
+  
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 
 module.exports = {
     login,
+    logoutadmin,
     loginpost,
     dashboard1,
     addproductpost,
@@ -374,7 +832,13 @@ module.exports = {
     userlist,
     userblock,
     order,
-    updateOrderStatus
+    updateOrderStatus,
+    sales,
+    filterSales,
+    filterSalesByDate,
+    filterByDateRange,
+  
+    salesRep
 
 
     

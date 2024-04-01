@@ -11,11 +11,57 @@
 
 </head>
 <body>
+  <style>
+    .sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+@media screen and (max-width: 768px) {
+            .sidebar {
+                width: 200px; /* Adjust sidebar width for smaller screens */
+            }
+            .main-content {
+                margin-left: 200px; /* Adjust main content margin */
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .sidebar {
+                display: none; /* Hide sidebar on smaller screens */
+            }
+            .main-content {
+                margin-left: 0; /* Adjust main content margin */
+            }
+        }
+  </style>
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />  
-   
+    <div class="toggle-sidebar">
+      <i class="bx bx-menu toggle-icon"></i>
+    </div>
 <nav class="sidebar">
       <header>
         <div class="image-text">
@@ -65,9 +111,15 @@
               </a>
             </li>
             <li class="nav-link">
-              <a href="#">
+              <a href="/admin/coupon">
                 <i class="bx bx-wallet-alt icons"></i>
                 <span class="text nav-text">coupon</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="/admin/sales">
+                <i class="bx bx-wallet-alt icons"></i>
+                <span class="text nav-text">Sales Report</span>
               </a>
             </li>
           </ul>
@@ -135,5 +187,34 @@
     </div>
 </main>
 </section>
+<script>
+  // JavaScript for automatically toggling sidebar visibility
+  const toggleButton = document.querySelector('.toggle-sidebar');
+  const sidebar = document.querySelector('.sidebar');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('hidden');
+    toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+  }
+  
+  function checkViewportWidth() {
+    if (window.innerWidth <= 1300) {
+      sidebar.classList.add('hidden');
+      toggleButton.style.display = 'block';
+    } else {
+      sidebar.classList.remove('hidden');
+      toggleButton.style.display = 'none';
+    }
+  }
+  
+  toggleButton.addEventListener('click', function() {
+    toggleSidebar();
+  });
+  
+  // Check viewport width initially and on resize
+  checkViewportWidth();
+  window.addEventListener('resize', checkViewportWidth);
+  
+  </script>
 </body>
 </html>

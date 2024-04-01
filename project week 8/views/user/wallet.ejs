@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet Information</title>
+  <!-- Include Bootstrap CSS -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+@media (max-width: 768px) {
+  h1 {
+    font-size: 30px; /* Smaller font size for smaller screens */
+  }
+}
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700; /* For bold text */
+  font-size: 36px; /* Adjust the size as needed */
+  color: #333; /* Change the color as desired */
+  text-align: center; /* Center the text */
+  margin-bottom: 20px; /* Add some space below the heading */
+}
+@media (max-width: 768px) {
+      h1 {
+        font-size: 30px; /* Smaller font size for smaller screens */
+      }
+    }
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700; /* For bold text */
+      font-size: 36px; /* Adjust the size as needed */
+      color: #333; /* Change the color as desired */
+      text-align: center; /* Center the text */
+      margin-bottom: 20px; /* Add some space below the heading */
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa; /* Light gray background */
+      color: #333; /* Dark text color */
+      padding-top: 20px; /* Add some space at the top */
+    }
+    .container {
+      max-width: 600px; /* Limit container width */
+      margin: 0 auto; /* Center container */
+      padding: 0 15px; /* Add some padding to the sides */
+    }
+    .card {
+ background: linear-gradient(to right, #ffffff, #ffffffaf);
+ border-radius: 10px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ transition: transform 0.3s ease-in-out;
+ margin-bottom: 20px; 
+}
+
+.card:hover {
+ transform: scale(1.05);
+}
+
+.card-body {
+ padding: 20px;
+}
+
+.card-title {
+ color: #292525;
+ font-weight: bold;
+}
+
+.card-text {
+ color: #322c2c;
+}
+
+
+    .form-group {
+      margin-bottom: 15px; /* Add space below form fields */
+    }
+    button[type="button"] {
+      cursor: pointer; /* Change cursor to pointer for buttons */
+    }
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animated {
+      animation-name: fadeIn;
+      animation-duration: 1s;
+    }
+    /* Additional styles */
+    .modal-content {
+      background-color: #f8f9fa; /* Light gray background for modal */
+      border-radius: 10px; /* Rounded corners for modal */
+      overflow: hidden; /* Hide overflow content */
+    }
+    .modal-header {
+      background-color: #232424; /* Blue background for modal header */
+      color: #fff; /* White text color for modal header */
+      border-bottom: none; /* Remove border bottom for modal header */
+    }
+    .modal-title {
+      font-size: 24px; /* Font size for modal title */
+    }
+    .modal-body {
+      padding: 20px; /* Add padding to modal body */
+    }
+    .modal-footer {
+      border-top: none; /* Remove border top for modal footer */
+    }
+    .btn {
+      background-color: #1c1d1e; /* Blue background for primary button */
+      border-color: #161616; /* Blue border color for primary button */
+    }
+    .btn:hover {
+      background-color: #1b1c1c; /* Darker blue background on hover */
+      border-color: #151515; /* Darker blue border color on hover */
+    }
+    .card-title {
+ text-align: center; 
+}
+.card-text{
+  text-align: center;
+}
+.black-touch {
+  background-color: #000; /* Black background color */
+  border-color: #000; /* Black border color */
+  color: #fff; /* White text color */
+}
+
+.black-touch:hover {
+  background-color: #383737; 
+  border-color: #ffffff; 
+  color: white;
+}
+.button-container {
+ display: flex;
+ justify-content: center; /* Center the buttons horizontally */
+ gap: 10px; /* Adjust the gap between buttons as needed */
+ margin-top: 20px;
+}
+
+@media (max-width: 359px) {
+ .button-container {
+    flex-direction: column; /* Stack buttons vertically */
+ }
+}
+.content-container {
+ background: linear-gradient(to right, #ffffff, #e4f8e7, #c5f4cb);
+ border-radius: 10px; /* Adjust the border radius as needed */
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust the box shadow as needed */
+ padding: 20px; /* Add some padding inside the container */
+}
+
+
+.content-container  {
+ max-width: 1000px; /* Set the maximum width of the container */
+ margin: 0 auto; /* Center the container horizontally */
+}
+
+@media (max-width: 1200px) {
+  .content-container  {
+    max-width: 90%; /* Reduce the maximum width for smaller screens */
+ }
+}
+.back-button {
+                position: absolute;
+                top: 25px;
+                left: 80px;
+                z-index: 1000; /* Ensure the button is above other elements */
+            }
+
+            .back-button a {
+                font-size: 24px; /* Increase the font size of the icon */
+                padding: 10px; /* Add some padding around the icon */
+                color: #000; /* Adjust the color as needed */
+                text-decoration: none;
+            }
+
+            .back-button a:hover {
+                color: #333; /* Change the color on hover */
+            }
+            .header {
+                position: relative;
+                width: 100%;
+                height: 60px; /* Adjust the height as needed */
+                background-color: #f8f9fa; /* Background color of the header */
+            }
+
+            .header-text {
+                position: absolute;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
+            .content-container {
+                position: relative;
+                top: 25px; /* Adjust this value as needed */
+            }
+
+            /* Default styles */
+            .header-text h1 {
+                font-size: 3rem;
+            }
+            .profile-icon {
+    position: absolute;
+    right: 60px;
+    top: 12px;
+    cursor: pointer;
+}
+.profile-icon i {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+   </style>
+   
+</head>
+<body>
+
+  <div class="back-button">
+    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
+</div>
+
+<header class="header">
+    <div class="header-text">
+        <h1>ELAVATE</h1>
+    </div>
+    <div class="profile-icon">
+      <i class="fas fa-user fa-2x"></i>       
+       </div>
+</header>
+
+  <div class="content-container">
+  <div class="container">
+    <h1 class="text-center mb-4">Wallet </h1>
+   
+
+    <!-- Display Wallet Balance -->
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Current Balance</h5>
+        <p class="card-text">Balance:₹ <%= balance%></p>
+      </div>
+    </div>
+
+
+
+
+      
+      <!-- Modal -->
+      <div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Transaction History</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Static transaction data -->
+            <!-- Your EJS template code -->
+
+<% if (typeof userWallet !== 'undefined' && userWallet && userWallet.transactions) { %>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Transaction History</h5>
+  
+        <!-- Dynamic transaction data from userWallet -->
+        <ul class="list-group">
+          <% userWallet.transactions.forEach(transaction => { %>
+            <li class="list-group-item">
+              <% if (transaction.type === 'deposit') { %>
+                Deposit: ₹<%= transaction.amount %>
+              <% } else if (transaction.type === 'withdrawal') { %>
+                Withdrawal: ₹<%= transaction.amount %>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  <% } else { %>
+    <p>No transaction data available.</p>
+    <!-- You might want to include a message or some other UI indication -->
+  <% } %>
+  
+  <!-- Your other EJS template code -->
+  
+  
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Add Balance Form -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Add Balance</h5>
+        
+        <!-- Form for adding balance -->
+        <form id="addBalanceForm">
+          <div class="form-group text-center">
+            <label for="amount">Amount (₹)</label>
+            <input type="number" class="form-control" id="amount" name="amount" required>
+         </div>
+          </form>
+      </div>
+    </div>
+
+     <div class="button-container">
+    <button type="button" class="btn btn animated-button black-touch" id="modal" data-toggle="modal" data-target="#transactionModal">
+        Open Transaction History
+    </button>
+    <button type="button" class="btn btn animated-button black-touch" onclick="handlePayment()">Add Balance</button>
+   </div>
+  </div>
+</div>
+
+ 
+   
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <!-- Include Bootstrap JS and Popper.js for Bootstrap functionalities -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Add this in the head section of your HTML -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+<script>
+  // Function to handle Razorpay payment
+  function handlePayment() {
+    var amount = document.getElementById('amount').value;
+
+    // Check if the amount is empty
+    if (!amount.trim()) {
+      // If amount is empty, show SweetAlert
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please enter the amount to add balance!',
+        confirmButtonColor: '#007bff' // Blue color for confirm button
+      });
+      return; // Exit the function if amount is empty
+    }
+
+    // Make an AJAX request to your server to generate a Razorpay order
+    fetch('/generate-razorpay-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Initialize Razorpay checkout
+      var options = {
+        key: 'rzp_test_rJ0yPg6ZIlUOvq',
+        amount: data.amount,
+        currency: 'INR',
+        name: 'elavate',
+        description: 'Add Balance',
+        order_id: data.id,
+        handler: function(response) {
+          // Send the Razorpay payment ID to your server for verification
+          fetch('/verify-razorpay-payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentId: response.razorpay_payment_id, amount: amount })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log("SUCCESS");
+              Swal.fire({
+                icon: 'success',
+                title: 'Balance Added Successfully!',
+                position: 'top-end',
+                toast: true,
+                showConfirmButton: false,
+                timer: 1500,  // Display the toast for 1.5 seconds
+                customClass: {
+                  popup: 'swal2-small-toast',  // Apply a custom class for smaller toast
+                },
+              });
+
+              // Optionally, you can add a delay before submitting the form
+              setTimeout(() => {
+                document.getElementById('addBalanceForm').submit();
+              }, 1500);  // Adjust the delay as needed
+            } else {
+              // Handle payment failure
+              alert('Payment failed. Please try again.');
+            }
+          });
+        }
+      };
+
+      var rzp = new Razorpay(options);
+      rzp.open();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+</script>
+<script>
+  document.getElementById('backButton').addEventListener('click', function() {
+ window.history.back();
+});
+
+</script>
+<script>
+  document.querySelector('.profile-icon').addEventListener('click', function() {
+window.location.href = '/profile';
+});
+
+</script>
+</body>
+</html>

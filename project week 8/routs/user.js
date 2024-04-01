@@ -5,7 +5,12 @@ const userController = require("../contorller/usercontroller");
 // GET routes
 router.get("/", userController.home);
 router.get("/login", userController.getLogin);
-router.get("/getRegister", userController.getRegister); // Define route for rendering registration page
+router.get("/getRegister", userController.getRegister); 
+router.get("/category/:id", userController.getProductsByCategory);
+
+router.post("/checkReferralCode", userController.checkReferralCode)
+
+
 router.get("/logout", userController.getLogout);
 router.get("/home", userController.getHome);
 router.get("/forher", userController.forher);
@@ -22,8 +27,18 @@ router.get("/getcartnumber/:userId", userController.getcartnumber);
 
 
 router.get("/checkout", userController.checkout);
+router.post("/checkout", userController.checkoutpost);
+router.get("/check-wallet", userController.getWalletBalance)
+router.post("/update-wallet", userController.deductFromWallet)
+
+
+
+
 router.get("/order", userController.order);
 router.get("/orderhistory", userController.orderhistory);
+router.get('/generate-invoice/:orderId', userController.generateInvoice);
+
+
 router.get("/signout", userController.logout);
 router.get("/changepass", userController.changepass);
 router.get("/forgotpassword", userController.forgotpassword);
@@ -43,7 +58,6 @@ router.post("/removeFromCart/:productId", userController.removeFromCart);
 // router.post("/addAddress", userController.addAddresspost);
 // router.post("/updateProfile/:id", userController.updateProfile);
 
-router.post("/checkout", userController.checkoutpost);
 router.post("/cancel-order/:orderId", userController.cancelOrder);
 router.post("/changepass",userController.changepasspost);
 router.post("/forgotpassword",userController.forgotpasswordpost)
@@ -64,5 +78,20 @@ router.get("/Editaddress/:i",userController.geteditAddress)
 // router.post("/deleteAddress/:addressId", userController.deleteAddress);
 // router.post('/updateAddress/:addressId',userController.updateAddress);
 
+router.get("/wishlistPage", userController.wishlistPage);
+router.post('/wishlistPage',userController.wishlistPagePost)
+router.get('/wishlistInfo', userController.wishlistInfo);
+router.post('/wishlistRemove', userController.removeProductFromWishlist);
+
+router.get("/wallet", userController.wallet);
+router.post('/verify-razorpay-payment',userController.verifyRazorpayPayment);
+router.post("/create-razorpay-order",userController.createrazorpayorder)
+router.post('/generate-razorpay-order', userController.generatewalletRazorpay);
+
+router.post('/createReferral', userController.createReferral)
+
 
 module.exports = router;
+
+
+

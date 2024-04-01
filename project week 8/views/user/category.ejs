@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= category.name %> Products</title>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+        <!-- Font Awesome CDN -->
+        <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/stylesheet/user/forhim.css" />
+</head>
+<body>
+    <%-include('nav')%>
+    <div class="product-heading" style="text-align: center;">
+        <h2><%= category.name %></h2>
+    </div>
+    <div class="product-container">
+        <% if (products.length === 0) { %>
+            <p>No product available for this category now.</p>
+        <% } else { %>
+            <% products.forEach(product => { %>
+                <a href="/display/<%= product.id %>">
+                    <div class="product-card">
+                        <div class="product-tumb">
+                            <img src="<%= product.productImages[0] %>" alt="<%= product.name %>" />
+                        </div>
+                        <div class="product-details">
+                            <span class="product-catagory"><%= product.category %></span>
+                            <h4><a href=""><%= product.name %></a></h4>
+                            <p><%= product.description %></p>
+                            <div class="product-bottom-details">
+                                <div class="product-price">
+                                    <% if (product.oldPrice) { %>
+                                        <small><%= product.oldPrice %></small>
+                                    <% } %>
+                                    <%= product.price %>
+                                </div>
+                                <div class="product-links">
+                                    <a href="#"><i class="fa fa-heart"></i></a>
+                                    <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"><i class="fa fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            <% }); %>
+        <% } %>
+    </div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#searchInput").keyup(function () {
+                var searchTerm = $(this).val().toLowerCase();
+                var productsFound = false;
+
+                $(".product-card").each(function () {
+                    var productName = $(this).find(".product-details h4 a").text().toLowerCase();
+                    if (productName.indexOf(searchTerm) > -1) {
+                        $(this).show();
+                        productsFound = true;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // If no products were found, show a SweetAlert message
+                if (!productsFound) {
+                    swal("Oops!", "No products found for your search term.", "error");
+                }
+            });
+        });
+    </script>
+
+<script>
+    document.querySelectorAll('#addToCartIcon').forEach(icon => {
+icon.addEventListener('click', function(event) {
+ event.preventDefault(); // Prevent default anchor tag behavior
+
+ const productId = this.getAttribute('data-product-id'); // Get the product ID from data-product-id attribute
+ const quantity = this.getAttribute('data-quantity'); // Get the quantity from data-quantity attribute
+ const userId = '<%= userId %>'; // Get the userId from the EJS template
+
+ // Find the closest product card element
+ const productCard = this.closest('.product-card');
+ 
+ // Get the stock of the product from the product card
+ const stock = productCard.getAttribute('data-stock');
+
+ if (parseInt(stock) <= 0) {
+     // Show a SweetAlert indicating that the product is out of stock
+     Swal.fire({
+         title: 'Out of Stock',
+         text: 'This product is currently out of stock.',
+         icon: 'error'
+     });
+ } else {
+     // Construct the URL for the cart page with the product ID, quantity, and user ID
+     const url = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
+     // Navigate to the constructed URL
+     window.location.href = url;
+ }
+});
+});
+
+ </script>
+</body>
+</html>

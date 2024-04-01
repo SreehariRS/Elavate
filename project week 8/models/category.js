@@ -13,7 +13,9 @@ const categorySchema = new mongoose.Schema({
   name: {
     type: String,
    
-  }
+  },
+  OfferApplied:{type: Boolean, default: false },
+  OfferPercentage:{type: Number, default: 0 }
 });
 
 

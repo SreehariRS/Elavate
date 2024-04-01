@@ -8,7 +8,7 @@
 <body>
 
     <style>
-        #address-form {
+         #address-form {
     font-family: Arial, sans-serif;
     width: 300px;
     margin: 0 auto;
@@ -57,7 +57,7 @@
     </style>
     <div id="address-form">
         <p>Add Address</p>
-        <form id="editaddress"  method="post" action="/addressedit/<%=address.id%>">
+        <form id="editaddress" onsubmit="return validateForm()" method="post" action="/addressedit/<%=address.id%>">
             <label for="address-type">Address type:</label><br>
             <select id="address-type" name="address-type">
                 <option value="home" <%= address.addressType === 'home' ? 'selected' : '' %>>Home</option>
@@ -85,5 +85,44 @@
             <input type="submit" value="Save Address">
         </form>
     </div>
+
+    <script>
+        function validateForm() {
+            var country = document.getElementById("country").value.trim();
+            var flat = document.getElementById("flat").value.trim();
+            var district = document.getElementById("district").value.trim();
+            var state = document.getElementById("state").value.trim();
+            var phoneNumber = document.getElementById("mobile-number").value.trim();
+    
+            // Check if any of the required fields are empty
+            if (country === '' || flat === '' || district === '' || state === '' || phoneNumber === '') {
+                alert("Please fill out all required fields.");
+                return false;
+            }
+    
+            // Check if any field contains numbers
+            if (/\d/.test(country) || /\d/.test(flat) || /\d/.test(district) || /\d/.test(state)) {
+                alert("Fields cannot contain numbers.");
+                return false;
+            }
+    
+            // Check if any field contains disallowed symbols
+            var disallowedSymbols = /[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/;
+            if (disallowedSymbols.test(country) || disallowedSymbols.test(flat) || disallowedSymbols.test(district) || disallowedSymbols.test(state)) {
+                alert("Fields cannot contain special symbols.");
+                return false;
+            }
+    
+            // Phone number validation
+            var phoneNumberPattern = /^\d{10}$/; // Assuming phone number should be 10 digits long
+            if (!phoneNumberPattern.test(phoneNumber)) {
+                alert("Invalid phone number. Please enter a 10-digit number.");
+                return false;
+            }
+    
+            return true; // Form submission allowed
+        }
+    </script>
+    
 </body>
 </html>

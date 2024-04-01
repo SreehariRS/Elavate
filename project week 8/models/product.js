@@ -19,11 +19,16 @@ const productschema = new mongoose.Schema({
         type: String,
         
       },
+
       category: {
         type: String,
       
       },
       price: {
+        type: Number,
+       
+      },
+      offerprice: {
         type: Number,
        
       },

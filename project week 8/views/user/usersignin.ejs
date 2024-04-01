@@ -104,6 +104,16 @@
                     <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" class="inpt" required />
                     <span id="confirmPasswordError" class="error-message"></span>
                 </div>
+                <br>
+                <div class="form-group">
+                    <label>
+                      <span class="sr-only">Referral Code (if any)</span>
+                      <input type="text" placeholder="Referral Code (if any)" name="referralCode" id="referralInput" class="form-input">
+                      <div id="referralError" class="error-message"></div>
+                  </label>
+                  
+                  <button type="button" onclick="checkReferralCode()" style="background-color: transparent; color: white;">Check Referral Code</button>
+                </div>
                 <br />
                 <button type="submit" class="btn">Sign up</button>
             </form>
@@ -112,45 +122,85 @@
             </div>
         </div>
         <script>
-            function validateForm() {
-                var name = document.forms["registrationForm"]["name"].value;
-                var email = document.forms["registrationForm"]["email"].value;
-                var password = document.forms["registrationForm"]["password"].value;
-                var confirmPassword = document.forms["registrationForm"]["confirmPassword"].value;
+         function validateForm() {
+    var name = document.forms["registrationForm"]["name"].value;
+    var email = document.forms["registrationForm"]["email"].value;
+    var password = document.forms["registrationForm"]["password"].value;
+    var confirmPassword = document.forms["registrationForm"]["confirmPassword"].value;
+
+    // Reset previous error messages
+    document.getElementById("nameError").innerText = "";
+    document.getElementById("emailError").innerText = "";
+    document.getElementById("passwordError").innerText = "";
+    document.getElementById("confirmPasswordError").innerText = "";
+
+    if (name === "") {
+        document.getElementById("nameError").innerText = "Please enter your name";
+        return false;
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        document.getElementById("emailError").innerText = "Please enter a valid email address";
+        return false;
+    }
+
+    // Strong password validation
+    var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        document.getElementById("passwordError").innerText = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+        return false;
+    }
+
+    if (confirmPassword === "") {
+        document.getElementById("confirmPasswordError").innerText = "Please confirm your password";
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        document.getElementById("confirmPasswordError").innerText = "Passwords do not match";
+        return false;
+    }
+
+    return true;
+}
+
+        </script>
+           <script>
+            function checkReferralCode() {
+                var referralCode = document.getElementById('referralInput').value;
         
-                // Reset previous error messages
-                document.getElementById("nameError").innerText = "";
-                document.getElementById("emailError").innerText = "";
-                document.getElementById("passwordError").innerText = "";
-                document.getElementById("confirmPasswordError").innerText = "";
-        
-                if (name === "") {
-                    document.getElementById("nameError").innerText = "Please enter your name";
-                    return false;
+                // Perform client-side validation
+                if (referralCode.trim() === '') {
+                    document.getElementById('referralError').innerText = 'Referral code is required.';
+                    return;
                 }
         
-                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    document.getElementById("emailError").innerText = "Please enter a valid email address";
-                    return false;
-                }
-        
-                if (password.length < 6) {
-                    document.getElementById("passwordError").innerText = "Password must be at least 6 characters long";
-                    return false;
-                }
-        
-                if (/\s/.test(password)) {
-                    document.getElementById("passwordError").innerText = "Password cannot contain spaces";
-                    return false;
-                }
-        
-                if (password !== confirmPassword) {
-                    document.getElementById("confirmPasswordError").innerText = "Passwords do not match";
-                    return false;
-                }
-        
-                return true;
+                // Call the server-side logic to check the referral code
+                // Replace the URL with the actual endpoint on your server
+                fetch('/checkReferralCode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        referralCode: referralCode,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isValid) {
+                        document.getElementById('referralError').innerText = 'Referral code is valid.';
+                        document.getElementById('referralError').style.color = 'green';
+                    } else {
+                        document.getElementById('referralError').innerText = 'Invalid referral code.';
+      
+      
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
         </script>
         

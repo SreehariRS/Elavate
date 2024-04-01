@@ -86,13 +86,19 @@
 <body>
   <div class="container">
     <div class="close-btn" onclick="closeContainer()">X</div>
-    <form id="editCategoryForm" method="post" action="/admin/category/<%=data.id%>">
+    <form id="editCategoryForm">
       <h2>Edit Category Name</h2>
+      <% if (data) { %>
       <div class="edit-form">
-        <input type="text" id="categoryName"  name="categoryName" placeholder="Enter new category name" value="<%= data.name%>">
-        <button type="submit" id="updateBtn">Update</button>
+          <input type="text" id="categoryName" name="categoryName" placeholder="Enter new category name" value="<%= data.name %>">
+          <p style="color: red;" id="message"></p>
+          <button type="button" id="updateBtn" onclick="editcat('<%= data.id %>')">Update</button>
+          <% } else { %>
+            <p>This category is currently unavailable.</p>
+        <% } %>
       </div>
-    </form>
+  </form>
+  
   </div>
 <!-- Include this div to display error messages -->
 <div id="errorMessageContainer" class="error-message"></div>
@@ -102,6 +108,75 @@
     window.location.href = '/admin/category'; // Redirect to /admin/category
   }
 </script>
+
+<script>
+  const message = document.getElementById("message");
+
+  function editcat(id) {
+      // Retrieve the category name input field
+      const categoryNameInput = document.getElementById("categoryName");
+      const categoryName = categoryNameInput.value.trim();
+
+      // Regular expression to check if the category name contains any numbers
+      const containsNumbers = /\d/.test(categoryName);
+
+      // Regular expression to check if the category name contains any symbols or special characters
+      const containsSymbols = /[!@#$%^&*(),.?":{}|<>=_-]/.test(categoryName);
+
+      // Check if the category name is empty
+      if (!categoryName) {
+          message.textContent = "Category name cannot be empty.";
+          return;
+      }
+      
+      // Check if the category name contains numbers
+      if (containsNumbers) {
+          message.textContent = "Category name cannot contain numbers.";
+          return;
+      }
+
+      // Check if the category name contains symbols or special characters
+      if (containsSymbols) {
+          message.textContent = "Category name cannot contain symbols or special characters.";
+          return;
+      }
+
+      // Construct the data object to be sent
+      const data = {
+          categoryName: categoryName
+      };
+
+      // Perform the fetch request to update the category
+      fetch(`/admin/category/${id}`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error("Category name already exists");
+          }
+          return response.json();
+      })
+      .then(result => {
+          // Handle the result
+          if (result.success) {
+              window.location.href = "/admin/category"; // Redirect to category page if update is successful
+          } else if (result.message) {
+              message.textContent = "Category name " + result.message; // Display custom message if provided by the server
+          } else {
+              message.textContent =  result.error; 
+          }
+      })
+      .catch(error => {
+          message.textContent =  error.message;
+      });
+  };
+</script>
+
+
 
 </body>
 </html>

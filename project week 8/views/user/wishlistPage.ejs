@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
+    <style>
+        
+        .wishlist-item {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+    width: 50%;
+ 
+    box-shadow: 0px 1px 2px rgba(19, 11, 11, 0.1), 
+                0px 2px 4px rgba(62, 62, 62, 0.1), 
+                0px 4px 8px rgba(0, 0, 0, 0.264), 
+                0px 8px 16px rgba(2, 4, 1, 0.192);
+}
+
+
+.wishlist-item img {
+    width: 100px; /* Reduce image size further */
+    max-width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.view-button {
+    margin: 10px 0;
+    padding: 5px 10px; /* Reduced padding for smaller size */
+    font-size: 14px; /* Adjust font size for smaller text */
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    width: 120px;
+    height: 40px;
+}
+
+.view-button:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.view-button:hover:before, .remove-button:hover:before {
+    opacity: 1;
+}
+.remove-button {
+    margin: 10px 0;
+    padding: 5px 10px; /* Reduced padding for smaller size */
+    font-size: 14px; /* Adjust font size for smaller text */
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #d31e30; /* Changed background color */
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    width: 120px;
+    height: 40px;
+}
+
+.remove-button:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.remove-button:hover:before {
+    opacity: 1;
+}
+
+.remove-button:hover {
+    background-color: #ff0000; /* Changed hover background color */
+    color: #fff; /* Ensure text remains readable on hover */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for color change */
+}
+
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+
+.item-details {
+    text-align: center;
+    font-family: 'Arial', sans-serif; /* Example font family */
+}
+
+.item-details h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase; /* Make product names uppercase */
+    letter-spacing: 1px; /* Add some spacing between letters */
+    color: #2b2a2a; /* Darker text color */
+}
+
+.item-details p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #474545; /* Lighter text color for descriptions */
+    line-height: 1.5; /* Increase line height for better readability */
+    letter-spacing: 0.5px; /* Slight spacing between letters */
+}
+
+
+.empty-wishlist-message {
+    text-align: center;
+    padding: 50px;
+}
+
+.empty-wishlist-message img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .wishlist-item {
+        flex-direction: column;
+        align-items: center;
+        width: 80%; /* Adjust width for smaller screens */
+    }
+    .wishlist-item img {
+        max-width: 100%;
+    }
+    .item-details h2 {
+        font-size: 18px; /* Adjust font size for smaller screens */
+    }
+    .item-details p {
+        font-size: 12px; /* Adjust font size for smaller screens */
+    }
+}
+
+.wishlist-header {
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px 0; /* Padding for spacing */
+    text-align: center; /* Center the text */
+    font-family: 'Arial', sans-serif; /* Font family */
+}
+
+.wishlist-header h1 {
+    color: #343a40; /* Dark text color */
+    font-size: 24px; /* Font size */
+    margin: 0; /* Remove default margin */
+}
+.wishlist-container {
+    height: 100vh; /* Adjust the height as needed */
+    overflow-y: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.wishlist-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+.back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #111;
+    color: #fff;
+    text-decoration: none;
+}
+
+.back-arrow:hover {
+    background-color: #333;
+}
+
+
+    </style>
+</head>
+<body>
+    <header class="wishlist-header">
+        <a href="/" class="back-arrow">
+            <!-- Insert the SVG code here -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <h1>Your Wishlist</h1>
+    </header>
+    
+    
+    
+    <main>
+        <div class="wishlist-container">
+        <% if (wishlist && wishlist.items && wishlist.items.length > 0) { %>
+            <% wishlist.items.forEach(item => { %>
+                <% if (item.productId) { %> <!-- Check if productId is not null -->
+                    <section class="wishlist-item">
+                        <% if (item.productId.productImages && item.productId.productImages.length > 0) { %>
+                            <img src="<%= item.productId.productImages %>" alt="<%= item.productId.name %>">
+                        <% } else { %>
+                            <!-- Handle missing or invalid image -->
+                            <img src="/placeholder-image.jpg" alt="Placeholder Image">
+                        <% } %>
+                        <div class="item-details">
+                            <% if (item.productId.name) { %>
+                                <h2><%= item.productId.name %></h2>
+                            <% } else { %>
+                                <!-- Handle missing product name -->
+                                <h2>Product Name Not Available</h2>
+                            <% } %>
+                            <% if (item.productId.description) { %>
+                                <p><%= item.productId.description %></p>
+                            <% } else { %>
+                                <!-- Handle missing product description -->
+                                <p>Description Not Available</p>
+                            <% } %>
+                            <% if (item.productId.price) { %>
+                                <p>Price: ₹<%= item.productId.price %></p>
+                            <% } else { %>
+                                <!-- Handle missing product price -->
+                                <p>Price Not Available</p>
+                            <% } %>
+                            <button class="view-button" data-product-id="<%= item.productId._id %>">View</button>
+                            <button class="remove-button" id="remove-<%= item.productId._id %>" data-product-id="<%= item.productId._id %>">Remove</button>
+                        </div>
+                    </section>
+                <% } else { %>
+                    <div class="empty-wishlist-message">
+                        <img src="/img/empty wishlist.jpg " alt="Empty Wishlist Image">
+                        <p>Product is not available now.</p>
+                        <button onclick="removeMessage()">Remove Message</button>
+                    </div>
+                <% } %>
+            <% }); %>
+        <% } else { %>
+            <div class="empty-wishlist-message">
+                <img src="/img/empty wishlist.jpg " alt="Empty Wishlist Image">
+                <p>Your wishlist is empty. <a href="/">Start adding products</a> to your wishlist!</p>
+            </div>
+        <% } %>
+    </div>
+    </main>
+
+    <script>
+document.querySelectorAll('.remove-button').forEach(function (button) {
+    button.addEventListener('click', function () {
+        const productId = this.getAttribute('data-product-id');
+        // Send a request to remove the product from the wishlist
+        fetch(`/wishlistRemove?productId=${productId}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the item from the UI
+                this.closest('.wishlist-item').remove();
+                // Optionally, show a success message
+                console.log(data.message);
+            } else {
+                // Handle errors
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.view-button').forEach(function (viewButton) {
+        viewButton.addEventListener('click', function () {
+          const productId = this.dataset.productId;
+          window.location.href = `/display/${productId}`;
+        });
+      });
+    });
+  </script>
+  <script>
+    document.querySelector('.back-arrow').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default action
+    window.location.href = '/'; // Navigate to the root
+});
+
+  </script>
+
+</body>
+</html>

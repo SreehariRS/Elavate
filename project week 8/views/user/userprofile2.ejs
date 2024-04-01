@@ -11,19 +11,17 @@
     
 </head>
 <body>
-    <!-- <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />   -->
-    
+  <div class="back-button">
+    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
+</div>
 
-    
+<header class="header">
   
-    
+    <div class="header-text">
+        <h1>ELAVATE</h1>
+    </div>
+</header>
 
-    
-
-    
     <div class="container">
         <div class="main-body">
       
@@ -31,23 +29,39 @@
         
                 <!-- User Profile Card -->
 <!-- User Profile Card -->
-<div class="col-md-4 mb-3">
+<div class="col-md-4 mb-3 position-relative">
   <div class="card">
-      <div class="card-body d-flex justify-content-between align-items-center">
-          <div class="d-flex flex-column align-items-center text-center">
-              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
-              <div class="mt-3">
-                  <h2><%= user.firstname %></h2>
-                  <p><%= user.email %></p>
-              </div>
-          </div>
-          <div>
-            <a href="/orderhistory"> <button class="btn btn-primary btn-order">Order</button></a> 
-              <a href="/address"><button class="btn btn-primary btn-address">Address</button></a> 
-          </div>
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div class="d-flex flex-column align-items-center text-center">
+        <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+        <div class="mt-3">
+          <h2><%= user.firstname %></h2>
+          <p><%= user.email %></p>
+        </div>
       </div>
+      <div>
+        <a href="/orderhistory"><button class="custom-button">My Orders</button></a>
+        <a href="/address"><button class="custom-button">Address</button></a>
+        <a href="/changepass"><button class="custom-button">Change Password</button></a>
+        <button class="custom-button" type="button" onclick="saveProfile()">Save Profile</button>
+        <a href="/wallet"><button class="custom-button">Wallet</button></a>
+        <a href="#" id="createReferralLink">
+            <button type="button" class="custom-button" data-user-id="<%= user._id %>" onclick="createReferral(this)">Create Referral</button>
+        </a>
+        <span id="referralCodeSpan">Referral code: <%= user.referralCode %></span>
+        <div id="referralCodeContainer" style="display: none;">
+            <!-- The referral code will be displayed here -->
+            <span>Referal code : <%= user.referralCode %></span>
+        </div>
+       </div>
+       
+    </div>
   </div>
 </div>
+
+
+
+
 
     
                 <!-- User Details Card -->
@@ -59,16 +73,15 @@
                                     <h6 class="mb-0">Full Name</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    <%= user.firstname %>
-                                </div>
+                                  <label class="labels">Name</label>
+                                  <input type="text" id="firstname" class="form-control" placeholder="First Name" value="<%= user.firstname %>" />
+                                  <div id="firstnameError" class="text-danger"></div>
+                              </div>
+
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-sm-12">
-                                    <button class="btn btn-primary mr-3" onclick="openModal()">
-                                        <i class="icofont-ui-edit"></i> Edit
-                                    </button>
-                                </div>
+                             
                             </div>
                         </div>
                     </div>
@@ -76,22 +89,32 @@
     
                 <!-- Address Card -->
                 <div class="col-md-12 mt-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Your Address</h5>
-                            <% if (user && user.addresses && user.addresses.length> 0) { %>
-                              <% user.addresses.forEach((address, index)=> { %>
-                                    <p class="card-text">
-                                      <label class="labels">Address <%= index + 1 %></label>
-                                      <%= address.addressType %>,<%= address.country %>,"<%= address.mobileNumber %>,<%= address.pincode %>,<%= address.flat %>,<%= address.district %>,<%= address.state %>
-                                    </p>
-                                    <% }); %>
-                                    <% } else { %>
-                                <p class="card-text">No address found.</p>
-                                <% } %>
-                        </div>
-                    </div>
-                </div>
+                  <div class="card">
+                      <div class="card-body custom-card-body">
+                          <h5 class="card-title">Your Address</h5>
+                          <% if (user && user.addresses && user.addresses.length > 0) { %>
+                              <% user.addresses.forEach((address, index) => { %>
+                                  <div class="address-container">
+                                      <p class="card-text">
+                                          <label class="labels">Address <%= index + 1 %></label><br>
+                                          <span class="address-details">
+                                              <span><strong>Type:</strong> <%= address.addressType %></span><br>
+                                              <span><strong>Country/State:</strong> <%= address.country %>, <%= address.state %></span><br>
+                                              <span><strong>District/Pincode:</strong> <%= address.district %>, <%= address.pincode %></span><br>
+                                              <span><strong>Flat:</strong> <%= address.flat %></span><br>
+                                              <span><strong>Mobile Number:</strong> <%= address.mobileNumber %></span>
+                                          </span>
+                                      </p>
+                                  </div>
+                              <% }); %>
+                          <% } else { %>
+                              <p class="card-text">No address found.</p>
+                          <% } %>
+                      </div>
+                  </div>
+              </div>
+              
+              
             </div>
         </div>
     </div>
@@ -99,27 +122,146 @@
     
             </div>
         </div>
-        <!-- Add this HTML code to your page where you want the modal to appear -->
-        <div id="editprofile" class="modal">
-          <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Edit Profile</h2>
-            <div class="modal-body">
-              <form id="editProfileForm" action="/editprofile/<%= user._id %>" method="post">
-                <label for="newName">New Name:</label>
-                <input type="text" id="newName" class="form-control" name="newName" value="<%= user.firstname %>">
-           
-            </div>
-            <div class="modal-footer">
-             
-              <button type="submit" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
-            </form> 
-            </div>
-          </div>
-        </div>
-        
-        <!-- Include your custom CSS styles -->
         <style>
+          .card {
+    background: rgba(255, 255, 255, 0.1); /* Translucent glass finish background */
+    border: 2px solid; /* Gradient border */
+    border-image: linear-gradient(to right, #ffffff, #bcc1c1);
+    border-image-slice: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 3D effect */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden; /* Ensures the border-radius is applied to the content */
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Slight lift on hover */
+}
+
+.card-body {
+    padding: 20px;
+    color: #333;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.labels {
+    font-weight: bold;
+    color: #151515; /* Matching the gradient border color */
+}
+
+@media (max-width: 600px) {
+    .card {
+        width: 100%;
+    }
+}
+
+          .custom-card-body {
+    padding: 20px;
+}
+
+.address-container {
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.back-button {
+    position: absolute;
+    top: 25px;
+    left: 80px;
+    z-index: 1000; /* Ensure the button is above other elements */
+}
+.back-button a {
+    font-size: 24px; /* Increase the font size of the icon */
+    padding: 10px; /* Add some padding around the icon */
+    color: #000; /* Adjust the color as needed */
+    text-decoration: none;
+}
+
+.back-button a:hover {
+    color: #333; /* Change the color on hover */
+}
+
+@media only screen and (max-width: 768px) {
+    .back-button {
+        left: 20px; /* Adjust left position for smaller screens */
+    }
+}
+
+.header {
+            position: relative;
+            width: 100%;
+            height: 60px; /* Adjust the height as needed */
+            background-color: #f8f9fa; /* Background color of the header */
+        }
+
+
+
+      
+
+        .header-text {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+.header-text h1 {
+    font-size: 3rem;
+}
+.custom-button {
+    background-color: #000000; 
+    color: #ffffff; 
+    border: 2px solid #000000; 
+    padding: 5px 10px;
+    font-size: 15px; 
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    height: auto; 
+    width: 100%; /* Make the button full width by default */
+    max-width: 200px; /* Optionally, set a maximum width */
+}
+
+.custom-button:hover {
+    background-color: #333333; 
+    color: #ffffff; 
+}
+
+.custom-button:active, .custom-button:focus {
+    outline: none; 
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25); 
+}
+
+/* Responsive design for smaller screens */
+@media only screen and (max-width: 480px) {
+    .custom-button {
+        font-size: 12px; /* Adjust font size for smaller screens */
+        padding: 3px 5px; /* Adjust padding for smaller screens */
+    }
+}
+
+         </style>
+         
+        <style>
+          
           .card-body {
     display: flex;
     justify-content: space-between;
@@ -139,12 +281,12 @@
   }
 
   .modal-content {
-    background-color: #f8f9fa; /* Light gray background color */
+    background-color: #f8f9fa; 
     padding: 20px;
     border-radius: 10px;
     max-width: 400px;
     margin: auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
   }
 
   .modal-body {
@@ -163,7 +305,7 @@
     width: 100%;
     padding: 8px;
     font-size: 16px;
-    border: 1px solid #ced4da; /* Bootstrap default border color */
+    border: 1px solid #ced4da;
     border-radius: 5px;
   }
 
@@ -175,25 +317,25 @@
  
 
   .btn-dark {
-    background-color: #343a40; /* Dark gray background color */
-    color: #fff; /* White text color */
-    border: 1px solid #343a40; /* Matching border color */
+    background-color: #343a40; 
+    color: #fff;
+    border: 1px solid #343a40;
   }
 
   .btn-dark:hover {
-    background-color: #23272b; /* Darker gray on hover */
-    border: 1px solid #23272b; /* Matching border color on hover */
+    background-color: #23272b; 
+    border: 1px solid #23272b; 
   }
 
 
   .modal-footer .btn-primary {
-  background-color: #007bff; /* Set the background color to a primary color */
-  color: #fff; /* Set text color to white */
-  border: none; /* Remove the border */
-  padding: 10px 20px; /* Add padding for better appearance */
-  border-radius: 4px; /* Add border-radius for rounded corners */
+  background-color: #0d0d0e; 
+  color: #fff;
+  border: none; 
+  padding: 10px 20px; 
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Add a smooth transition effect */
+  transition: background-color 0.3s ease; 
 }
 
 /* Hover effect */
@@ -206,33 +348,129 @@
   outline: none; /* Remove the default focus outline */
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a box shadow on focus */
 }
+/* Add black color and animation to buttons */
+.btn {
+    color: #ffffff; /* Text color */
+    background-color: #000000; /* Background color (black) */
+    border: 1px solid #000000; /* Border color (black) */
+    transition: all 0.3s ease; /* Animation transition */
+}
 
-          /* Add your own additional styling as needed */
+/* Change color and background on hover */
+.btn:hover {
+    color: #000000; /* Text color on hover */
+    background-color: #ffffff; /* Background color on hover (white) */
+}
+
+
         </style>
+      
+       <script>
+        function saveProfile() {
+            var firstname = document.getElementById("firstname").value.trim();
+            document.getElementById("firstnameError").innerHTML = "";
+            if (firstname === "") {
+                document.getElementById("firstnameError").innerHTML = "First Name cannot be empty";
+                return;
+            }
+            var data = {
+                newFirstName: firstname, // Rename to match the backend variable name
+            };
+            fetch("/editprofile/<%= user._id %>", { // Ensure correct user ID is passed
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((response) => response.json())
+            .then((response) => {
+                console.log("Profile updated successfully:", response);
+                // Optionally, you can display a success message to the user
+                // Reload the page to reflect the changes
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Error updating profile:", error);
+                // Optionally, you can display an error message to the user
+            });
+        }
+
+        </script>
         
         <script>
-          // Add this JavaScript code to your page to handle modal functionality
-          function openModal() {
-            document.getElementById('editprofile').style.display = 'flex';
-          }
-        
-          function closeModal() {
-            document.getElementById('editprofile').style.display = 'none';
-          }
-        
-          function saveChanges() {
-            // Add your logic here to save the changes to the name
-            var newName = document.getElementById('newName').value;
-            console.log('New Name:', newName);
-        
-            // Close the modal after saving changes
-            closeModal();
+          // Function to navigate back to the root path "/"
+          function goBack() {
+            window.location.href = "/";
           }
         </script>
-
+ <script>
+    document.addEventListener("DOMContentLoaded", function() {
+           var referralCode = '<%= user.referralCode %>';
+           var createReferralButton = document.querySelector('#createReferralLink');
+           
+           if (referralCode) {
+               // If referral code is present, hide the button
+               createReferralButton.style.display = 'none';
+           }
+       });
+   
+       function createReferral(button) {
+           
+           // Your createReferral function logic here
+           // This function will be called when the "Create Referral" button is clicked
+       }
+   
+   
+   
+   
+           function createReferral(button) {
+               const userId = button.getAttribute('data-user-id');
+       
+               fetch('/createReferral', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json',
+                   },
+                   body: JSON.stringify({ userId }),
+               })
+               
+               
+               .then(response => response.json())
+               
+               .then(data => {
+                   const referralCodeContainer = document.getElementById('referralCodeContainer');
+       
+                   if (data.status === 'success') {
+                       
+                       if (data.referralCode) {
+                           // Display the existing referral code in the container
+                           referralCodeContainer.innerHTML = `<p>Your Referral Code: ${data.referralCode}</p>`;
+                           referralCodeContainer.style.display = 'block';
+                           button.style.display = 'none';
+                           
+                       } else {
+                           // Display the newly generated referral code
+                           referralCodeContainer.innerHTML = `<p>Your Referral Code: ${data.referralCode}</p>`;
+                           console.log(data.referralCode);
+                           referralCodeContainer.style.display = 'block';
+                           button.style.display = 'none';
+                       }
+                   } else {
+                       alert(data.message); // Display error message
+                   }
+                   
+               })
+               .catch(error => {
+                   console.error('Error:', error);
+               });
+               window.location.reload();
+           }
+       </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy5x25EJwo0pm6d4Zvu25/TfMIqE2t9nq" crossorigin="anonymous"></script>
 </body>
 </html>
+

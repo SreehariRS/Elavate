@@ -167,17 +167,27 @@
 </div>
 
 <script>
-    function validateForm() {
-        var newPassword = document.getElementById("newPassword").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
+function validateForm() {
+    var newPassword = document.getElementById("newPassword").value;
+    var confirmPassword = document.getElementById("confirmPassword").value;
 
-        if (newPassword !== confirmPassword) {
-            document.getElementById("passwordMatchError").style.display = "block";
-            return false;
-        }
-
-        return true;
+    // Strong password validation
+    var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+        document.getElementById("passwordMatchError").innerText = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+        document.getElementById("passwordMatchError").style.display = "block";
+        return false;
     }
+
+    if (newPassword !== confirmPassword) {
+        document.getElementById("passwordMatchError").innerText = "Passwords do not match!";
+        document.getElementById("passwordMatchError").style.display = "block";
+        return false;
+    }
+
+    return true;
+}
+
 
     window.onload = function() {
         document.getElementById("container").classList.add("active");

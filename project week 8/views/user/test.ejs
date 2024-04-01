@@ -1,507 +1,870 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
-    <!-- Add SweetAlert CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
     <style>
-  @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-            body {
-                font-family: "Poppins", sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .container {
-                max-width: 800px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: #fff;
-                border-radius: 10px;
-                box-shadow: 0px 0px 10px rgba(242, 255, 0, 0.1);
-                position: relative;
-                height: 320px; /* Set a fixed height */
-                overflow-y: auto; /* Enable vertical scroll */
-            }
-            a {
-                color: #2319b0;
-                text-decoration: none;
-            }
-            .container::-webkit-scrollbar {
-                display: none; /* Hide the scrollbar */
-            }
+        /* Add your CSS styles here */
+        body {
+    display: initial; /* or display: unset; */
+    margin: 0; /* or margin: initial; */
+}
 
-            .order-details {
-                margin-bottom: 20px;
-                text-align: center;
-            }
-            .order-details label {
-                font-weight: bold;
-            }
-            /* .cancel-btn {
-        background-color: #070707;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        position:relative;
-        top: 20rem;
-        left: 62rem;
-        z-index: 1;
-    }
+         body {
+            font-family: 'Arial', sans-serif;
+            margin-top: 0px;
+            padding: 0;
+            /* background-color: #f8f8f8; */
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #pdfTitle {
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #pdfButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            margin-left: 50%;
+        }
+        #pdfButton:hover {
+            background-color: #45a049;
+        }
+        #filterContainer {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        #filterType {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        #selectedDate {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+            display: none;
+        }
+        #applyFilterButton, #applyDateFilterButton {
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
 
-    .cancel-btn:hover {
-        background-color: #353434;
-    }
+        /* Style for the "Apply Normal Filter" button */
+        #applyFilterButton {
+            background-color: #3498db;
+            color: #fff;
+        }
 
-    
-    .cancel-btn.cancelled {
-        background-color: #ee182e;
-        color: white; 
-    } */
+        /* Style for the "Apply Date Filter" button */
+        #applyDateFilterButton {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+        .nav-profile{
+            margin-left: -888%;
+            height: 42px;
+        }
 
-            .product-info {
-                display: block; /* Changed from flex to block */
-            }
-            .product-info img {
-                position: relative;
-                top: 55px;
-                max-width: 150px;
-                margin-right: 20px;
-                border-radius: 5px;
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            .product-details {
-                flex-grow: 1;
-                position: relative;
-                left: 145px;
-                bottom: 100px;
-            }
-            h2 {
-                margin-top: 0;
-                font-weight: 600;
-            }
-            p {
-                margin: 5px 0;
-                font-weight: 400;
-            }
-            /* Added CSS rules for different order statuses */
-            .confirmed {
-                color: rgb(0, 255, 0);
-            }
-            .shipped {
-                color: rgb(255, 81, 0);
-            }
-            .returned {
-                color: rgb(47, 0, 255);
-            }
-            .cancelled {
-                color: rgb(255, 0, 0);
-            }
-            .delivered {
-                color: rgb(255, 0, 242);
-            }
+        .space {
+            margin-left: 200px;
+            padding: 20px;
+            padding-top: 30px; /* Adjusted padding for content area */
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .overview-item {
+            /* flex-basis: calc(25% - 20px); */
+            width: 20%;
+            background-color: #27e473;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-            /* Custom CSS for SweetAlert */
-            .swal-title {
-                font-size: 20px; /* Adjust title font size */
-            }
+        .overview-item h3 {
+            margin-top: 0;
+            color: white;
+            text-transform: uppercase;
+        }
 
-            .swal-text {
-                font-size: 16px; /* Adjust text font size */
-            }
-
-            .swal-input {
-                border-radius: 8px; /* Add border radius to input */
-                padding: 10px; /* Add padding to input */
-                font-size: 14px; /* Adjust input font size */
-            }
-
-            .swal-button {
-                border-radius: 8px; /* Add border radius to buttons */
-                padding: 10px 20px; /* Add padding to buttons */
-                font-size: 16px; /* Adjust button font size */
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Add box shadow to buttons */
-                background-color: #070707;
-            }
-
-            .swal-button:hover {
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Adjust box shadow on hover */
-                color: aqua;
-                background-color: #070707;
-            }
-
-            .swal-button:focus {
-                outline: none; /* Remove focus outline */
-                color: aqua;
-                background-color: #070707;
-            }
-
-            .swal-footer {
-                border-top: none; /* Remove top border from footer */
-            }
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f9f9f9;
-                margin: 0;
-                padding: 0;
-            }
-            @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
-            * {
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                padding-top: 56px; /* Adjust based on the height of your navbar */
-                font-family: "Poppins", sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f5f5f5;
-                /* display: flex; */
-            }
-
-            .navbar {
-                background-color: #ffffff; /* White background */
-                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Box shadow for subtle depth */
-                width: 100%;
-                position: fixed;
-                position: relative;
-            }
-            */ .navbar-brand {
-                padding: 0.5rem 2rem;
-                margin-right: 2rem;
-            }
-
-            .navbar-logo {
-                width: 50px;
-                height: auto;
-            }
-
-            .navbar-toggler-icon {
-                background-color: #1a63ab; /* Dark Gray color for toggler icon */
-            }
-
-            .navbar-nav {
-                margin-left: auto; /* Adjusted to move items to the right */
-            }
-
-            .nav-item {
-                margin-left: 1.5rem;
-            }
-
-            .nav-link {
-                color: #000000; /* Dark Gray color for nav links */
-                font-weight: bold;
-                transition: color 0.3s ease-in-out;
-            }
-
-            .nav-link:hover {
-                color: #060606; /* Red color on hover */
-            }
-
-            .profile-icon {
-                background-color: #bc050500; /* Red color for profile icon background */
-                color: #a61414; /* White color for the icon */
-                border-radius: 50%;
-                padding: 5px;
-                font-size: 1.2rem;
-                transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-            }
-
-            .profile-icon:hover {
-                background-color: #ed0b0b00; /* Dark Gray color on hover */
-                color: #15ba29; /* White color on hover */
-            }
-
-            .dropdown-menu {
-                background-color: #2c2b2b; /* White background for dropdown menu */
-            }
-
-            .dropdown-item {
-                color: #ffffff; /* Dark Gray color for dropdown items */
-                font-weight: bold;
-                transition: color 0.3s ease-in-out;
-            }
-
-            .dropdown-item:hover {
-                color: #f60505; /* Red color on hover */
-            }
-
-            .product-heading {
-                text-align: center;
-                padding-left: 22px;
-            }
-            .product-heading h2 {
-                margin-top: 150px;
-                font-weight: 700;
-            }
-
-            .navbar.fixed-top {
-                position: fixed;
-                width: 100%;
-                top: 0;
-                z-index: 1000;
-            }
-
-            .navMAin {
-                margin-top: 56px; /* Adjusted to account for the fixed-top navbar height */
-            }
-            .section-padding {
-                padding: 100px 0;
-            }
-
-            .cancel-order-btn {
-                margin-top: 10px; /* Adjust as needed */
-            }
-
-            .cancel-btn,
-            .return-btn {
-                background-color: #070707;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-                position: relative;
-                top: 10rem;
-                left: 18rem;
-                z-index: 1;
-            }
-
-            .cancel-btn:hover,
-            .return-btn:hover {
-                background-color: #353434;
-            }    </style>
+        .overview-item p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <main class="navMAin">
-        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">
-                    <img src="/img/logo.png" alt="Logo" class="navbar-logo" />
-                </a>
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/forhim">For Him</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/forher">For Her</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a
-                                class="nav-link profile-icon"
-                                href="#"
-                                id="navbarDropdownMenuLink"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false"
-                            >
-                                <i class="fas fa-user"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Wishlist</a>
-                                <a class="dropdown-item" href="/CartView">Cart</a>
-                                <a class="dropdown-item" href="/login">Login</a>
-                                <a class="dropdown-item" href="/signout">Logout</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </main>
-   
-        <!-- Loop through orders -->
-        <% ordersi.slice().reverse().forEach(order => { %>
+     
+  <h1>Welcome to Report Page</h1>
+  <div class="space">
+  <div class="overview-item overall-sales">
+    <h3>Overall Sales Amount</h3>
+    <p>₹<%= data.totalAmount %></p>
+</div>
 
-        <!-- Loop through items in each order -->
-        <% order.items.forEach(item => { %>
-        <div class="container">
-            <div class="order-item">
-                <div class="order-details">
-                    <div>
-                        <h2>Order_ID <%= String(order._id).slice(-4) %></h2>
-                        <p>Date & Time: <%= order.date.toLocaleString() %></p>
 
-                        <% if (order.status === 'delivered') { %>
-                        <div class="return-order-btn">
-                            <button class="return-btn" onclick="initiateReturn('<%= order._id %>')">Return Order</button>
-                        </div>
+<div class="overview-item overall-order-amount">
+    <h3>Total Orders</h3>
+    <p><%= data.totalOrders %></p>
+</div>
 
-                        <% } else if (order.status === 'returned' || order.status === 'cancelled') { %>
-                        <!-- Show generate invoice button for returned orders -->
+<!-- Overall Discount -->
+<div class="overview-item overall-discount">
+    <h3>Total Users</h3>
+    <p><%= data.user %></p>
+</div>
 
-                        <% } else { %>
-                        <!-- Show the cancel and generate invoice buttons for other cases -->
+<!-- Total Product Numbers -->
+<div class="overview-item total-product-numbers">
+    <h3>Total Products</h3>
+    <p><%= data.product %></p>
+</div>
+</div>
 
-                        <div class="cancel-order-btn">
-                            <button
-                                class="cancel-btn"
-                                id="cancelBtn_<%= order._id %>"
-                                onclick="cancelOrder('<%= order._id %>')"
-                            >
-                                Cancel Order
-                            </button>
-                        </div>
-
-                        <% } %>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <!-- Display product details -->
-                    <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
-                    <img
-                        src="<%= item.productId.productImages[0] %>"
-                        alt="Product Image"
-                        style="max-width: 100px; max-height: 100px; height: auto"
-                    />
-                    <div class="product-details">
-                        <h2><%= item.productId.name %></h2>
-                        <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                        <p><strong>Address:</strong> <%= order.selectedAddress %></p>
-                        <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                        <p>
-                            <strong>Order Status:</strong>
-                            <span class="<%= order.status.toLowerCase() %>"><%= order.status %></span>
-                        </p>
-                        <p><strong>Total:</strong> ₹<%= item.productId.price * item.quantity %></p>
-                    </div>
-                    <% } else { %>
-                    <div class="product-details">
-                        <p><em>Product details not available</em></p>
-                    </div>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-        <% }); %>
-        <% }); %>
-</body>
-<script
-src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-crossorigin="anonymous"
-></script>
-
-<!-- Your scripts -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script>
-    async function initiateReturn(orderId) {
-        try {
-                        const { value: reason } = await Swal.fire({
-                            title: "Initiate Return",
-                            input: "text",
-                            inputLabel: "Reason for Return",
-                            inputPlaceholder: "Enter your reason here",
-                            showCancelButton: true,
-                            confirmButtonColor: "#d9534f",
-                            cancelButtonColor: "#3085d6",
-                            confirmButtonText: "Initiate Return",
-                        });
+  <div id="filterContainer">
     
-                        if (reason) {
-                            const response = await fetch(`/initiate-return/${orderId}`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({ reason }),
-                            });
-    
-                            const data = await response.json();
-    
-                            if (data.success) {
-                                // Update the UI or show a success message
-                                console.log("Return initiated successfully");
-                            } else {
-                                console.error("Error initiating return:", data.message);
-                                // Handle the case where return initiation failed
-                            }
-                        }
-                    } catch (error) {
-                        console.error("Error initiating return:", error);
-                    }    }
+    <!-- Form to select filter options -->
+    <label for="filterType">Filter by:</label>
+    <select id="filterType">
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+        <option value="date" hidden>Date</option>
 
-    async function cancelOrder(orderId, productId) {
-        // Check if the order has already been cancelled locally
-        if (localStorage.getItem(`cancelledOrder_${orderId}_${productId}`)) {
-            // Update the button text and style
-            Swal.fire("Already Cancelled", "This product has already been cancelled.", "info");
-            return;
-        }
-        const { value: reason } = await Swal.fire({
-            title: "Cancel Product",
-            input: "text",
-            inputLabel: "Reason for cancellation",
-            inputPlaceholder: "Enter your reason here",
-            showCancelButton: true,
-            confirmButtonColor: "#d9534f",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Confirm Cancellation",
+    </select>
+    <button onclick="applyFilter()" id="applyFilterButton">Apply Normal Filter</button>
+    <!-- Additional input field for selecting date -->
+    <input type="date" id="selectedDate" style="display: inline-block;">
+
+    <!-- Separate buttons for applying each type of filter -->
+    
+    <button onclick="applyDateFilter()" id="applyDateFilterButton">Apply Date Filter</button>
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" style="display: inline-block; margin-right: 10px;">
+    
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" style="display: inline-block;">
+    
+    <button onclick="applyDateRangeFilter()" id="applyDateRangeFilterButton">Apply Date Range Filter</button>
+    
+
+</div>
+
+
+
+
+  <% if (salesReport && salesReport.length > 0) { %>
+      <!-- <h2>Sales Report</h2> -->
+      <span id="filterInfo"></span>
+      <button onclick="printPDF()" id="pdfButton">Download PDF</button>
+      <button onclick="downloadExcel()">Download Excel</button>
+      <div id="salesData">
+          <table id="salesTable">
+              <thead>
+                <tr>
+                    <div id="filterInfo"></div>
+                </tr>
+                  <tr>
+                      <th>Date</th>
+                      <th>Product Name</th>
+                      <th>Quantity</th>
+                      <th>Dicounted Amount</th>
+                      <th>Total Sales</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% salesReport.forEach(entry => { %>
+                      <% entry.items.forEach(product => { %>
+                          <tr>
+                             
+                                  <td><%= entry.date %></td>
+                                  <td><%=product.productId.name %></td>
+                                  <td><%= product.quantity %></td>
+                              
+                                  <td>₹<%= entry.totalprice %></td>
+                             
+                             
+                          </tr>
+                      <% }); %>
+                  <% }); %>
+              </tbody>
+          </table>
+      </div>
+
+      <!-- Include libraries for PDF generation -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+          integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          
+      <script>
+        
+          // Define formatDate function
+          function formatDate(dateObj) {
+              return new Date(dateObj.year, dateObj.month - 1, dateObj.day).toDateString();
+          }
+
+          function applyFilter() {
+              const filterType = document.getElementById("filterType").value;
+              const selectedDate = document.getElementById("selectedDate").value;
+              
+    document.getElementById("filterInfo").innerText = `Filter: ${filterType}`;
+              document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
+              // Make AJAX request to the server for normal filter
+              fetch('/admin/filter-sales', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ filterType }),
+              })
+              .then(response => response.json())
+              .then(filteredData => {
+                  updateTable(filteredData);
+              })
+              .catch(error => {
+                  console.error('Error fetching filtered data:', error);
+              });
+          }
+
+          function applyDateFilter() {
+              const selectedDate = document.getElementById("selectedDate").value;
+    document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
+
+              if (!selectedDate) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please select a valid date for filtering!',
+    });
+    return;
+}
+
+
+              // Make AJAX request to the server for date filter
+              fetch('/admin/filter-sales-by-date', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ selectedDate }),
+              })
+              .then(response => response.json())
+              .then(filteredData => {
+                  updateTable(filteredData);
+              })
+              .catch(error => {
+                  console.error('Error fetching filtered data:', error);
+              });
+          }
+
+
+          function applyDateRangeFilter() {
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const filterInfo = document.getElementById("filterInfo");
+
+    if (!startDate || !endDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select both start and end dates for filtering!',
         });
-
-        if (reason) {
-            try {
-                // Send an AJAX request to your server to cancel the product
-                const response = await fetch(`/cancel-product/${orderId}/${productId}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ reason }),
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Update the button text and style
-                    localStorage.setItem(`cancelledOrder_${orderId}_${productId}`, "true"); // Store in local storage
-                    const cancelButton = document.getElementById(`cancelBtn_${orderId}_${productId}`);
-                    cancelButton.innerText = "Cancelled";
-                    cancelButton.classList.add("cancelled");
-                    cancelButton.disabled = true;
-
-                    // Show a success message
-                    Swal.fire({
-                        title: "Product Cancelled!",
-                        text: `The product has been cancelled. Reason: ${reason}`,
-                        icon: "success",
-                    });
-                } else {
-                    // Handle the case where the cancellation was not successful
-                    console.error("Error cancelling product:", data.message);
-                    Swal.fire("Error", "Failed to cancel product. Please try again.", "error");
-                }
-            } catch (error) {
-                console.error("Error cancelling product:", error);
-                Swal.fire("Error", "Failed to cancel product. Please try again.", "error");
-            }
-        }
+        return;
     }
-</script>
+
+    if (startDate > endDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Start date cannot be after end date!',
+        });
+        return;
+    } else if (endDate < startDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'End date cannot be before start date!',
+        });
+        return;
+    }
+
+    // Update filter information
+    filterInfo.innerText = `Filter: Date Range - ${startDate} to ${endDate}`;
+
+    // Make AJAX request to the server for date range filter
+    fetch('/admin/filter-sales-by-date-range', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ startDate, endDate }),
+    })
+    .then(response => response.json())
+    .then(filteredData => {
+        console.log(filteredData);
+        updateTable(filteredData);
+    })
+    .catch(error => {
+        console.error('Error fetching filtered data:', error);
+    });
+}
+
+
+
+
+        function updateTable(filteredData) {
+    const salesTable = document.getElementById("salesTable");
+    salesTable.innerHTML = '<thead><tr><th>Date</th><th>Product Name</th><th>Quantity</th><th>Discounted Amount</th><th>Total Sales</th></tr></thead><tbody>';
+    filteredData.forEach(entry => {
+        entry.products.forEach(product => {
+            addTableRow(entry, product);
+        });
+    });
+    salesTable.innerHTML += '</tbody>';
+}
+
+function addTableRow(entry, product) {
+    const salesTable = document.getElementById("salesTable").getElementsByTagName('tbody')[0];
+    const row = salesTable.insertRow();
+    const cell1 = row.insertCell(0);
+    const cell2 = row.insertCell(1);
+    const cell3 = row.insertCell(2);
+    const cell4 = row.insertCell(3);
+    const cell5 = row.insertCell(4);
+
+    if (entry.products.indexOf(product) === 0) {
+        cell1.innerHTML = formatDate(entry._id);
+        cell4.innerHTML = '₹' + (entry.discountValue || 0).toFixed(2); // Display discount value for the first product only
+        cell5.innerHTML = '₹' + entry.totalSales.toFixed(2);
+    } else {
+        // For non-first products, leave the date, discount, and total sales cells empty
+        cell1.innerHTML = '';
+        cell4.innerHTML = '';
+        cell5.innerHTML = '';
+    }
+
+    cell2.innerHTML = product.name;
+    cell3.innerHTML = product.quantity;
+}
+
+
+// function formatDate(dateObj) {
+//     // Implement the formatting logic for the date
+//     // You can use libraries like moment.js for more advanced formatting
+//     return `${dateObj.day}-${dateObj.month}-${dateObj.year}`;
+// }
+
+          function printPDF() {
+              const pdfTable = document.getElementById("salesTable");
+              const filterInfo = document.getElementById("filterInfo").innerText;
+               // Add filter type to table caption
+              const caption = pdfTable.querySelector("caption");
+              if (caption) {
+                caption.innerHTML += `<br>${filterInfo}`;
+              } else {
+                // Add a new caption if one doesn't exist
+                const caption = document.createElement("caption");
+                caption.innerHTML = filterInfo;
+                pdfTable.prepend(caption);
+              }
+              const pdfOptions = {
+                  margin: 1,
+                  filename: 'sales_report.pdf',
+                  image: { type: 'jpeg', quality: 0.98 },
+                  html2canvas: { scale: 2 },
+                  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+              };
+
+              html2pdf().set(pdfOptions).from(pdfTable).save();
+          }
+
+          function downloadExcel() {
+        const salesTable = document.getElementById("salesTable");
+
+        // Create a new workbook
+        const wb = XLSX.utils.book_new();
+
+        // Convert the table to a worksheet
+        const ws = XLSX.utils.table_to_sheet(salesTable);
+
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+
+        // Save the workbook as an Excel file
+        XLSX.writeFile(wb, 'sales_report.xlsx');
+    }
+      </script>
+
+      <!-- Add a button to trigger PDF download -->
+  <% } else { %>
+      <p>No sales data available.</p>
+  <% } %>
+  
+</body>
 </html>
+ 
+
+
+<script>
+    const generateSalesReport = async () => {
+    try {
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items",
+        },
+        {
+          $lookup: {
+            from: "product",
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo",
+        },
+        {
+          $lookup: {
+            from: "coupon",
+            localField: "items.couponId",
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            date: { $first: "$date" },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: 1,
+            totalSales: 1,
+            discountValue: 1,
+            products: 1,
+          },
+        },
+      ]);
+      // console.log(salesReport);
+      console.log("helooosales",salesReport);
+
+      return salesReport;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  generateSalesReport();
+  
+
+  const sales = async (req, res) => {
+    try {
+      if (req.session.admin) {
+        res.render("admin/adminlogin.ejs");
+      } else {
+        // Fetch sales report data dynamically
+        const orderData = await orders.find();
+        console.log(orderData);
+        let totalAmount = 0;
+        const totalOrders = orderData.length;
+
+        console.log(totalOrders);
+      const user = await user2.find().count();
+        const product = await product2.find().count();
+        orderData.forEach((order) => {
+          totalAmount += order.totalprice;
+        });
+  
+        const data = {
+          totalAmount,
+          user,
+          product,
+          totalOrders,
+        };
+
+        const salesReport = await orders.find();
+
+        console.log("salesReport",salesReport)
+       
+        res.render("admin/salesReport", { salesReport, data });
+
+        console.log("sales report",salesReport);
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  const filterSales = async (req, res) => {
+    try {
+      const filterType = req.body.filterType;
+  
+      if (!filterType) {
+        return res
+          .status(400)
+          .json({ message: "filterType is missing in the request" });
+      }
+  
+      let filterQuery;
+  
+      if (filterType === "day") {
+        // Filter for a single day
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+  
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+  
+        filterQuery = {
+          date: {
+            $gte: startOfDay,
+            $lt: endOfDay,
+          },
+        };
+      } else if (filterType === "week") {
+        // Filter for the current week
+        const startOfWeek = new Date();
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Start from the beginning of the week (Sunday)
+  
+        const endOfWeek = new Date();
+        endOfWeek.setHours(23, 59, 59, 999);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // End at the end of the week (Saturday)
+  
+        filterQuery = {
+          date: {
+            $gte: startOfWeek,
+            $lt: endOfWeek,
+          },
+        };
+      } else if (filterType === "month") {
+        // Filter for the current month
+        const startOfMonth = new Date();
+        startOfMonth.setHours(0, 0, 0, 0);
+        startOfMonth.setDate(1);
+  
+        const endOfMonth = new Date();
+        endOfMonth.setHours(23, 59, 59, 999);
+        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+        endOfMonth.setDate(0);
+  
+        filterQuery = {
+          date: {
+            $gte: startOfMonth,
+            $lt: endOfMonth,
+          },
+        };
+      } else if (filterType === "year") {
+        // Filter for the current year
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+        const endOfYear = new Date(
+          new Date().getFullYear(),
+          11,
+          31,
+          23,
+          59,
+          59,
+          999
+        );
+  
+        filterQuery = {
+          date: {
+            $gte: startOfYear,
+            $lt: endOfYear,
+          },
+        };
+      } else {
+        return res.status(400).json({ message: "Invalid filterType" });
+      }
+  
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items",
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product",
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo",
+        },
+        {
+          $lookup: {
+            from: "coupon",
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+      //console.log(salesReport);
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  const filterSalesByDate = async (req, res) => {
+    try {
+      const selectedDate = req.body.selectedDate;
+  
+      if (!selectedDate) {
+        return res.status(400).json({ message: "Please provide a valid date." });
+      }
+  
+      // Construct the start and end of the selected date
+      const startOfSelectedDate = new Date(selectedDate);
+      startOfSelectedDate.setHours(0, 0, 0, 0);
+  
+      const endOfSelectedDate = new Date(selectedDate);
+      endOfSelectedDate.setHours(23, 59, 59, 999);
+  
+      const filterQuery = {
+        date: {
+          $gte: startOfSelectedDate,
+          $lt: endOfSelectedDate,
+        },
+      };
+  
+      // Use the same aggregation pipeline as in your existing filterSales function
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items", // Unwind the items array
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product", // The name of the products collection
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo", // Unwind the productInfo array
+        },
+        {
+          $lookup: {
+            from: "coupon", // The name of the coupons collection
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+  
+      //console.log(salesReport);
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  const filterByDateRange = async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body;
+      console.log(startDate, endDate);
+  
+      // Construct the filter query with date range
+      const filterQuery = {
+        date: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+  
+      // Add your logic to query the database for sales data within the specified date range
+      const salesReport = await orders.aggregate([
+        {
+          $unwind: "$items", // Unwind the items array
+        },
+        {
+          $match: filterQuery,
+        },
+        {
+          $lookup: {
+            from: "product", // The name of the products collection
+            localField: "items.productId",
+            foreignField: "_id",
+            as: "productInfo",
+          },
+        },
+        {
+          $unwind: "$productInfo", // Unwind the productInfo array
+        },
+        {
+          $lookup: {
+            from: "coupon", // The name of the coupons collection
+            localField: "items.couponId", // Assuming there is a field 'couponId' in the items array
+            foreignField: "_id",
+            as: "couponInfo",
+          },
+        },
+        {
+          $unwind: { path: "$couponInfo", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+            discountValue: { $sum: "$couponInfo.discountValue" },
+            products: {
+              $push: {
+                name: "$productInfo.productname",
+                quantity: "$items.quantity",
+              },
+            },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+      // console.log("Start and End",salesReport);
+  
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  const salesRep = async (req, res) => {
+    try {
+      const salesReport = await orders.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+            },
+            totalSales: { $sum: "$totalprice" },
+          },
+        },
+        {
+          $sort: { "_id.year": -1, "_id.month": -1, "_id.day": -1 },
+        },
+      ]);
+  
+      res.json(salesReport);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+</script>

@@ -26,6 +26,11 @@ const mongoose = require('mongoose');
             required: true,
             default: 1,
         },
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Coupon', // Reference to the Coupon model
+            default: null,
+        },
     }],
     selectedAddress: {
         type: String,

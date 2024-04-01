@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+    display: initial; /* or display: unset; */
+    margin: 0; /* or margin: initial; */
+}
+
+         body {
+            font-family: 'Arial', sans-serif;
+            margin-top: 0px;
+            padding: 0;
+            /* background-color: #f8f8f8; */
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #pdfTitle {
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #pdfButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            margin-left: 50%;
+        }
+        #pdfButton:hover {
+            background-color: #45a049;
+        }
+        #filterContainer {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        #filterType {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        #selectedDate {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+            display: none;
+        }
+        #applyFilterButton, #applyDateFilterButton {
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        /* Style for the "Apply Normal Filter" button */
+        #applyFilterButton {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        /* Style for the "Apply Date Filter" button */
+        #applyDateFilterButton {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+        .nav-profile{
+            margin-left: -888%;
+            height: 42px;
+        }
+
+        .space {
+            margin-left: 200px;
+            padding: 20px;
+            padding-top: 30px; /* Adjusted padding for content area */
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .overview-item {
+            /* flex-basis: calc(25% - 20px); */
+            width: 20%;
+            background-color: #27e473;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .overview-item h3 {
+            margin-top: 0;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .overview-item p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+
+        .sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+@media screen and (max-width: 768px) {
+            .sidebar {
+                width: 200px; /* Adjust sidebar width for smaller screens */
+            }
+            .main-content {
+                margin-left: 200px; /* Adjust main content margin */
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .sidebar {
+                display: none; /* Hide sidebar on smaller screens */
+            }
+            .main-content {
+                margin-left: 0; /* Adjust main content margin */
+            }
+        }
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+* {
+  font-family: "Poppins", "sans-sarif";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-color: #ffffff;
+  --sidebar-color: #000000;
+  --primary-color: #f4f2f2;
+  --primary-color-light: #f4f2f2;
+  --text-color: #ffffff;
+ 
+
+  --trans-02: all 0.2s ease;
+  --trans-03: all 0.3s ease;
+  --trans-04: all 0.4s ease;
+  --trans-04: all 0.5s ease;
+}
+
+body {
+  height: 100vh;
+  background-color: var(--body-color);
+  transition: var(--trans-02);
+}
+
+.sidebar .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  /* transition: var(--trans-04); */
+  white-space: unset;
+  opacity: 1;
+}
+
+.sidebar .image {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0px;
+  height: 100%;
+  width: 250px;
+  background-color: var(--sidebar-color);
+  padding: 10px 14px;
+  transition: var(--trans-02);
+}
+
+.sidebar header {
+  position: relative;
+}
+.sidebar .image-text img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  align-items: center;
+}
+
+.header .image-text .header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .main {
+  font-weight: 600;
+}
+
+.header-text .sub {
+  margin-top: -2px;
+}
+
+
+.sidebar li {
+  height: 50px;
+  /* background-color: red; */
+  margin-top: 10px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar li .icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  font-size: 20px;
+}
+.sidebar li .icons,
+.sidebar li .text {
+  color: var(--text-color);
+  transition: var(--trans-03);
+}
+
+.sidebar li a {
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding-right: 50px;
+  border-radius: 6px;
+  transition: var(--trans-04);
+  text-align: left;
+}
+
+.sidebar li a:hover {
+  background: var(--primary-color);
+}
+.sidebar li a:hover .icons,
+.sidebar li a:hover .text {
+  color: var(--dark-color);
+}
+
+.sidebar .menu-bar {
+  height: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* Add styles for the new navbar */
+.main-content {
+    margin-left: 250px; /* Adjust based on the width of the sidebar */
+    padding: 0.25px;
+    background-color: #ffffff; 
+    justify-content: space-evenly;
+    /* box-shadow: 2px  4px 8px rgba(0, 0, 0, 0.5); */
+}
+.container {
+    padding-left: 18%; /* Adjust the value as needed */
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container1" >
+  <link
+  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+  rel="stylesheet"
+/>  
+<div class="toggle-sidebar">
+  <i class="bx bx-menu toggle-icon"></i>
+</div>
+<nav class="sidebar">
+  <header>
+    <div class="image-text">
+      <span class="image">
+        <img src="/img/logo.png" alt="logo" />
+      </span>
+      <div class="text header-text">
+        <span class="main">ELAVATE</span>
+        <br>
+        <span class="sub">make your smell</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="menu-bar">
+    <div class="menu">
+      <ul class="menu-links">
+        <li class="nav-link">
+          <a href="/admin/dashboard">
+            <i class="bx bx-home-alt icons"></i>
+            <span class="text nav-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/customers">
+            <i class="bx bx-bell icons"></i>
+            <span class="text nav-text">User</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/productlist">
+            <i class="bx bx-bar-chart-alt-2 icons"></i>
+            <span class="text nav-text">Product</span>
+          </a>
+        </li>
+       
+        <li class="nav-link">
+          <a href="/admin/order">
+            <i class="bx bx-pie-chart-alt icons"></i>
+            <span class="text nav-text">order</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/category">
+            <i class="bx bx-heart icons"></i>
+            <span class="text nav-text">Category</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/coupon">
+            <i class="bx bx-wallet-alt icons"></i>
+            <span class="text nav-text">coupon</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="/admin/sales">
+            <i class="bx bx-wallet-alt icons"></i>
+            <span class="text nav-text">Sales Report</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  
+      <li class="nav-link">
+        <a href="/admin/login">
+          <i class="bx bx-log-out icons"></i>
+          <span class="text nav-text">Log Out</span>
+        </a>
+      </li>
+      
+      </li>
+   
+  </div>
+</nav>
+</div>
+
+<div class="container" >
+    <h1 style="text-align: center;">Welcome to Report Page</h1>
+
+    <div class="space" style="margin-left: -10px;">
+        <div class="overview-item overall-sales">
+          <h3>Overall Sales Amount</h3>
+          <p>₹<%= data.totalAmount %></p>
+        </div>
+      
+        <div class="overview-item overall-order-amount">
+          <h3>Total Orders</h3>
+          <p><%= data.totalOrders %></p>
+        </div>
+      
+        <!-- Overall Discount -->
+        <div class="overview-item overall-discount">
+          <h3>Total Users</h3>
+          <p><%= data.user %></p>
+        </div>
+      
+        <!-- Total Product Numbers -->
+        <div class="overview-item total-product-numbers">
+          <h3>Total Products</h3>
+          <p><%= data.product %></p>
+        </div>
+      </div>
+      
+
+      <div id="filterContainer">
+    
+        <!-- Form to select filter options -->
+        <label for="filterType">Filter by:</label>
+        <select id="filterType">
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+            <option value="date" hidden>Date</option>
+    
+        </select>
+        <button onclick="applyFilter()" id="applyFilterButton">Apply Normal Filter</button>
+        <!-- Additional input field for selecting date -->
+        <input type="date" id="selectedDate" style="display: inline-block;">
+    
+        <!-- Separate buttons for applying each type of filter -->
+        
+        <button onclick="applyDateFilter()" id="applyDateFilterButton">Apply Date Filter</button>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" style="display: inline-block; margin-right: 10px;">
+        
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" style="display: inline-block;">
+        
+        <button onclick="applyDateRangeFilter()" id="applyDateRangeFilterButton">Apply Date Range Filter</button>
+        
+    
+    </div>
+    
+
+  <% if (salesReport && salesReport.length > 0) { %>
+      <!-- <h2>Sales Report</h2> -->
+      <span id="filterInfo"></span>
+      <button onclick="printPDF()" id="pdfButton">Download PDF</button>
+      <button onclick="downloadExcel()">Download Excel</button>
+      <div id="salesData">
+          <table id="salesTable">
+              <thead>
+                <tr>
+                    <div id="filterInfo"></div>
+                </tr>
+                  <tr>
+                      <th>Date</th>
+                      <th>Product Name</th>
+                      <th>Quantity</th>
+                      <th>Dicounted Amount</th>
+                      <th>Total Sales</th>
+                  </tr>
+              </thead>
+              <tbody>
+                <% salesReport.forEach(entry => { %>
+                    <% entry.items.forEach(product => { %>
+                        <tr>
+                            <% if (entry.items.indexOf(product) === 0) { %>
+                                <td rowspan="<%= entry.items.length %>"><%= new Date(entry.date).toDateString() %></td>
+                                <td><%= product.productId.name %></td>
+                                <td><%= product.quantity %></td>
+                                <td rowspan="<%= entry.items.length %>">₹<%= product.productId.offerprice %></td>
+                                <td rowspan="<%= entry.items.length %>"><%= entry.totalprice.toFixed(2) %></td>
+                            <% } else { %>
+                                <td><%= product.name %></td>
+                                <td><%= product.quantity %></td>
+                            <% } %>
+                        </tr>
+                    <% }); %>
+                <% }); %>
+            </tbody>
+            
+      </div>
+
+      <!-- Include libraries for PDF generation -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+          integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          
+          <script>
+            // Define formatDate function
+            function formatDate(dateObj) {
+                return new Date(dateObj.year, dateObj.month - 1, dateObj.day).toDateString();
+            }
+        
+            function applyFilter() {
+                const filterType = document.getElementById("filterType").value;
+                const selectedDate = document.getElementById("selectedDate").value;
+        
+                document.getElementById("filterInfo").innerText = `Filter: ${filterType}`;
+                document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
+        
+                // Make AJAX request to the server for normal filter
+                fetch('/admin/filter-sales', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filterType }),
+                })
+                .then(response => response.json())
+                .then(filteredData => {
+                    updateTable(filteredData);
+                })
+                .catch(error => {
+                    console.error('Error fetching filtered data:', error);
+                });
+            }
+        
+            function applyDateFilter() {
+                const selectedDate = document.getElementById("selectedDate").value;
+                document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
+        
+                if (!selectedDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a valid date for filtering!',
+                    });
+                    return;
+                }
+        
+                // Make AJAX request to the server for date filter
+                fetch('/admin/filter-sales-by-date', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ selectedDate }),
+                })
+                .then(response => response.json())
+                .then(filteredData => {
+                    updateTable(filteredData);
+                })
+                .catch(error => {
+                    console.error('Error fetching filtered data:', error);
+                });
+            }
+        
+            function applyDateRangeFilter() {
+                const startDate = document.getElementById("startDate").value;
+                const endDate = document.getElementById("endDate").value;
+                const filterInfo = document.getElementById("filterInfo");
+        
+                if (!startDate || !endDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select both start and end dates for filtering!',
+                    });
+                    return;
+                }
+        
+                if (startDate > endDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Start date cannot be after end date!',
+                    });
+                    return;
+                } else if (endDate < startDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'End date cannot be before start date!',
+                    });
+                    return;
+                }
+        
+                // Update filter information
+                filterInfo.innerText = `Filter: Date Range - ${startDate} to ${endDate}`;
+        
+                // Make AJAX request to the server for date range filter
+                fetch('/admin/filter-sales-by-date-range', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ startDate, endDate }),
+                })
+                .then(response => response.json())
+                .then(filteredData => {
+                    updateTable(filteredData);
+                })
+                .catch(error => {
+                    console.error('Error fetching filtered data:', error);
+                });
+            }
+        
+            function updateTable(filteredData) {
+                const salesTable = document.getElementById("salesTable");
+                salesTable.innerHTML = '<thead><tr><th>Date</th><th>Product Name</th><th>Quantity</th><th>Discounted Amount</th><th>Total Sales</th></tr></thead><tbody>';
+                filteredData.forEach(entry => {
+                    entry.items.forEach(product => {
+                        addTableRow(entry, product);
+                    });
+                });
+                salesTable.innerHTML += '</tbody>';
+            }
+        
+            function addTableRow(entry, product) {
+                const salesTable = document.getElementById("salesTable").getElementsByTagName('tbody')[0];
+                const row = salesTable.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+                const cell5 = row.insertCell(4);
+        
+                if (entry.items.indexOf(product) === 0) {
+                    cell1.innerHTML = formatDate(entry.date);
+                    cell4.innerHTML = '₹' + (entry.discountValue || 0); // Display discount value for the first product only
+                    cell5.innerHTML = '₹' + entry.totalprice.toFixed(2);
+                } else {
+                    // For non-first products, leave the date, discount, and total sales cells empty
+                    cell1.innerHTML = '';
+                    cell4.innerHTML = '';
+                    cell5.innerHTML = '';
+                }
+        
+                cell2.innerHTML = product.productId.name;
+                cell3.innerHTML = product.quantity;
+            }
+        
+            function printPDF() {
+                const pdfTable = document.getElementById("salesTable");
+                const filterInfo = document.getElementById("filterInfo").innerText;
+                // Add filter type to table caption
+                const caption = pdfTable.querySelector("caption");
+                if (caption) {
+                    caption.innerHTML += `<br>${filterInfo}`;
+                } else {
+                    // Add a new caption if one doesn't exist
+                    const caption = document.createElement("caption");
+                    caption.innerHTML = filterInfo;
+                    pdfTable.prepend(caption);
+                }
+                const pdfOptions = {
+                    margin: 1,
+                    filename: 'sales_report.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                };
+        
+                html2pdf().set(pdfOptions).from(pdfTable).save();
+            }
+        
+            function downloadExcel() {
+                const salesTable = document.getElementById("salesTable");
+        
+                // Create a new workbook
+                const wb = XLSX.utils.book_new();
+        
+                // Convert the table to a worksheet
+                const ws = XLSX.utils.table_to_sheet(salesTable);
+        
+                // Add the worksheet to the workbook
+                XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+        
+                // Save the workbook as an Excel file
+                XLSX.writeFile(wb, 'sales_report.xlsx');
+            }
+        </script>
+        
+
+ <script>
+    // JavaScript for automatically toggling sidebar visibility
+    const toggleButton = document.querySelector('.toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('hidden');
+      toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+    }
+    
+    function checkViewportWidth() {
+      if (window.innerWidth <= 1300) {
+        sidebar.classList.add('hidden');
+        toggleButton.style.display = 'block';
+      } else {
+        sidebar.classList.remove('hidden');
+        toggleButton.style.display = 'none';
+      }
+    }
+    
+    toggleButton.addEventListener('click', function() {
+      toggleSidebar();
+    });
+    
+    // Check viewport width initially and on resize
+    checkViewportWidth();
+    window.addEventListener('resize', checkViewportWidth);
+    
+    </script>
+      <!-- Add a button to trigger PDF download -->
+  <% } else { %>
+      <p>No sales data available.</p>
+  <% } %>
+</div>
+</body>
+</html>
