@@ -1,16 +1,7 @@
 const mongoose = require('mongoose');
 
-// // require("dotenv").config();
-// require('dotenv').config()
-// mongoose.connect(`mongodb://${process.env.LOCALHOST}`)
-// // mongoose.connect(`mongodb://localhost:${process.env.DBport}/try1`)
-// .then(()=>{
-//     console.log("mongodb connected");
-// })
-// .catch(()=>{
-//     console.log("Failed to connect5");
-// })
-  const orderSchema = new mongoose.Schema({
+
+const orderSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true,
@@ -46,11 +37,11 @@ const mongoose = require('mongoose');
     },
     status: {
         type: String,
+        enum: ['pending','confirmed','dispatched','out for delivery','delivered','returned','cancelled'],
         default: 'confirmed', // Default status is 'confirmed', you can adjust this based on your requirements
     },
     paymentMethod: {
-        type: String,
-        default: 'Cash On Delivery'
+        type: String
     },
     cancellationReason: {
         type: String,

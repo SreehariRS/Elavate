@@ -161,7 +161,6 @@
                 border-radius: 8px;
                 cursor: pointer;
                 box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-                position: absolute;
                 bottom: 20px;
                 right: 20px;
                 z-index: 1;
@@ -231,7 +230,7 @@
 
         <header class="header">
             <div class="header-text">
-                <h1>ELAVATE</h1>
+             <h1 id="elavate">ELAVATE</h1>
             </div>
             <div class="profile-icon">
                 <i class="fas fa-user fa-2x"></i>       
@@ -252,13 +251,14 @@
                 
                     <% if (order.status === 'delivered') { %>
                         <div class="return-order-btn">
-                            <button class="return-btn" onclick="initiateReturn('<%= order._id %>')">Return Order</button>
                             <button class="return-btn" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+
+                            <button class="return-btn" onclick="initiateReturn('<%= order._id %>')">Return Order</button>
                         </div>
                     <% }
-                     else if (order.status === 'pending') { %>
+                    else if (order.status === 'pending') { %>
                        
-                        <button id="payBtn">Pay with Razorpay</button>
+                        <button id="payBtn" onclick="failedpay( '<%= order.totalprice %>','<%= order._id %>')">Pay with Razorpay</button>
 
 
                     <% }
@@ -268,10 +268,18 @@
                     <% }
                      else { %>
                         <!-- Show the cancel and generate invoice buttons for other cases -->
-                        <div class="cancel-order-btn">
-                            <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
-                           
-                        </div>
+                        <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
+                            <!-- Product details available, display button -->
+                            <div class="cancel-order-btn">
+                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                            </div>
+                        <% } else { %>
+                            <!-- Product details not available, disable button -->
+                            <div class="cancel-order-btn">
+                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" disabled>Cancel Order</button>
+                            </div>
+                        <% } %>
+                        
                     <% } %>
                     </div>
                 </div>
@@ -311,7 +319,7 @@
                     </div>
                     <% } else { %>
                     <div class="product-details">
-                        <p><em>Product details not available</em></p>
+                        <p><em>Apologies, the product is currently unavailable.</em></p>
                     </div>
                     <% } %>
                 </div>
@@ -328,6 +336,235 @@
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"
         ></script>
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+function failedpay(price , orderId ){
+    
+    fetch('/generate-razorpay-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: price }),
+    })
+    .then(response => response.json())
+    .then(order => {
+        var options = {
+            key: "rzp_test_rJ0yPg6ZIlUOvq", // Enter the Key ID generated from the Dashboard
+            amount: order.amount, 
+            currency: "INR",
+            name: "Elavate",
+            description: "Payment for your order",
+            image: "https://example.com/your_logo",
+            order_id: order.id, 
+            handler: function (response){
+                // After payment successfully made, you can verify the payment
+                // by sending request to your server with necessary data
+                console.log(response);
+               
+            console.log('Order',orderId);
+                // Update the order status to 'confirmed'
+                updateOrderStatus(orderId);
+                
+            },
+            prefill: {
+                name: "sreehari",
+                email: "sreeharikannan373@gmail.com",
+                contact: "9645277856",
+            },
+            theme: {
+                color: "#3399cc"
+            }
+        };
+        var paymentObject = new Razorpay(options);
+        paymentObject.open();
+    })
+    .catch(error => console.error('Error:', error));
+}
+function updateOrderStatus(orderId) {
+    fetch('/update-order-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: orderId, status: 'confirmed' }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+        window.location.reload()
+        // Optionally, update the UI to reflect the new order status
+    })
+    .catch(error => console.error('Error updating order status:', error));
+}
+</script>
+<script>
+   
+async function continuePayment() {
+    const orderData = {
+        userId: '<%= userId %>',
+        cartItems: [], // Populate this array based on your form
+        
+        totalPrice: discountedPrice, // Use discounted price instead of totalPrice
+        paymentMethod,
+        couponCode: selectedCouponCode, // Include the selected coupon code
+    };
+    const orderDataa = {
+userId: '<%= userId %>',
+cartItems: [], // Populate this array based on your form
+selectedAddress,
+totalPrice: discountedPrice, // Use discounted price instead of totalPrice
+paymentMethod,
+couponCode: selectedCouponCode, // Include the selected coupon code
+status: 'failedpayment' // Add an empty status field initially
+};
+    try {
+        // Fetch discounted price
+        const discountedPrice = parseFloat(document.querySelector('.highlight').innerText.replace('₹', ''));
+console.log(discountedPrice);
+        // Fetch order details from your server
+        const createOrderResponse = await fetch('/create-razorpay-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: discountedPrice }), // Pass discountedPrice to Razorpay
+        });
+
+        const createOrderResult = await createOrderResponse.json();
+console.log("createOrderResult",createOrderResult);
+        if (createOrderResult.error) {
+            Swal.fire({
+                title: 'Failed to create Razorpay order',
+                text: 'Please try again later or choose a different payment method.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000, // 3 seconds timer
+                timerProgressBar: true,
+                onClose: () => {
+                    window.location.href = '/orderhistory'; // Redirect to order history page
+                }
+            });
+            return;
+        }
+
+        const razorpayOrderId = createOrderResult.orderId;
+console.log(razorpayOrderId);
+        const options = {
+            key: 'rzp_test_rJ0yPg6ZIlUOvq', // Replace with your Razorpay key ID
+            amount: discountedPrice * 100, // Amount in paisa
+            currency: 'INR',
+            name: 'Elavate',
+            description: 'Payment for your order',
+            order_id: razorpayOrderId,
+            handler: function (response) {
+                console.log(response);
+                submitOrderToServer(orderData);
+            },
+            prefill: {
+                name: "sreehari",
+                email: "sreeharikannan373@gmail.com",
+                contact: "9645277856",
+            },
+            theme: {
+                color: '#A48F7A',
+            },
+        };
+
+        const razorpayInstance = new Razorpay(options);
+        razorpayInstance.open();
+
+        // Handling payment failure
+        razorpayInstance.on('payment.failed', function (response) {
+            Swal.fire({
+                title: 'Payment Failed',
+                text: response.error.description,
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000, // 3 seconds timer
+                timerProgressBar: true,
+                onClose: () => {
+                    // Redirect to order history page with payment failed status
+                    const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
+                    submitOrderWithFailedPaymentToServer(orderDataWithStatus);
+                    window.location.href = '/orderhistory'; // Redirect to order history page
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+
+    async function submitOrderToServer(orderData) {
+        try {
+            console.log("TRYY");
+            const response = await fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+            console.log(result);
+            window.location.href = "/order";
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function submitOrderWithFailedPaymentToServer(orderDataa) {
+try {
+    // Add status as paymentfailed to orderData
+    const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
+console.log("FAILED",orderDataWithStatus);
+    const response = await fetch('/checkouterror', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderDataWithStatus),
+    });
+
+    const result = await response.json();
+    console.log(result);
+    // Handle redirect based on the result if necessary
+   // window.location.href = "/orderhistory"; // Example redirect
+} catch (error) {
+    console.error(error);
+}
+}
+
+}
+</script>
+
+<script>
+async function generateInvoice(orderId) {
+try {
+  const response = await fetch(`/generate-invoice/${orderId}`);
+  if (response.ok) {
+    // Trigger a download of the generated invoice
+    const blob = await response.blob();
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = `invoice_${orderId}.pdf`;
+    link.click();
+  } else {
+    // Handle the case where generating the invoice failed
+    console.error('Error generating invoice:', response.statusText);
+  }
+} catch (error) {
+  console.error('Error generating invoice:', error);
+}
+}
+</script>
+
 
         <script>
         async function generateInvoice(orderId) {
@@ -459,5 +696,6 @@
     });
     
             </script>
+                    
     </body>
 </html>

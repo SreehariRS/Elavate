@@ -467,7 +467,7 @@ body {
       <div class="menu">
         <ul class="menu-links">
           <li class="nav-link">
-            <a href="/admin/dashboard">
+            <a href="/admin/home">
               <i class="bx bx-home-alt icons"></i>
               <span class="text nav-text">Dashboard</span>
             </a>
@@ -565,26 +565,24 @@ body {
                           <td><%= order.userId %></td>
                           <td><%= order.selectedAddress %></td>
                           <td><%= order.date.toLocaleString() %></td>
-                          <td><%= item.productId.name %></td> <!-- Display product name -->
+                          <td><%= item.productId ? item.productId.name : 'N/A' %></td> <!-- Display product name, or 'N/A' if productId is null or undefined -->
                           <td><%= order.totalprice %></td>
                           <td>
-                              <div class="cancel-order-btn">
-                                  <!-- Check order status and display accordingly -->
-                                  <% if (order.status === 'cancelled' || order.status === 'returned') { %>
-                                      <!-- Display the cancellation reason as a link -->
-                                      <a href="#" onclick="showCancellationReason('<%= order.cancellationReason %>')"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></a>
-                                  <% } else { %>
-                                      <!-- Display dropdown for non-cancelled and non-returned orders -->
-                                      <select id="orderStatusDropdown_<%= order._id %>" onchange="updateOrderStatus('<%= order._id %>')">
-                                          <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-                                          <option value="dispatched" <%= order.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option>
-                                          <option value="outfordelivery" <%= order.status === 'outfordelivery' ? 'selected' : '' %>>Out For Delivery</option>
-                                          <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                                          <!-- Add other status options if needed -->
-                                      </select>
-                                  <% } %>
-                              </div>
-                          </td>
+                            <% if (item.productId && item.productId.name !== 'N/A') { %>
+                                <div class="cancel-order-btn">
+                                    <% if (order.status === 'cancelled' || order.status === 'returned') { %>
+                                        <a href="#" onclick="showCancellationReason('<%= order.cancellationReason %>')"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></a>
+                                    <% } else { %>
+                                        <select id="orderStatusDropdown_<%= order._id %>" onchange="updateOrderStatus('<%= order._id %>')">
+                                            <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                            <option value="dispatched" <%= order.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option>
+                                            <option value="outfordelivery" <%= order.status === 'outfordelivery' ? 'selected' : '' %>>Out For Delivery</option>
+                                            <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                        </select>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </td>
                           <td><%= order.paymentMethod %></td>
                       </tr>
                   <% }); %>

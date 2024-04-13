@@ -282,66 +282,7 @@ color: #000000; /* Icon color for search */
 
 
     @import url("https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap");
-    #flashMessageContainer {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-    }
-
-    /* Style for popup message */
-    .alert {
-        background-color: #f44336;
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-        position: relative;
-        display: inline-block;
-    }
-
-    .alert.show {
-        opacity: 1;
-    }
-
-    /* Animation */
-    @keyframes slideIn {
-        from {
-            transform: translateY(-50px);
-        }
-        to {
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes slideOut {
-        from {
-            transform: translateY(0);
-        }
-        to {
-            transform: translateY(-50px);
-        }
-    }
-
-    /* Applying Animation */
-    .alert.slideIn {
-        animation: slideIn 0.5s forwards;
-    }
-
-    .alert.slideOut {
-        animation: slideOut 0.5s forwards;
-    }
-    #flashMessageContainer {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-    }
-
+  
     /* Add your custom styles for the search input field here */
     #searchInput {
         width: 100%; /* Make the input field take up the full width of its container */

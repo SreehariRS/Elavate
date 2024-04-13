@@ -28,9 +28,13 @@ router.get("/getcartnumber/:userId", userController.getcartnumber);
 
 router.get("/checkout", userController.checkout);
 router.post("/checkout", userController.checkoutpost);
+router.post("/checkouterror", userController.checkouterrorpost);
+router.post("/create-razorpay-order",userController.createrazorpayorder)
+router.post('/update-order-status',userController.updateOrderStatus);
+
+
 router.get("/check-wallet", userController.getWalletBalance)
 router.post("/update-wallet", userController.deductFromWallet)
-
 
 
 
@@ -85,10 +89,10 @@ router.post('/wishlistRemove', userController.removeProductFromWishlist);
 
 router.get("/wallet", userController.wallet);
 router.post('/verify-razorpay-payment',userController.verifyRazorpayPayment);
-router.post("/create-razorpay-order",userController.createrazorpayorder)
 router.post('/generate-razorpay-order', userController.generatewalletRazorpay);
 
 router.post('/createReferral', userController.createReferral)
+
 
 
 module.exports = router;

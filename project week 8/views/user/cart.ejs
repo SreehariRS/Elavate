@@ -336,12 +336,15 @@ body {
         </table>
       
           <% } %>
-        <div class="cart-footer">
-            <div class="total-price">Total: ₹<span class="cart-total"><%= totalPrice.toFixed(2) %></span></div>
-            
-<a href="#" onclick="handleCheckout()"><button class="checkout-btn">Checkout</button></a>
-
-        </div>
+          <% if (cart.length > 0) { %>
+            <div class="cart-footer">
+                <div class="total-price">Total: ₹<span class="cart-total"><%= totalPrice.toFixed(2) %></span></div>
+                <a href="#" onclick="handleCheckout()"><button class="checkout-btn">Checkout</button></a>
+            </div>
+        <% } else { %>
+            <!-- Optionally, you can display a message or leave this section empty if you don't want to show anything when the cart is empty -->
+        <% } %>
+        
       
 
     </div>
@@ -443,6 +446,7 @@ body {
             const quantityInputs = document.querySelectorAll(".quantity-input");
             const removeButtons = document.querySelectorAll(".remove-btn");
             const shopNowBtn = document.querySelector(".shop-now-btn");
+            
             function updateTotal() {
         const subtotals = document.querySelectorAll(".subtotal");
         let total = 0;
@@ -453,7 +457,10 @@ body {
 
         const totalPriceElement = document.querySelector(".cart-total");
         totalPriceElement.innerText = total.toFixed(2);
+        
     }
+
+    
             // Function to update total price
            
             // Remove button click event

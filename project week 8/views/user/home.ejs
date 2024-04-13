@@ -18,11 +18,72 @@
 
         <%-include('nav')%>
 
+        <style>
+           #flashMessageContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+#flashMessage {
+    background-color: #111111; /* Red color */
+    color: #ffffff; /* Dark red text color */
+    border: 1px solid #cf3747; /* Red border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 1rem;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(252, 0, 0, 0.2); /* Increased shadow effect */
+    animation: slideIn 0.5s forwards, pulse 1s infinite alternate; /* Added pulse animation */
+    opacity: 0;
+    transform: translateY(-50px); /* Start position */
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+/* Styling for the close button */
+.closeButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+    color: #721c24; /* Dark red text color */
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.closeButton:hover {
+    color: #dc3545; /* Lighter red hover color */
+}
+
+        </style>
+        
         <div id="flashMessageContainer">
             <% if (typeof errorMessage !== 'undefined' && errorMessage.length > 0) { %>
             <div id="flashMessage" class="alert slideIn show"><%= errorMessage %></div>
             <% } %>
         </div>
+        
 
         <!-- carousel.. -->
         <div class="carousel">
@@ -134,6 +195,7 @@
                 </div>
             </div>
         </section>
+        <%-include('footer')%>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
@@ -392,42 +454,7 @@
             document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
             document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
         </script>
-        <script>
-            function sortProductsAlphabeticallyAZ() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const nameA = a.querySelector(".product-details h4 a").innerText.toLowerCase();
-                    const nameB = b.querySelector(".product-details h4 a").innerText.toLowerCase();
-                    return nameA.localeCompare(nameB);
-                });
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
-
-            // Function to sort products alphabetically (Z to A)
-            function sortProductsAlphabeticallyZA() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const nameA = a.querySelector(".product-details h4 a").innerText.toLowerCase();
-                    const nameB = b.querySelector(".product-details h4 a").innerText.toLowerCase();
-                    console.log(nameA);
-                    console.log(nameB);
-                    return nameB.localeCompare(nameA);
-                });
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
-
-            // Attach event listeners to filter buttons for sorting alphabetically
-            document.querySelector("#sortByAlphabeticalAZ").addEventListener("click", sortProductsAlphabeticallyAZ);
-            document.querySelector("#sortByAlphabeticalZA").addEventListener("click", sortProductsAlphabeticallyZA);
-        </script>
+       
         <script>
             document.getElementById("filterButton").addEventListener("click", function () {
                 var filterMenu = document.querySelector(".filter-menu");

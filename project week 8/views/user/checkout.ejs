@@ -31,7 +31,7 @@
 
         <header class="header">
             <div class="header-text">
-                <h1>ELAVATE</h1>
+                <h1 id="elavate">ELAVATE</h1>
             </div>
             <div class="profile-icon">
                 <i class="fas fa-user fa-2x"></i>       
@@ -159,8 +159,12 @@
           <!-- <% cartItems.forEach(item => { %>
             <button class="btn btn-primary" onclick="submitOrder()" data-product-id="<%= item.productId %>">Proceed to Checkout</button>
         <% }); %>   -->
-            <button class="btn btn-primary" onclick="submitOrder()" data-product-id="">Proceed to Checkout</button>
-  
+            <!-- <button class="btn btn-primary" onclick="submitOrder()" data-product-id="">Proceed to Checkout</button> -->
+            <% cartItems.forEach(item => { %>
+                <button class="btn btn-primary" onclick="submitOrder()" data-product-id="<%= item.productId %>">Proceed to Checkout</button>
+            <% }); %>
+            
+
         </div>
 
 
@@ -253,102 +257,105 @@
                 }
             }
         </script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
         <!-- order ,payment,coupon discount -->
         <script>
-          
-            const couponsDataElement = document.getElementById("couponsData");
-            const coupons = JSON.parse(couponsDataElement.getAttribute("data-coupons"));
+            // Access the coupons array from the data attribute
+            const couponsDataElement = document.getElementById('couponsData');
+        const coupons = JSON.parse(couponsDataElement.getAttribute('data-coupons'));
+    
+        function calculateDiscountedPrice(originalPrice, coupon) {
+            console.log("coupon.discountValue", coupon.discountValue);
+            if (coupon && typeof coupon.discountValue === 'number') {
+               // return originalPrice - coupon.discountValue;
+                return originalPrice - (originalPrice * (coupon.discountValue / 100))
+            } else {
+                // Handle the case when the coupon is not valid or does not have a valid discountValue
+                console.error('Invalid coupon or discountValue:', coupon);
+                return originalPrice;
+            }
+        }
+    
+        let couponApplied = false;
 
-            function calculateDiscountedPrice(originalPrice, coupon) {
-    console.log("coupon.discountValue", coupon.discountValue);
-    if (coupon && typeof coupon.discountValue === "number") {
-        // Assuming coupon.discountValue is in percentage
-        // Calculate the discount amount
-        const discountAmount = originalPrice * (coupon.discountValue / 100);
-        // Subtract the discount amount from the original price
-        return originalPrice - discountAmount;
+function applyCoupon() {
+    if (couponApplied) {
+        console.log('Coupon already applied.');
+        return;
+    }
+
+    const selectedCouponElement = document.getElementById('coupon');
+    const selectedCouponValue = selectedCouponElement.value;
+
+    const selectedCoupon = coupons.find(coupon => coupon.code === selectedCouponValue);
+
+    if (selectedCoupon) {
+        const discountedPrice = calculateDiscountedPrice(parseFloat(document.getElementById('totalPrice').innerText), selectedCoupon);
+
+        // Display the discount amount
+        document.getElementById('discountAmount').innerText = selectedCoupon.discountValue.toFixed(2);
+
+        // Update the UI with the discounted price
+        document.getElementById('totalPrice').innerText = discountedPrice.toFixed(2);
+
+        // Set the variable to true to indicate that the coupon has been applied
+        couponApplied = true;
+
+        // Disable the "Apply Coupon" button
+        document.getElementById('applyCouponBtn').disabled = true;
     } else {
-        // Handle the case when the coupon is not valid or does not have a valid discountValue
-        console.error("Invalid coupon or discountValue:", coupon);
-        return originalPrice;
+        console.error('Selected coupon not found.');
     }
 }
+        
+    
+async function submitOrder() {
+    try {
 
-
-            let couponApplied = false;
-
-            function applyCoupon() {
-                if (couponApplied) {
-                    console.log("Coupon already applied.");
-                    return;
-                }
-
-                const selectedCouponElement = document.getElementById("coupon");
-                const selectedCouponValue = selectedCouponElement.value;
-
-                const selectedCoupon = coupons.find((coupon) => coupon.code === selectedCouponValue);
-
-                if (selectedCoupon) {
-                    const discountedPrice = calculateDiscountedPrice(
-                        parseFloat(document.getElementById("totalPrice").innerText),
-                        selectedCoupon
-                    );
-
-                    // Display the discount amount
-                    document.getElementById("discountAmount").innerText = selectedCoupon.discountValue.toFixed(2);
-
-                    // Update the UI with the discounted price
-                    document.getElementById("totalPrice").innerText = discountedPrice.toFixed(2);
-
-                    // Set the variable to true to indicate that the coupon has been applied
-                    couponApplied = true;
-
-                    // Disable the "Apply Coupon" button
-                    document.getElementById("applyCouponBtn").disabled = true;
-                } else {
-                    console.error("Selected coupon not found.");
-                }
-            }
-
-            async function submitOrder() {
-                try {
+        
                     const selectedAddressElement = document.getElementById("address");
                     const selectedAddress = selectedAddressElement.options[selectedAddressElement.selectedIndex].text;
 
                     if (!selectedAddress) {
-                        displayAlert("Please select a shipping address.", 1000);
-                        return;
-                    }
+            alert('Please select a shipping address.');
+            return;
+        }
 
-                    const paymentMethodElements = document.querySelectorAll('input[name="paymentMethod"]:checked');
+        const paymentMethodElements = document.querySelectorAll('input[name="paymentMethod"]:checked');
+        
+        if (paymentMethodElements.length !== 1) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please select exactly one payment method.'
+    });
+    return;
+}
 
-                    if (paymentMethodElements.length !== 1) {
-                        displayAlert("Please select exactly one payment method.", 1000);
-                        return;
-                    }
 
-                    const paymentMethod = paymentMethodElements[0].value;
+        const paymentMethod = paymentMethodElements[0].value;
 
-                    // Get the selected coupon code
-                    const selectedCouponElement = document.getElementById("coupon");
-                    const selectedCouponCode = selectedCouponElement.value;
+        // Get the selected coupon code
+        const selectedCouponElement = document.getElementById('coupon');
+        const selectedCouponCode = selectedCouponElement.value;
 
-                    // Fetch discounted price from your frontend (assuming you have it available)
-                    const discountedPriceElement = document.getElementById("totalPrice");
-                    const discountedPrice = parseFloat(discountedPriceElement.innerText);
+        // Fetch discounted price from your frontend (assuming you have it available)
+        const discountedPriceElement = document.getElementById('totalPrice');
+        const discountedPrice = parseFloat(discountedPriceElement.innerText);
 
-                    const orderData = {
-                        userId: "<%= userId %>",
-                        cartItems: [], // Populate this array based on your form
-                        selectedAddress,
-                        totalPrice: discountedPrice, // Use discounted price instead of totalPrice
-                        paymentMethod,
-                        couponCode: selectedCouponCode, // Include the selected coupon code
-                    };
-                    console.log(orderData);
-
-                    const orderDataa = {
+        const orderData = {
+            userId: '<%= userId %>',
+            cartItems: [], // Populate this array based on your form
+            selectedAddress,
+            totalPrice: discountedPrice, // Use discounted price instead of totalPrice
+            paymentMethod,
+            couponCode: selectedCouponCode, // Include the selected coupon code
+        };
+        console.log(orderData);
+        const orderDataa = {
     userId: '<%= userId %>',
     cartItems: [], // Populate this array based on your form
     selectedAddress,
@@ -358,8 +365,8 @@
     status: 'failedpayment' // Add an empty status field initially
 };
 
-  // Add a condition to check if the total is greater than 1000 and payment method is cash on delivery
-  if (discountedPrice > 1000 && paymentMethod === 'Cash On Delivery') {
+        // Add a condition to check if the total is greater than 1000 and payment method is cash on delivery
+        if (discountedPrice > 1000 && paymentMethod === 'Cash On Delivery') {
             Swal.fire({
                 icon: 'error',
                 title: 'Cannot Proceed',
@@ -394,46 +401,56 @@
     // Update wallet balance
     const updatedWalletBalance = walletCheckResult.balance - discountedPrice;
 
-    const updateWalletResponse = await fetch(`/update-wallet`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ newBalance: updatedWalletBalance }),
-    });
+const updateWalletResponse = await fetch(`/update-wallet`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ newBalance: updatedWalletBalance }),
+});
 
-    const updateWalletResult = await updateWalletResponse.json();
+const updateWalletResult = await updateWalletResponse.json();
 
-    if (updateWalletResult.error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Wallet Update Failed',
-        text: 'Please try again or choose another payment method.',
-      });
-      return;
-    }
+if (updateWalletResult.error) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Wallet Update Failed',
+    text: 'Please try again or choose another payment method.',
+  });
+  return;
+}
 } 
 
-                    if (paymentMethod === "Razor Pay") {
-                        console.log("discountedPrice", discountedPrice);
-                        const createOrderResponse = await fetch("/create-razorpay-order", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ amount: discountedPrice }), // Pass discountedPrice to Razorpay
-                        });
+if (paymentMethod === 'Razor Pay') {
+try {
+    const createOrderResponse = await fetch('/create-razorpay-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: discountedPrice }), // Pass discountedPrice to Razorpay
+    });
 
-                        const createOrderResult = await createOrderResponse.json();
+    const createOrderResult = await createOrderResponse.json();
 
-                        if (createOrderResult.error) {
-                            displayAlert("Failed to create Razorpay order.", 1000);
-                            return;
-                        }
+    if (createOrderResult.error) {
+        Swal.fire({
+            title: 'Failed to create Razorpay order',
+            text: 'Please try again later or choose a different payment method.',
+            icon: 'error',
+            showConfirmButton: false,
+            timer: 3000, // 3 seconds timer
+            timerProgressBar: true,
+            onClose: () => {
+                window.location.href = '/orderhistory'; // Redirect to order history page
+            }
+        });
+        return;
+    }
 
-                        const razorpayOrderId = createOrderResult.orderId;
+    const razorpayOrderId = createOrderResult.orderId;
 
-                        const options = {
+        const options = {
                             key: "rzp_test_rJ0yPg6ZIlUOvq", // Replace with your Razorpay key ID
                             amount: discountedPrice * 100, // Amount in paisa
                             currency: "INR",
@@ -455,56 +472,77 @@
                         };
 
                         const razorpayInstance = new Razorpay(options);
-                        razorpayInstance.open();
-                    } else {
-                        submitOrderToServer(orderData);
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            }
+        razorpayInstance.open();
 
-            async function submitOrderToServer(orderData) {
-                try {
-                    const response = await fetch("/checkout", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(orderData),
-                    });
-
-                    const result = await response.json();
-                    console.log(result);
-                    window.location.href = "/order";
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-
-            async function submitOrderWithFailedPaymentToServer(orderDataa) {
-    try {
-        // Add status as paymentfailed to orderData
-        const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
-console.log("FAILED",orderDataWithStatus);
-        const response = await fetch('/checkouterror', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(orderDataWithStatus),
+        // Handling payment failure
+        razorpayInstance.on('payment.failed', function (response) {
+           
+                    // Redirect to order history page with payment failed status
+                    const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
+                    console.log("TTTT",orderDataWithStatus);
+                    submitOrderWithFailedPaymentToServer(orderDataWithStatus);
+                    // window.location.href = '/orderhistory'; // Redirect to order history page
+       
         });
+    } catch (error) {
+        console.error(error);
+    }
+} else {
+    // For other payment methods, simply submit the order
+    submitOrderToServer(orderData);
+}
 
-        const result = await response.json();
-        console.log(result);
-        // Handle redirect based on the result if necessary
-       // window.location.href = "/orderhistory"; // Example redirect
+
     } catch (error) {
         console.error(error);
     }
 }
 
-        </script>
+
+    
+        async function submitOrderToServer(orderData) {
+            try {
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData),
+                });
+    
+                const result = await response.json();
+                console.log(result);
+                window.location.href = "/order";
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+
+        async function submitOrderWithFailedPaymentToServer(orderData) {
+    try {
+        // Explicitly set the status to 'pending'
+        orderData.status = 'pending';
+
+        const response = await fetch('/checkouterror', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        });
+
+        const result = await response.json();
+        console.log(result);
+        // Handle redirect based on the result if necessary
+        window.location.href = "/orderhistory"; // Redirect to order history page
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
+    </script>
             <script>
                 document.querySelector('.profile-icon').addEventListener('click', function() {
         window.location.href = '/profile';
@@ -515,6 +553,10 @@ console.log("FAILED",orderDataWithStatus);
         <!-- Razorpay SDK -->
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+        <script>
+            document.getElementById("elavate").addEventListener("click", function() {
+                window.location.href = "/";
+            });
+            </script>
     </body>
 </html>

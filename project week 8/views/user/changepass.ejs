@@ -166,11 +166,21 @@
     </form>
 </div>
 
+
 <script>
 function validateForm() {
+    var currentPassword = document.getElementById("currentPassword").value;
+
     var newPassword = document.getElementById("newPassword").value;
     var confirmPassword = document.getElementById("confirmPassword").value;
 
+
+       // Check if current password and new password are the same
+       if (currentPassword === newPassword) {
+        document.getElementById("passwordMatchError").innerText = "New password cannot be the same as the current password!";
+        document.getElementById("passwordMatchError").style.display = "block";
+        return false;
+    }
     // Strong password validation
     var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(newPassword)) {

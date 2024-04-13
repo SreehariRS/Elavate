@@ -359,8 +359,7 @@ const otpvalidation = async (req, res) => {
 
             // Save the new user data without the referralCode
             const newUser = new collection1({
-                firstName: req.session.data.firstName,
-                lastName: req.session.data.lastName,
+                firstname: req.session.data.firstname,
                 email: req.session.data.email,
                 password: req.session.data.password,
                 referredCode: req.session.data.referredCode,
@@ -791,24 +790,23 @@ function calculateDiscountedPrice(originalPrice, coupon) {
 
 const checkout = async (req, res) => {
     try {
-        const userId = req.session.user;
-        const userData = await collection1.findOne({ _id: userId });
-        const user = userData._id.valueOf(); // I assume this line is necessary, so leaving it as is
+        const user = req.session.user;
+        const userData = await collection1.findOne({ _id: user });
+        const userId = userData._id.valueOf();
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required" });
         }
 
-        // Fetch the cart items along with product details
-        const cart = await Cart.findOne({ userId: user }).populate("items.productId");
-        console.log("cart dataaaaaaaaaa", cart);
+        const cartData = await Cart.findOne({ userId: userId }).populate('items.productId');
+        console.log("cartData", cartData);
 
-        if (!cart) {
+        if (!cartData) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
         // Extract cart items from the cart document
-        const cartItems = cart.items;
+        const cartItems = cartData.items;
 
         // Filter out cart items with null productId
         const validCartItems = cartItems.filter((item) => item.productId !== null);
@@ -828,7 +826,7 @@ const checkout = async (req, res) => {
         let discountedPrice = totalPrice;
         if (selectedCoupon) {
             // Subtract the discountValue from the total price
-            discountedPrice -= selectedCoupon.discountValue;
+            discountedPrice -= discountedPrice * (selectedCoupon.discountValue / 100)
         }
 
         const coupons = await AdminCoupon.find();
@@ -846,108 +844,168 @@ const checkout = async (req, res) => {
 
 const checkoutpost = async (req, res) => {
     try {
-        const userId = req.session.user;
-        const userData = await collection1.findOne({ _id: userId });
-        const userIdd = userData._id.valueOf();
-        const { selectedAddress, paymentMethod, couponCode } = req.body;
+        const user = req.session.user;
+        const userData = await collection1.findOne({ _id: user });
+        const userId = userData._id.valueOf();
+    const { selectedAddress, paymentMethod, couponCode } = req.body;
 
-        const cartData = await Cart.findOne({ userId: userIdd }).populate("items.productId");
+    // Fetch cart data
+    const cartData = await Cart.findOne({ userId: userId }).populate('items.productId');
 
-        if (!cartData) {
-            console.error("No cart found for the user");
-            return res.status(404).send("Cart not found");
-        }
+    // Fetch product details with quantity
+    const productsWithQuantity = await Promise.all(cartData.items.map(async (item) => {
+      const productDetails = await db.findById(item.productId); // Assuming Product is your model name
+      return { productDetails, quantity: item.quantity };
+    }));
 
-        const cartItems = cartData.items.map((item) => {
-            const productDetails = item.productId; // Since it's already populated, no need to query again
-            const maxStock = productDetails.stock;
-            const quantityToUse = Math.min(item.quantity, maxStock);
-            const price = quantityToUse * Math.min(productDetails.offerprice || Infinity, productDetails.price);
-            return {
-                productId: productDetails._id.valueOf(),
-                productName: productDetails.productname,
-                description: productDetails.description,
-                price: productDetails.price,
-                offerprice: productDetails.offerprice,
-                quantity: quantityToUse,
-                maxStock,
-                image: productDetails.image,
-                totalPrice: price,
-            };
-        });
+    // Calculate total price using reduce
+    let totalprice = productsWithQuantity.reduce((acc, item) => {
+      if (item && item.productDetails && typeof item.productDetails.price === 'number') {
+        const actualPrice = item.productDetails.price;
+        const offerPrice = item.productDetails.offerprice || Infinity;
+        const priceToUse = Math.min(actualPrice, offerPrice);
+        
+        return acc + (priceToUse * item.quantity);
+      } else {
+        console.error('Invalid item or price:', item);
+        return acc;
+      }
+    }, 0);
 
-        const productsWithQuantity = await Promise.all(
-            cartData.items.map(async (item) => {
-                const productDetails = await db.findById(item.productId); // Assuming Product is your model name
-                console.log(productDetails + "product details");
-                return { productDetails, quantity: item.quantity };
-            })
-        );
+    // Fetch coupon details based on the provided code
+    const selectedCoupon = await AdminCoupon.findOne({ code: couponCode });
+console.log("SelectedCOUPON"),selectedCoupon;
+    let discountedPrice = totalprice;
+    
+    // Apply discount if a valid coupon is found
+    if (selectedCoupon) {
+      discountedPrice -= discountedPrice * (selectedCoupon.discountValue / 100)
+      console.log("discountedPrice",discountedPrice);
 
-        const totalprice = productsWithQuantity.reduce((acc, item) => {
-            // Check if item and productDetails are defined before accessing price
-            if (item && item.productDetails && typeof item.productDetails.price === "number") {
-                const actualPrice = item.productDetails.price;
-                const offerPrice = item.productDetails.offerprice || Infinity;
-                const priceToUse = Math.min(actualPrice, offerPrice);
-
-                return acc + priceToUse * item.quantity;
-            } else {
-                // Handle the case where price or other properties are not available
-                console.error("Invalid item or price:", item);
-                return acc;
-            }
-        }, 0);
-
-        // Fetch coupon details based on the provided code
-        const selectedCoupon = await AdminCoupon.findOne({ code: couponCode });
-
-        let discountedPrice = totalprice;
-
-        // Apply discount if a valid coupon is found
-        if (selectedCoupon) {
-            // Subtract the discountValue from the total price
-            discountedPrice -= selectedCoupon.discountValue;
-        }
-
-        console.log("REQ");
-        console.log(req.body);
-
-        console.log(userId + "userID");
-        console.log(cartItems);
-        console.log(selectedAddress + "selectedAddress");
-
-        const orderItems = cartItems.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            couponId: selectedCoupon ? selectedCoupon._id : null, // Add couponId to each item
-        }));
-
-        const newOrder = new orders({
-            userId,
-            items: orderItems,
-            selectedAddress,
-            totalprice: discountedPrice, // Use the discounted price in the order
-            paymentMethod,
-        });
-
-        await newOrder.save();
-
-        await Promise.all(
-            productsWithQuantity.map(async (item) => {
-                const productId = item.productDetails._id;
-                const quantity = item.quantity;
-                const updatedProduct = await db.findByIdAndUpdate(productId, { $inc: { stock: -quantity } }, { new: true });
-                console.log(`Stock decremented for product ${updatedProduct.productname}`);
-            })
-        );
-
-        res.status(200).json({ message: "Order placed successfully!" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
     }
+
+    // Create an array to store order items
+    const orderItems = cartData.items.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      couponId: selectedCoupon ? selectedCoupon._id : null, // Add couponId to each item
+    }));
+
+    // Update the totalprice with the discounted value
+    const newOrder = new orders({
+      userId,
+      items: orderItems,
+      selectedAddress,
+      totalprice: discountedPrice, // Use the discounted price in the order
+      paymentMethod,
+   
+
+   
+      
+    });
+
+    // Save the order to the database
+    await newOrder.save();
+
+    // Additional logic for processing payment, sending confirmation emails, etc.
+    await Promise.all(productsWithQuantity.map(async (item) => {
+      const productId = item.productDetails._id;
+      const quantity = item.quantity;
+
+      // Update the product stock in the database
+      await db.findByIdAndUpdate(productId, { $inc: { stock: -quantity } });
+    }));
+
+    // Send a success response
+    res.status(200).json({ message: 'Order placed successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
+
+
+const checkouterrorpost = async (req, res) => {
+    try {
+        const user = req.session.user;
+        const userData = await collection1.findOne({ _id: user });
+        const userId = userData._id.valueOf();
+    const { selectedAddress, paymentMethod, couponCode } = req.body;
+
+    // Fetch cart data
+    const cartData = await Cart.findOne({ userId: userId }).populate('items.productId');
+
+    // Fetch product details with quantity
+    const productsWithQuantity = await Promise.all(cartData.items.map(async (item) => {
+      const productDetails = await db.findById(item.productId); // Assuming Product is your model name
+      return { productDetails, quantity: item.quantity };
+    }));
+
+    // Calculate total price using reduce
+    let totalprice = productsWithQuantity.reduce((acc, item) => {
+      if (item && item.productDetails && typeof item.productDetails.price === 'number') {
+        const actualPrice = item.productDetails.price;
+        const offerPrice = item.productDetails.offerprice || Infinity;
+        const priceToUse = Math.min(actualPrice, offerPrice);
+        
+        return acc + (priceToUse * item.quantity);
+      } else {
+        console.error('Invalid item or price:', item);
+        return acc;
+      }
+    }, 0);
+
+    // Fetch coupon details based on the provided code
+    const selectedCoupon = await AdminCoupon.findOne({ code: couponCode });
+console.log("SelectedCOUPON"),selectedCoupon;
+    let discountedPrice = totalprice;
+    
+    // Apply discount if a valid coupon is found
+    if (selectedCoupon) {
+      discountedPrice -= discountedPrice * (selectedCoupon.discountValue / 100)
+      console.log("discountedPrice",discountedPrice);
+
+    }
+
+    // Create an array to store order items
+    const orderItems = cartData.items.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      couponId: selectedCoupon ? selectedCoupon._id : null, // Add couponId to each item
+    }));
+
+    // Update the totalprice with the discounted value
+    const newOrder = new orders({
+      userId,
+      items: orderItems,
+      selectedAddress,
+      totalprice: discountedPrice, // Use the discounted price in the order
+      paymentMethod,
+      status:"pending"
+      
+    });
+
+    // Save the order to the database
+    await newOrder.save();
+
+    // Additional logic for processing payment, sending confirmation emails, etc.
+    await Promise.all(productsWithQuantity.map(async (item) => {
+      const productId = item.productDetails._id;
+      const quantity = item.quantity;
+
+      // Update the product stock in the database
+      await db.findByIdAndUpdate(productId, { $inc: { stock: -quantity } });
+    }));
+
+    // Send a success response
+    res.status(200).json({ message: 'Order placed successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 
 const order = async (req, res) => {
     try {
@@ -1021,6 +1079,27 @@ const orderhistory = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
+        console.log(orderId);
+        console.log("dfd",status);
+        if (status !== 'confirmed') {
+            return res.status(400).json({ message: "Invalid status" });
+        }
+
+        const updatedOrder = await orders.findByIdAndUpdate(orderId, { status: status }, { new: true });
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        res.json({ message: "Order status updated successfully", updatedOrder });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 
 const cancelOrder = async (req, res) => {
     try {
@@ -1432,15 +1511,19 @@ const geteditAddress = async (req, res) => {
 const wishlistPage = async (req, res) => {
     try {
         const user = req.session.user;
+        const userDataa = req.session.userData;
         const userData = await collection1.findOne({ _id: user });
 
         const userId = userData._id.valueOf();
 
         // Fetch the wishlist for the user
         const userWishlist = await wishlist.findOne({ userId }).populate("items.productId");
+        const add = await product.find()
+        console.log("11111111111111111111111111111",add);
+
         console.log(userWishlist);
         // Render the wishlistPage view with the wishlist data
-        res.render("user/wishlistPage", { wishlist: userWishlist });
+        res.render("user/wishlistPage", { wishlist: userWishlist ,product:add, userId: req.session.user});
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -1506,42 +1589,34 @@ const removeProductFromWishlist = async (req, res) => {
 };
 
 const razorpay = new Razorpay({
-    key_id: process.env.KEY_ID,
-    key_secret: process.env.KEY_SECRET,
-});
-
-const createrazorpayorder = async (req, res) => {
-    console.log("razor pay is working ");
+    key_id: 'rzp_test_rJ0yPg6ZIlUOvq',
+    key_secret: 'ufxbfK2FqmH9NHjGPULk8uZf',
+  });
+  
+   const createrazorpayorder = async (req, res) => {
     try {
-        const { amount } = req.body;
-        var instance = new Razorpay({ key_id: process.env.KEY_ID, key_secret: process.env.KEY_SECRET });
-        console.log("razor pay is working ", instance);
-        var options = {
-            amount: amount * 100, // Convert amount to the smallest currency unit (e.g., paise in INR)
-            currency: "INR",
-            receipt: "order_rcptid_11",
-        };
-        console.log(options);
-
-        // Creating the order
-        instance.orders.create(options, function (err, order) {
-            if (err) {
-                console.error(err);
-                res.status(500).send("Error creating order");
-                return;
-            }
-
-            // Add orderprice to the response object
-
-            res.send({ orderId: order.id });
-            // Replace razorpayOrderId and razorpayPaymentId with actual values
-            // Redirect to /orderdata on successful payment
-        });
+      const { amount } = req.body;
+  console.log(amount);
+      const options = {
+        amount: amount*100, // Razor Pay requires the amount in paisa
+        currency: 'INR',
+        receipt: 'order-receipt', // Replace with your order receipt ID
+        payment_capture: 1, // Auto-capture payments
+      };
+  console.log(options);
+      razorpay.orders.create(options, (error, order) => {
+        if (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Failed to create Razorpay order' });
+        } else {
+          res.json({ orderId: order.id });
+        }
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-};
+  };
 
 const getWalletBalance = async (req, res) => {
     console.log("getWallet is working");
@@ -1686,6 +1761,7 @@ const verifyRazorpayPayment = async (req, res) => {
     }
 };
 
+
 const generateReferralCode = () => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const codeLength = 8;
@@ -1728,7 +1804,11 @@ const createReferral = async (req, res) => {
     }
 };
 
+
+
+
 module.exports = {
+    updateOrderStatus,
     getLogin,
     getRegister,
     initiateReturn,
@@ -1787,4 +1867,5 @@ module.exports = {
     checkReferralCode,
     generateInvoice,
     getProductsByCategory,
+    checkouterrorpost
 };

@@ -24,7 +24,8 @@ const AdminCoupon = require('../models/coupon')
 
 
 const renderCreateCouponPage = (req, res) => {
-    res.render('admin/coupon');
+  let msg
+    res.render('admin/coupon',{msg});
   };
 
   const createCoupon = async (req, res) => {
@@ -38,11 +39,17 @@ const renderCreateCouponPage = (req, res) => {
         expirationDate,
       });
   
-      res.render('admin/coupon', { success: 'Coupon created successfully' });
+      res.render('admin/coupon', { msg: 'Coupon created successfully' });
     } catch (error) {
       console.error('Error creating admin coupon:', error);
-      res.status(500).send('Internal Server Error');
-    }
+      if (error.code === 11000) { // MongoDB duplicate key error code
+        // res.status(400).json({ error: 'Coupon already exists' });
+        res.render('admin/coupon', { msg: 'Coupon already exists' });
+
+      } else {
+        res.status(500).send('Internal Server Error');
+      }
+   }
   };
 
   const getAvailableCoupons = async (req, res) => {

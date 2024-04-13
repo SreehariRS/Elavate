@@ -307,7 +307,7 @@ button {
     <div class="menu">
       <ul class="menu-links">
         <li class="nav-link">
-          <a href="/admin/dashboard">
+          <a href="/admin/home">
             <i class="bx bx-home-alt icons"></i>
             <span class="text nav-text">Dashboard</span>
           </a>
@@ -405,6 +405,7 @@ button {
     </div>
   <% } %>
 </div>
+
 <script>
 // JavaScript for automatically toggling sidebar visibility
 const toggleButton = document.querySelector('.toggle-sidebar');
@@ -435,6 +436,9 @@ window.addEventListener('resize', checkViewportWidth);
 
 </script>
 <script>
+  document.getElementById('offerprice').addEventListener('change', function () {
+    validateOfferPrice();
+});
 document.getElementById('editProductForm').addEventListener('submit', function (event) {
   event.preventDefault();
 
@@ -466,6 +470,9 @@ document.getElementById('editProductForm').addEventListener('submit', function (
       return;
   }
 
+  if (!validateOfferPrice()) {
+        return;
+    }
   const formData = new FormData(this);
   const formAction = this.getAttribute('action');
 
@@ -517,6 +524,25 @@ document.getElementById('productImages').addEventListener('change', function () 
         reader.readAsDataURL(file);
     });
 });
+function validateOfferPrice() {
+    const offerPriceInput = document.getElementById('offerprice');
+    const productPriceInput = document.getElementById('productPrice');
+
+    const offerPrice = parseFloat(offerPriceInput.value);
+    const productPrice = parseFloat(productPriceInput.value);
+
+    if (offerPrice > productPrice) {
+        swal({
+            title: "Error!",
+            text: "Offer Price cannot be greater than Product Price.",
+            icon: "error",
+            button: "OK",
+        });
+        return false;
+    }
+    return true;
+}
 </script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>
 </html>

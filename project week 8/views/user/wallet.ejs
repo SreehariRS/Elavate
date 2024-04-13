@@ -232,7 +232,7 @@ h1 {
 
 <header class="header">
     <div class="header-text">
-        <h1>ELAVATE</h1>
+      <h1 id="elavate">ELAVATE</h1>
     </div>
     <div class="profile-icon">
       <i class="fas fa-user fa-2x"></i>       
@@ -430,5 +430,10 @@ window.location.href = '/profile';
 });
 
 </script>
+<script>
+  document.getElementById("elavate").addEventListener("click", function() {
+      window.location.href = "/";
+  });
+  </script>
 </body>
 </html>

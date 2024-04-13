@@ -1,133 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <style>
-        /* Add your CSS styles here */
-        body {
-    display: initial; /* or display: unset; */
-    margin: 0; /* or margin: initial; */
-}
+    <title>SALESer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome CDN -->
+    <!-- DataTable HEADER-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
-         body {
-            font-family: 'Arial', sans-serif;
-            margin-top: 0px;
+    <!-- Include pdfmake library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
             padding: 0;
-            /* background-color: #f8f8f8; */
-        }
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-        }
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        #pdfTitle {
-            font-size: 18px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        #pdfButton {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 16px;
-            margin-left: 50%;
-        }
-        #pdfButton:hover {
-            background-color: #45a049;
-        }
-        #filterContainer {
-            margin-bottom: 20px;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Remove horizontal scrolling */
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .side-nav {
+            background-color: black;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            width: 200px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .side-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-nav a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            border-radius: 20px;
+            transition: 0.33s ease-in-out;
+            font-weight: 500;
+        }
+
+        .side-nav a:hover {
+            color: black;
+            background-color: white;
+            border-radius: 20px;
+        }
+
+         /* Main Content Area */
+         .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto; /* Added overflow-y to allow scrolling if content overflows */
+            margin-left: 200px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            margin-left: 200px;
+            /* width: 100%; */
+            height: 80px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: rgb(246, 246, 246);
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        #filterType {
-            padding: 8px;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        #selectedDate {
-            padding: 8px;
-            font-size: 16px;
-            margin-right: 10px;
-            display: none;
-        }
-        #applyFilterButton, #applyDateFilterButton {
-            padding: 8px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            margin: 5px;
-        }
 
-        /* Style for the "Apply Normal Filter" button */
-        #applyFilterButton {
-            background-color: #3498db;
-            color: #fff;
-        }
-
-        /* Style for the "Apply Date Filter" button */
-        #applyDateFilterButton {
-            background-color: #2ecc71;
-            color: #fff;
-        }
-        .nav-profile{
-            margin-left: -888%;
-            height: 42px;
-        }
-
-        .space {
-            margin-left: 200px;
-            padding: 20px;
-            padding-top: 30px; /* Adjusted padding for content area */
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-        .overview-item {
-            /* flex-basis: calc(25% - 20px); */
-            width: 20%;
-            background-color: #27e473;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        h1 {
             text-align: center;
-        }
-
-        .overview-item h3 {
-            margin-top: 0;
-            color: white;
+            color: #333;
+            margin-bottom: 30px;
             text-transform: uppercase;
         }
 
-        .overview-item p {
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
+        .btn-container {
+            text-align: right;
         }
 
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
+        .btn-pdf,
+        .btn-excel {
+            margin:40px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-pdf:hover,
+        .btn-excel:hover {
+            background-color: #f2f2f2;
+        }
+
+        /* Table Styles */
+        table {
+            width: 110%; /* Adjusted width */
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: black;
+            color: white;
+            width: 230px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        @media screen and (max-width: 768px) {
+            .side-nav {
+                display: none; /* Hide sidebar on smaller screens */
+            }
+
+            .content {
+                padding-left: 20px; /* Add padding to content to compensate for hidden sidebar */
+            }
+        }
+        
         .sidebar.hidden {
   display: none;
 }
@@ -303,23 +337,180 @@ body {
   flex-direction: column;
   justify-content: space-between;
 }
-/* Add styles for the new navbar */
-.main-content {
-    margin-left: 250px; /* Adjust based on the width of the sidebar */
-    padding: 0.25px;
-    background-color: #ffffff; 
-    justify-content: space-evenly;
-    /* box-shadow: 2px  4px 8px rgba(0, 0, 0, 0.5); */
+.containerfirst {
+    max-width: 89%; 
+    margin: 0 auto; 
 }
-.container {
-    padding-left: 18%; /* Adjust the value as needed */
+
+.space {
+    margin-left: 200px;
+    padding: 20px;
+    padding-top: 30px; /* Adjusted padding for content area */
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
+
+.overview-item {
+    width: calc(45% - 20px); /* slightly reduced width */
+    border-radius: 10px; /* slightly reduced border radius */
+    padding: 25px;
+    margin-bottom: 20px; /* slightly reduced margin bottom */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.overview-item:nth-child(odd) {
+    background-color: #131212; /* dark gray for odd items */
+}
+
+.overview-item:nth-child(even) {
+    background-color: #2c3e50; /* blue-gray for even items */
+}
+
+.overview-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.overview-item h3 {
+    margin-top: 0;
+    color: #fff;
+    font-size: 1.6em; /* slightly reduced font size */
+    text-transform: uppercase;
+    margin-bottom: 10px; /* slightly reduced margin bottom */
+}
+
+.overview-item p {
+    margin: 0;
+    font-size: 1.2em; /* slightly reduced font size */
+    font-weight: bold;
+    color: #fff;
+}
+
+
+.btn-pdf, .btn-excel {
+    font-size: 14px; 
+    padding: 5px 10px; 
+    line-height: 1; 
+    border: 2px solid transparent; 
+    border-radius: 10px; 
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+
+.btn-pdf {
+    background-color: #007bff;
+    color: white; 
+    border-color: #007bff; 
+}
+
+
+.btn-pdf:hover {
+    background-color: #0056b3; 
+    border-color: #0056b3; 
+}
+
+.btn-excel {
+    background-color: #28a745; 
+    color: white; 
+    border-color: #28a745; 
+}
+
+.btn-excel:hover {
+    background-color: #218838; 
+    border-color: #218838; 
+}
+
+/* Container for the form elements */
+.form-container {
+ display: flex;
+ justify-content: center; /* Center the elements horizontally */
+ align-items: center; /* Align items vertically in the center */
+ gap: 10px; /* Space between the elements */
+ padding: 10px; /* Padding around the container */
+}
+
+/* Styling for the date input fields */
+/* Reduce the width of the date input fields */
+input[type="date"] {
+ width: 150px; /* Adjust this value to your preference */
+ padding: 8px;
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ font-size: 16px;
+ background-color: #f8f8f8;
+}
+
+
+/* Styling for the filter button */
+.btn-filter {
+ padding: 10px 20px;
+ border: none;
+ border-radius: 4px;
+ background-color: #0e0e0e;
+ color: white;
+ font-size: 12px;
+ cursor: pointer;
+ transition: background-color 0.3s ease;
+}
+
+.btn-filter:hover {
+ background-color: #1c1e20;
+}
+
+/* Styling for the labels */
+label {
+ font-size: 14px;
+ color: #333;
+ margin-right: 5px; /* Add some space between the label and the input */
+}
+
+/* Table Styles */
+.table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; /
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd; 
+    padding: 8px; 
+    text-align: left; 
+}
+
+.table th {
+    background-color: black; 
+    color: white; 
+    width: auto; 
+}
+
+.table tr:nth-child(even) {
+    background-color: #f2f2f2; 
+}
+.welcome-heading {
+    text-align: center; 
+    color: #333;
+    font-size: 2em; 
+    margin-bottom: 20px; 
+    text-transform: uppercase; 
+    font-weight: bold; 
+    letter-spacing: 1px;
+   
+}
+.move-right {
+    padding-left: 130px;
+}
+
 
     </style>
 </head>
-<body>
 
-    <div class="container1" >
+<body>
   <link
   href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
   rel="stylesheet"
@@ -345,7 +536,7 @@ body {
     <div class="menu">
       <ul class="menu-links">
         <li class="nav-link">
-          <a href="/admin/dashboard">
+          <a href="/admin/home">
             <i class="bx bx-home-alt icons"></i>
             <span class="text nav-text">Dashboard</span>
           </a>
@@ -402,12 +593,11 @@ body {
    
   </div>
 </nav>
-</div>
 
-<div class="container" >
-    <h1 style="text-align: center;">Welcome to Report Page</h1>
+    <div class="containerfirst">
+      <h1 class="welcome-heading move-right">Welcome to Report Page</h1>
 
-    <div class="space" style="margin-left: -10px;">
+      <div class="space" style="margin-left: 250px;">
         <div class="overview-item overall-sales">
           <h3>Overall Sales Amount</h3>
           <p>₹<%= data.totalAmount %></p>
@@ -432,304 +622,121 @@ body {
       </div>
       
 
-      <div id="filterContainer">
-    
-        <!-- Form to select filter options -->
-        <label for="filterType">Filter by:</label>
-        <select id="filterType">
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-            <option value="year">Year</option>
-            <option value="date" hidden>Date</option>
-    
-        </select>
-        <button onclick="applyFilter()" id="applyFilterButton">Apply Normal Filter</button>
-        <!-- Additional input field for selecting date -->
-        <input type="date" id="selectedDate" style="display: inline-block;">
-    
-        <!-- Separate buttons for applying each type of filter -->
-        
-        <button onclick="applyDateFilter()" id="applyDateFilterButton">Apply Date Filter</button>
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" style="display: inline-block; margin-right: 10px;">
-        
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" style="display: inline-block;">
-        
-        <button onclick="applyDateRangeFilter()" id="applyDateRangeFilterButton">Apply Date Range Filter</button>
-        
-    
-    </div>
-    
-
-  <% if (salesReport && salesReport.length > 0) { %>
-      <!-- <h2>Sales Report</h2> -->
-      <span id="filterInfo"></span>
-      <button onclick="printPDF()" id="pdfButton">Download PDF</button>
-      <button onclick="downloadExcel()">Download Excel</button>
-      <div id="salesData">
-          <table id="salesTable">
-              <thead>
-                <tr>
-                    <div id="filterInfo"></div>
-                </tr>
-                  <tr>
-                      <th>Date</th>
-                      <th>Product Name</th>
-                      <th>Quantity</th>
-                      <th>Dicounted Amount</th>
-                      <th>Total Sales</th>
-                  </tr>
-              </thead>
-              <tbody>
-                <% salesReport.forEach(entry => { %>
-                    <% entry.items.forEach(product => { %>
-                        <tr>
-                            <% if (entry.items.indexOf(product) === 0) { %>
-                                <td rowspan="<%= entry.items.length %>"><%= new Date(entry.date).toDateString() %></td>
-                                <td><%= product.productId.name %></td>
-                                <td><%= product.quantity %></td>
-                                <td rowspan="<%= entry.items.length %>">₹<%= product.productId.offerprice %></td>
-                                <td rowspan="<%= entry.items.length %>"><%= entry.totalprice.toFixed(2) %></td>
-                            <% } else { %>
-                                <td><%= product.name %></td>
-                                <td><%= product.quantity %></td>
-                            <% } %>
-                        </tr>
-                    <% }); %>
-                <% }); %>
-            </tbody>
+       
+        <div class="content">
+            <div class="btn-container">
+              <span id="filterInfo"></span>
+             
             
-      </div>
-
-      <!-- Include libraries for PDF generation -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-          integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+              <button onclick="printPDF()" id="pdfButton" class="btn-pdf">Download PDF</button>
+              <button onclick="downloadExcel()" class="btn-excel">Download Excel</button>
+              
+                
+                
+            <form id="dateFilterForm" action="/admin/sales" method="GET"> <!-- Make sure the form sends a GET request to the correct endpoint -->
+              <div class="form-container">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate">
+                <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Filter</button>
+               </div>
+               
+               
+               
+          </form>
           
-          <script>
-            // Define formatDate function
-            function formatDate(dateObj) {
-                return new Date(dateObj.year, dateObj.month - 1, dateObj.day).toDateString();
-            }
-        
-            function applyFilter() {
-                const filterType = document.getElementById("filterType").value;
-                const selectedDate = document.getElementById("selectedDate").value;
-        
-                document.getElementById("filterInfo").innerText = `Filter: ${filterType}`;
-                document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
-        
-                // Make AJAX request to the server for normal filter
-                fetch('/admin/filter-sales', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ filterType }),
-                })
-                .then(response => response.json())
-                .then(filteredData => {
-                    updateTable(filteredData);
-                })
-                .catch(error => {
-                    console.error('Error fetching filtered data:', error);
-                });
-            }
-        
-            function applyDateFilter() {
-                const selectedDate = document.getElementById("selectedDate").value;
-                document.getElementById("filterInfo").innerText = `Filter: Date - ${selectedDate}`;
-        
-                if (!selectedDate) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Please select a valid date for filtering!',
-                    });
-                    return;
-                }
-        
-                // Make AJAX request to the server for date filter
-                fetch('/admin/filter-sales-by-date', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ selectedDate }),
-                })
-                .then(response => response.json())
-                .then(filteredData => {
-                    updateTable(filteredData);
-                })
-                .catch(error => {
-                    console.error('Error fetching filtered data:', error);
-                });
-            }
-        
-            function applyDateRangeFilter() {
-                const startDate = document.getElementById("startDate").value;
-                const endDate = document.getElementById("endDate").value;
-                const filterInfo = document.getElementById("filterInfo");
-        
-                if (!startDate || !endDate) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Please select both start and end dates for filtering!',
-                    });
-                    return;
-                }
-        
-                if (startDate > endDate) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Start date cannot be after end date!',
-                    });
-                    return;
-                } else if (endDate < startDate) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'End date cannot be before start date!',
-                    });
-                    return;
-                }
-        
-                // Update filter information
-                filterInfo.innerText = `Filter: Date Range - ${startDate} to ${endDate}`;
-        
-                // Make AJAX request to the server for date range filter
-                fetch('/admin/filter-sales-by-date-range', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ startDate, endDate }),
-                })
-                .then(response => response.json())
-                .then(filteredData => {
-                    updateTable(filteredData);
-                })
-                .catch(error => {
-                    console.error('Error fetching filtered data:', error);
-                });
-            }
-        
-            function updateTable(filteredData) {
-                const salesTable = document.getElementById("salesTable");
-                salesTable.innerHTML = '<thead><tr><th>Date</th><th>Product Name</th><th>Quantity</th><th>Discounted Amount</th><th>Total Sales</th></tr></thead><tbody>';
-                filteredData.forEach(entry => {
-                    entry.items.forEach(product => {
-                        addTableRow(entry, product);
-                    });
-                });
-                salesTable.innerHTML += '</tbody>';
-            }
-        
-            function addTableRow(entry, product) {
-                const salesTable = document.getElementById("salesTable").getElementsByTagName('tbody')[0];
-                const row = salesTable.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-                const cell3 = row.insertCell(2);
-                const cell4 = row.insertCell(3);
-                const cell5 = row.insertCell(4);
-        
-                if (entry.items.indexOf(product) === 0) {
-                    cell1.innerHTML = formatDate(entry.date);
-                    cell4.innerHTML = '₹' + (entry.discountValue || 0); // Display discount value for the first product only
-                    cell5.innerHTML = '₹' + entry.totalprice.toFixed(2);
-                } else {
-                    // For non-first products, leave the date, discount, and total sales cells empty
-                    cell1.innerHTML = '';
-                    cell4.innerHTML = '';
-                    cell5.innerHTML = '';
-                }
-        
-                cell2.innerHTML = product.productId.name;
-                cell3.innerHTML = product.quantity;
-            }
-        
-            function printPDF() {
-                const pdfTable = document.getElementById("salesTable");
-                const filterInfo = document.getElementById("filterInfo").innerText;
-                // Add filter type to table caption
-                const caption = pdfTable.querySelector("caption");
-                if (caption) {
-                    caption.innerHTML += `<br>${filterInfo}`;
-                } else {
-                    // Add a new caption if one doesn't exist
-                    const caption = document.createElement("caption");
-                    caption.innerHTML = filterInfo;
-                    pdfTable.prepend(caption);
-                }
-                const pdfOptions = {
-                    margin: 1,
-                    filename: 'sales_report.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                };
-        
-                html2pdf().set(pdfOptions).from(pdfTable).save();
-            }
-        
-            function downloadExcel() {
-                const salesTable = document.getElementById("salesTable");
-        
-                // Create a new workbook
-                const wb = XLSX.utils.book_new();
-        
-                // Convert the table to a worksheet
-                const ws = XLSX.utils.table_to_sheet(salesTable);
-        
-                // Add the worksheet to the workbook
-                XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
-        
-                // Save the workbook as an Excel file
-                XLSX.writeFile(wb, 'sales_report.xlsx');
-            }
-        </script>
-        
+            </div>
+            <table id="example" class="table table-striped table-sm" style="width:100%">
+              <thead>
+                    <tr>
+                        <th>Sl No</th>
+                        <th>Product Name</th>
+                        <th>user Details</th>
+                        <th>Date</th>
+                        <th>Quantity</th>
+                        <th>Offer Price</th>
+                        <th>Original Price</th>
+                        <th>Payment Method</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                  <% salesReport.forEach(function(report, index) { %>
+                  <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= report.proname %></td>
+                      <td>
+                          <%= report.address ? report.address : "Address Not Available" %>
+                      </td>
+                      <td><%= report.createdAt %></td>
+                      <td><%= report.quantity %></td>
+                      <td><%= report.price %></td>
+                      <td>₹<%= report.totalprice %></td>
+                      <td>
+                          <% if (report.paymentMethod === "razorpay") { %>
+                              <strong>Online Payment</strong>
+                          <% } else if(report.paymentMethod === "Cash On Delivery") { %>
+                              <strong>COD</strong>
+                          <% } else { %>
+                              <strong>Wallet</strong>
+                          <% } %>
+                      </td>
+                  </tr>
+                  <% }); %>
+              </tbody>
+              
+            </table>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
- <script>
-    // JavaScript for automatically toggling sidebar visibility
-    const toggleButton = document.querySelector('.toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
-    
-    function toggleSidebar() {
-      sidebar.classList.toggle('hidden');
-      toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+ <!-- DATATABLE  SCRIPT-->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>  
+<script>
+   new DataTable('#example');
+   
+  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js" integrity="sha512-UnrKxsCMN9hFk7M56t4I4ckB4N/2HHi0w/7+B/1JsXIX3DmyBcsGpT3/BsuZMZf+6mAr0vP81syWtfynHJ69JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+ 
+      
+    <script>
+      function printPDF() {
+    // Target the 'example' table instead of 'salesTable'
+    const pdfTable = document.getElementById("example");
+    const filterInfo = document.getElementById("filterInfo").innerText;
+    // Add filter type to table caption
+    const caption = pdfTable.querySelector("caption");
+    if (caption) {
+        caption.innerHTML += `<br>${filterInfo}`;
+    } else {
+        // Add a new caption if one doesn't exist
+        const caption = document.createElement("caption");
+        caption.innerHTML = filterInfo;
+        pdfTable.prepend(caption);
     }
-    
-    function checkViewportWidth() {
-      if (window.innerWidth <= 1300) {
-        sidebar.classList.add('hidden');
-        toggleButton.style.display = 'block';
-      } else {
-        sidebar.classList.remove('hidden');
-        toggleButton.style.display = 'none';
-      }
-    }
-    
-    toggleButton.addEventListener('click', function() {
-      toggleSidebar();
-    });
-    
-    // Check viewport width initially and on resize
-    checkViewportWidth();
-    window.addEventListener('resize', checkViewportWidth);
-    
+    const pdfOptions = {
+        margin: 1,
+        filename: 'sales_report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    };
+
+    html2pdf().set(pdfOptions).from(pdfTable).save();
+}
+
     </script>
-      <!-- Add a button to trigger PDF download -->
-  <% } else { %>
-      <p>No sales data available.</p>
-  <% } %>
-</div>
 </body>
 </html>

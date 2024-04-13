@@ -281,7 +281,7 @@ body {
     <div class="menu">
       <ul class="menu-links">
         <li class="nav-link">
-          <a href="/admin/dashboard">
+          <a href="/admin/home">
             <i class="bx bx-home-alt icons"></i>
             <span class="text nav-text">Dashboard</span>
           </a>
@@ -348,13 +348,18 @@ body {
       </div>
       <div class="form-group">
         <label for="discountValue">Discount Percentage:</label>
-        <input type="number" class="form-control" id="discountValue" name="discountValue" required >
+        <input type="number" class="form-control" id="discountValue" name="discountValue" required min="1" max="99">
         <span id="discountError" class="text-danger"></span>
-      </div>
+       </div>
+       
       <div class="form-group">
         <label for="expirationDate">Expiration Date:</label>
         <input type="date" class="form-control" id="expirationDate" name="expirationDate" required>
       </div>
+
+      <p style="color: red;"> <%= msg %></p>
+
+
       <button type="submit" class="btn btn-primary" onclick="showPopup()">Create Coupon</button>
 
       <!-- Button to open the modal -->
@@ -406,19 +411,53 @@ body {
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
-    function validateForm() {
-        var discountValue = document.getElementById("discountValue").value;
-        var discountError = document.getElementById("discountError");
-        if (discountValue < 1 || discountValue > 99) {
-            discountError.innerHTML = "Discount Percentage must be between 1 and 99";
-            return false; // Prevent form submission
-        }
-        discountError.innerHTML = ""; // Clear previous error message
-        // Add any additional validation logic here if needed
-        return true; // Allow form submission
-    }
-</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  function validateForm() {
+     // Validation for Coupon Code
+     var codeInput = document.getElementById("code");
+     var code = codeInput.value.trim(); // Trim whitespace
+ 
+     // Check if coupon code is empty
+     if (code === "") {
+       Swal.fire({
+         icon: 'error',
+         title: 'Oops...',
+         text: 'Coupon code cannot be empty',
+       });
+       return false;
+     }
+ 
+     // Check for special characters
+     var specialChars = /^[a-zA-Z0-9]+$/; // Allow only alphanumeric characters
+     if (!specialChars.test(code)) {
+       Swal.fire({
+         icon: 'error',
+         title: 'Oops...',
+         text: 'Coupon code can only contain alphanumeric characters',
+       });
+       return false;
+     }
+ 
+     // Check for spaces
+     if (code.indexOf(" ") !== -1) {
+       Swal.fire({
+         icon: 'error',
+         title: 'Oops...',
+         text: 'Coupon code cannot contain spaces',
+       });
+       return false;
+     }
+ 
+     // If all validations pass, return true
+     return true;
+  }
+ </script>
+ 
+
   <script>
     function hidePopup() {
       var popup = document.getElementById("couponPopup");
@@ -522,5 +561,45 @@ body {
     window.addEventListener('resize', checkViewportWidth);
     
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.getElementById('yourFormId').addEventListener('submit', function(event) {
+       event.preventDefault();
+       const formData = new FormData(event.target);
+       fetch('/admin/coupon', {
+          method: 'POST',
+          body: formData
+       })
+       .then(response => response.json())
+       .then(data => {
+          if (data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: data.error, // This will display the error message from the backend
+            });
+          } else {
+            // Handle success, e.g., redirect or show success message
+          }
+       })
+       .catch(error => {
+          console.error('Error:', error);
+       });
+      });
+      </script>
+      <script>
+        document.getElementById('discountValue').addEventListener('input', function() {
+           var discountValue = this.value;
+           var discountError = document.getElementById('discountError');
+       
+           if (discountValue < 1 || discountValue > 99) {
+             discountError.textContent = 'Discount must be between 1 and 99';
+           } else {
+             discountError.textContent = '';
+           }
+        });
+       </script>
+       
+      
 </body>
 </html>
