@@ -1083,7 +1083,7 @@ const updateOrderStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body;
         console.log(orderId);
-        console.log("dfd",status);
+        
         if (status !== 'confirmed') {
             return res.status(400).json({ message: "Invalid status" });
         }
