@@ -12,69 +12,13 @@
         <link rel="stylesheet" href="/stylesheet/user/homepage.css" />
     </head>
     <body>
-        <style>
-    
-        </style>
+   
 
         <%-include('nav')%>
+   
 
         <style>
-           #flashMessageContainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-}
 
-#flashMessage {
-    background-color: #111111; /* Red color */
-    color: #ffffff; /* Dark red text color */
-    border: 1px solid #cf3747; /* Red border */
-    border-radius: 8px; /* Rounded corners */
-    padding: 1rem;
-    max-width: 400px;
-    box-shadow: 0 0 20px rgba(252, 0, 0, 0.2); /* Increased shadow effect */
-    animation: slideIn 0.5s forwards, pulse 1s infinite alternate; /* Added pulse animation */
-    opacity: 0;
-    transform: translateY(-50px); /* Start position */
-}
-
-/* Animation keyframes */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(1.1);
-    }
-}
-
-/* Styling for the close button */
-.closeButton {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    cursor: pointer;
-    color: #721c24; /* Dark red text color */
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-.closeButton:hover {
-    color: #dc3545; /* Lighter red hover color */
-}
 
         </style>
         
@@ -419,41 +363,51 @@
             document.getElementById("heartIcon").addEventListener("click", goToWishlistPage);
         </script>
 
-        <script>
-            // Function to sort products based on price (low to high)
-            function sortProductsByPriceLowToHigh() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const priceA = parseFloat(a.querySelector(".product-price").innerText.replace("$", ""));
-                    const priceB = parseFloat(b.querySelector(".product-price").innerText.replace("$", ""));
-                    return priceA - priceB;
-                });
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
+<script>
+    // Function to extract and parse the price from the product element
+    function extractPrice(productElement) {
+        const priceText = productElement.querySelector(".product-price").innerText.trim();
+        // Extracting the numeric part of the price and parsing it as a float
+        return parseFloat(priceText.replace(/[^\d.]/g, ''));
+    }
 
-            // Function to sort products based on price (high to low)
-            function sortProductsByPriceHighToLow() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const priceA = parseFloat(a.querySelector(".product-price").innerText.replace("$", ""));
-                    const priceB = parseFloat(b.querySelector(".product-price").innerText.replace("$", ""));
-                    return priceB - priceA;
-                });
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
+    // Function to sort products based on price (low to high)
+    function sortProductsByPriceLowToHigh() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const priceA = extractPrice(a);
+            const priceB = extractPrice(b);
+            return priceA - priceB;
+        });
+        // Clear the container and re-append sorted products
+        productContainer.innerHTML = "";
+        products.forEach((product) => {
+            productContainer.appendChild(product);
+        });
+    }
 
-            // Attach event listeners to filter buttons or dropdowns
-            document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
-            document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
-        </script>
+    // Function to sort products based on price (high to low)
+    function sortProductsByPriceHighToLow() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const priceA = extractPrice(a);
+            const priceB = extractPrice(b);
+            return priceB - priceA;
+        });
+        // Clear the container and re-append sorted products
+        productContainer.innerHTML = "";
+        products.forEach((product) => {
+            productContainer.appendChild(product);
+        });
+    }
+
+    // Attach event listeners to filter buttons or dropdowns
+    document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
+    document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
+</script>
+
        
         <script>
             document.getElementById("filterButton").addEventListener("click", function () {

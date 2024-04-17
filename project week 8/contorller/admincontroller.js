@@ -19,7 +19,7 @@ const AdminCoupon = require("../models/coupon");
 const login = (req, res) => {
   console.log(req.session, "session");
   if (req.session.admin) {
-    res.redirect("/admin/dashboard");
+    res.redirect("/admin/home");
   } else {
     // res.redirect('/admin/dashboard')
     res.render("admin/adminlogin");
@@ -55,7 +55,7 @@ const loginpost = async (req, res) => {
         if (!admin) {
             console.log("Admin data wrong");
         } else {
-            res.redirect("/admin/dashboard");
+            res.redirect("/admin/home");
         }
     } catch (error) {
         console.log(error);
@@ -76,7 +76,7 @@ const logoutadmin = (req, res) => {
 };
 
 const dashboard1 = (req, res) => {
-    res.render("admin/dashboard1");
+    res.render("admin/home");
     // if(req.session.admin) {
 
     //     res.render("admin/dashboard1")

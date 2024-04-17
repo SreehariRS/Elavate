@@ -413,3 +413,59 @@ color: #000000; /* Icon color for search */
     .heart-icon-filled {
 color: red;
 }
+#flashMessageContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+#flashMessage {
+    background-color: #111111; /* Red color */
+    color: #ffffff; /* Dark red text color */
+    border: 1px solid #cf3747; /* Red border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 1rem;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(252, 0, 0, 0.2); /* Increased shadow effect */
+    animation: slideIn 0.5s forwards, pulse 1s infinite alternate; /* Added pulse animation */
+    opacity: 0;
+    transform: translateY(-50px); /* Start position */
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+/* Styling for the close button */
+.closeButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+    color: #721c24; /* Dark red text color */
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.closeButton:hover {
+    color: #dc3545; /* Lighter red hover color */
+}

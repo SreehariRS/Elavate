@@ -61,7 +61,6 @@ app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 // app.use('/',userrouter)
 app.use("/admin", adminrouter);
 app.use('/',userConnection)
-// middelware for erroe handle
 app.get("*",(req,res)=>{
     res.render("error")
 })
