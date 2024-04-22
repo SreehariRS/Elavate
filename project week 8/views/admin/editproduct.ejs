@@ -384,18 +384,30 @@ button {
     <label for="productStock">Product Stock:</label>
     <input type="number" id="productStock" name="stock" value="<%= prod.stock %>" required>
 
+
+
     <label for="productImages" id="productImagesLabel">Product Images:</label>
-    <input type="file" id="productImages" name="productImages" accept="image/*" multiple>
-    <div id="imagePreviews">
-        <% prod.productImages.forEach(image => { %>
-            <div class="image-preview">
-                <img src="<%= image %>" alt="Product Image" class="preview-image">
-                <button class="delete-button">Delete</button>
+    <input type="file" id="productImages" name="productImages" accept="image/*" multiple onchange="previewImages()">
+    <input
+            type="hidden"
+            name="existingImages"
+            value="<%= JSON.stringify(prod.productImages) %>"
+          /><br />
+
+      <div id="imagePreviews" class="image-preview-container">
+        <% prod.productImages.forEach((image,index) => { %>
+          <div class="image-preview" data-index="<%= index %>">
+            <img src="<%= image %>" alt="Product Image" class="preview-image" />
+                <button class="delete-button" onclick="deleteImage('<%= prod._id %>', '<%= index %>')">&#10006;</button>
             </div>
         <% }); %>
     </div>
 
     <span id="selectedImagesPlaceholder">No files selected</span>
+
+
+
+   
 
     <button type="submit">Edit Product</button>
   </form>
@@ -495,35 +507,7 @@ document.getElementById('editProductForm').addEventListener('submit', function (
   });
 });
 
-document.getElementById('productImages').addEventListener('change', function () {
-    const imagePreviews = document.getElementById('imagePreviews');
 
-    Array.from(this.files).forEach(file => {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const preview = document.createElement('div');
-            preview.classList.add('image-preview');
-
-            const image = document.createElement('img');
-            image.src = e.target.result;
-            image.classList.add('preview-image');
-            preview.appendChild(image);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.classList.add('delete-button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.addEventListener('click', function () {
-                preview.remove();
-            });
-            preview.appendChild(deleteButton);
-
-            imagePreviews.appendChild(preview);
-        };
-
-        reader.readAsDataURL(file);
-    });
-});
 function validateOfferPrice() {
     const offerPriceInput = document.getElementById('offerprice');
     const productPriceInput = document.getElementById('productPrice');
@@ -543,6 +527,116 @@ function validateOfferPrice() {
     return true;
 }
 </script>
+
+
+
+
+<script>
+  let selectedFiles = []; // Keep track of selected files
+
+  function previewImages() {
+    const input = document.getElementById("productImages");
+    const container = document.getElementById("imagePreviews");
+    container.innerHTML = ""; // Clear previous previews
+
+    if (input.files) {
+      for (const file of input.files) {
+        selectedFiles.push(file); // Add file to selectedFiles array
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const imgContainer = document.createElement("div");
+          imgContainer.className = "image-preview"; // Changed class name
+          const index = selectedFiles.indexOf(file); // Get index of the file
+          imgContainer.setAttribute("data-index", index); // Set data-index attribute
+
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.alt = "Product Image";
+          img.className = "preview-image"; // Added class name for styling
+
+          const deleteButton = document.createElement("button");
+          deleteButton.innerText = "Delete";
+          deleteButton.type = "button";
+          deleteButton.className = "delete-button"; // Apply the CSS class
+          deleteButton.onclick = function () {
+            container.removeChild(imgContainer);
+            removeFileFromArray(file); // Remove file from selectedFiles array
+            input.value = ""; // Remove the corresponding file from the input
+          };
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(deleteButton);
+          container.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  function removeFileFromArray(fileToRemove) {
+    selectedFiles = selectedFiles.filter((file) => file !== fileToRemove);
+  }
+
+  function deleteImage(productId, index) {
+    const container = document.getElementById("imagePreviews");
+    const imgContainer = container.querySelector(`[data-index='${index}']`);
+    container.removeChild(imgContainer);
+    // Assuming you want to remove the corresponding file from selectedFiles array
+    selectedFiles.splice(index, 1);
+  }
+
+  function submitForm() {
+    const form = document.getElementById("editProductForm"); // Corrected form ID
+    const formData = new FormData(form);
+
+    // Append selectedFiles to formData
+    for (const file of selectedFiles) {
+      formData.append("productImages", file); // Corrected key name
+    }
+
+    // Assuming you want to submit the form programmatically
+    // You can uncomment the below line if needed
+    // form.submit();
+  }
+</script>
+
+<script>
+  async function deleteImage(prod, index) {
+ console.log("deleteImage function called with prod:", prod, "and index:", index);
+ 
+ const imageItem = document.querySelector('.image-preview[data-index="' + index + '"]');
+ console.log("Image item to delete:", imageItem); // Log the image item to be deleted
+ 
+ try {
+   const response = await fetch('/deleteImage/' + prod, {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+     },
+     body: JSON.stringify({ index }), // Send the index of the image to delete
+   });
+   
+   console.log("Response from server:", response); // Log the response from the server
+   
+   if (response.ok) {
+     // If the server successfully deleted the image, remove it from the DOM
+     imageItem.remove();
+     console.log("Image removed from DOM"); // Log the removal of the image from the DOM
+     window.reload
+   } else {
+     console.error('Failed to delete image from the server');
+   }
+ } catch (error) {
+   console.error('Error deleting image:', error);
+ }
+}
+
+    </script>
+
+
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>
 </html>

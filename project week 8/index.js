@@ -27,17 +27,12 @@ app.use(
 console.log(process.env)
 app.use(flash());
 
-// Assuming you have a route handler like this
 app.get('/home', async (req, res) => {
     try {
-        // Fetch product data from your database
         const products = await products.find();
 
-        // Render the EJS template with the product data
         res.render('home', { products: products });
     } catch (error) {
-        // Handle any errors that occur
-        console.error('Error fetching products:', error);
         res.status(500).send('Internal Server Error');
     }
 });
