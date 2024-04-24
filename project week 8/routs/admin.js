@@ -15,7 +15,7 @@ router.get("/productlist", admincontroller.productlist);
 router.get("/productlist/:id", admincontroller.deleteproduct);
 router.get("/addproduct", admincontroller.addproduct);
 router.get("/editproduct/:Id", admincontroller.editproduct);
-router.post("/deleteImage/:id",admincontroller.deleteImage)
+router.delete("/deleteimage/:productId/:index", admincontroller.deleteImage);
 
 
 router.get("/customers", admincontroller.userlist);

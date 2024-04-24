@@ -258,7 +258,7 @@
                     <% }
                     else if (order.status === 'pending') { %>
                        
-                        <button id="payBtn" onclick="failedpay( '<%= order.totalprice %>','<%= order._id %>')">Pay with Razorpay</button>
+                        <button id="payBtn" onclick="failedpay('<%= order.totalprice %>','<%= order._id %>')" class="cancel-btn cancel-order-btn">Re-try payment</button>
 
 
                     <% }
@@ -271,12 +271,12 @@
                         <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
                             <!-- Product details available, display button -->
                             <div class="cancel-order-btn">
-                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" class="cancel-btn cancel-order-btn">Cancel Order</button>
                             </div>
                         <% } else { %>
                             <!-- Product details not available, disable button -->
                             <div class="cancel-order-btn">
-                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" disabled>Cancel Order</button>
+                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" class="cancel-btn cancel-order-btn">Cancel Order</button>
                             </div>
                         <% } %>
                         
@@ -696,6 +696,7 @@ try {
     });
     
             </script>
+                    
                     
     </body>
 </html>

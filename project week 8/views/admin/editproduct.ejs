@@ -398,8 +398,8 @@ button {
         <% prod.productImages.forEach((image,index) => { %>
           <div class="image-preview" data-index="<%= index %>">
             <img src="<%= image %>" alt="Product Image" class="preview-image" />
-                <button class="delete-button" onclick="deleteImage('<%= prod._id %>', '<%= index %>')">&#10006;</button>
-            </div>
+            <button class="delete-button" onclick="deleteImage('<%= prod._id %>', '<%= index %>')">&#10006;</button>
+          </div>
         <% }); %>
     </div>
 
@@ -603,39 +603,28 @@ function validateOfferPrice() {
   }
 </script>
 
+
 <script>
-  async function deleteImage(prod, index) {
- console.log("deleteImage function called with prod:", prod, "and index:", index);
- 
- const imageItem = document.querySelector('.image-preview[data-index="' + index + '"]');
- console.log("Image item to delete:", imageItem); // Log the image item to be deleted
- 
- try {
-   const response = await fetch('/deleteImage/' + prod, {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json',
-     },
-     body: JSON.stringify({ index }), // Send the index of the image to delete
-   });
-   
-   console.log("Response from server:", response); // Log the response from the server
-   
-   if (response.ok) {
-     // If the server successfully deleted the image, remove it from the DOM
-     imageItem.remove();
-     console.log("Image removed from DOM"); // Log the removal of the image from the DOM
-     window.reload
-   } else {
-     console.error('Failed to delete image from the server');
-   }
- } catch (error) {
-   console.error('Error deleting image:', error);
- }
+  function deleteImage(productId, index) {
+    // Send a request to the backend to delete the image
+    fetch(`/admin/deleteimage/${productId}/${index}`, {
+        method: 'DELETE',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        // Remove the image preview from the DOM if the deletion was successful
+        const container = document.getElementById("imagePreviews");
+        const imgContainer = container.querySelector(`[data-index='${index}']`);
+        container.removeChild(imgContainer);
+    })
+    .catch(error => {
+        console.error('Error deleting image:', error);
+    });
 }
 
-    </script>
-
+</script>
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>

@@ -160,9 +160,12 @@
             <button class="btn btn-primary" onclick="submitOrder()" data-product-id="<%= item.productId %>">Proceed to Checkout</button>
         <% }); %>   -->
             <!-- <button class="btn btn-primary" onclick="submitOrder()" data-product-id="">Proceed to Checkout</button> -->
-            <% cartItems.forEach(item => { %>
-                <button class="btn btn-primary" onclick="submitOrder()" data-product-id="<%= item.productId %>">Proceed to Checkout</button>
+            <% cartItems.forEach((item, index) => { %>
+                <% if (index === 0) { %>
+                    <button class="btn btn-primary" onclick="submitOrder()" data-product-id="<%= item.productId %>">Proceed to Checkout</button>
+                <% } %>
             <% }); %>
+            
             
 
         </div>

@@ -213,44 +213,30 @@ const editproductpost = async (req, res) => {
 
 //delete image 
 const deleteImage = async (req, res) => {
-    console.log("Request received in deleteImage function"); // Log the start of the function
-
     try {
-       const id = req.params.id;
-       const indexToRemove = req.body.index;
+        const { productId, index } = req.params;
 
-       console.log("Request parameters:", { id }); // Log the id from request parameters
-       console.log("Request body:", { indexToRemove }); // Log the indexToRemove from request body
+        // Find the product by ID
+        const existingProduct = await product.findById(productId);
 
-       // Build the unset query properly
-       const unsetQuery = { $unset: { [`productImages.${indexToRemove}`]: 1 } };
-       console.log("Unset query:", unsetQuery); // Log the unset query
+        if (!existingProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
 
-       // Update the document to unset the specified index
-       await product.findByIdAndUpdate(id, unsetQuery);
+        // Remove the image at the specified index from the productImages array
+        existingProduct.productImages.splice(index, 1);
 
-       // Pull the null value from the array after unsetting
-       await product.findByIdAndUpdate(id, { $pull: { productImages: null } });
+        // Save the updated product
+        await existingProduct.save();
 
-       // Retrieve the updated product
-       const updatedProduct = await product.findById(id);
-
-       console.log("Updated product:", updatedProduct); // Log the updated product
-
-       if (updatedProduct) {
-         console.log("Image deleted successfully"); // Log success message
-         res.status(200).json({ success: true, message: 'Image deleted successfully', data: updatedProduct });
-       } else {
-         console.log("Index not found in productImages array"); // Log error message
-         res.status(404).json({ success: false, message: 'Index not found in productImages array' });
-       }
+        res.json({
+            message: "Image deleted successfully",
+        });
     } catch (error) {
-       console.error("Error in deleteImage function:", error); // Log the error
-       res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error deleting image:', error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-}
-
-
+};
 
 
 const Category = async (req,res)=>{

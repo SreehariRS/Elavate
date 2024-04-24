@@ -1,0 +1,191 @@
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About us</title>
+    <link rel="stylesheet" href="{% static 'about.css' %}" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="icon" href="{% static 'PICO-LOGO-SHORT.png' %}" type="image/gif">
+  </head>
+  
+  <body>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* -----------------company----------------------- */
+.company {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.company-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.img {
+  width: 100%;
+  margin: 1rem 0rem 0rem 2rem;
+}
+
+.img img {
+  width: 100%;
+}
+
+.company-info {
+  width: 100%;
+  margin-right: 4rem;
+}
+
+.company-info span {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.company-info span .our {
+  color: #ff0000;
+}
+
+.company-info span, .company-info p {
+          animation: moveUpDown 2s ease-in-out infinite;
+        }
+/* ----------------------------------------------- */
+  /* Animation */
+  .company-info {
+ animation: fadeIn 1.5s ease-out 0.5s forwards;
+ position: relative; /* Ensure z-index works */
+}
+
+.company-info span,
+    .company-info p {
+    
+      position: relative;
+      z-index: 1; /* Bring text to front */
+      animation: fadeInAnimation 1s ease forwards;
+      opacity: 0; /* Start with opacity 0 */
+    }
+ /* Animation */
+ @keyframes fadeInAnimation {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+ /* Animation */
+ @keyframes moveAnimation {
+  20% {
+    transform: translateX(0);
+  }
+  70% {
+    transform: translateX(5px); /* Adjust the distance the image moves */
+  }
+  50% {
+    transform: translateX(10px); /* Adjust the distance the image moves */
+  }
+  50% {
+    transform: translateX(5px); /* Adjust the distance the image moves */
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Apply the animation to your element */
+.element {
+  animation: moveAnimation 2s ease-in-out; /* Adjust duration and easing function */
+}
+
+
+    .moving-image {
+      animation: moveAnimation 3s ease infinite; /* Adjust the duration and timing function */
+    }
+    
+/* ---------------------------------------------------------------------------- */
+    </style>
+    <!-- -----------------------------------------------company---------------------------------------------------------------- -->
+    <div class="company">
+        <div class="img">
+            <img src="/img/pppppppppppppp.jpg" alt="" class="moving-image" style="width: 60%; height: auto; margin-left: 80px;" />
+
+          </div>
+          <div class="company-info">
+            <span>SCENTS <span class="our">FOR EVERYONE</span></span>
+            <p>
+                <b>Elavate</b> is a global perfume platform that brings together the finest fragrances from around the world. Our mission is to curate a vast collection of unique and exquisite scents, ensuring that every individual can find the perfect fragrance to complement their lifestyle. At Aroma, we strive to be a leading supplier of premium perfumes online, offering a wide range of options for men, women, and children.
+            </p>
+        </div>
+        
+        
+    </div>
+    <!-- ---------------------------------------------------------------------------------------------------------------------- -->
+
+    
+
+    <!-- -------------------------------------------------------------------------------------------- -->
+  <script>
+    const cardImages = document.querySelectorAll(".card-image");
+const cardTitles = document.querySelectorAll(".card-title");
+const cardDescriptions = document.querySelectorAll(".card-description");
+const cardMediaIcons = document.querySelectorAll(".card-mediaIcons a");
+const cardImgs = document.querySelectorAll(".card-image img");
+const cardTitleSpans = document.querySelectorAll(".card-title span");
+const cardDescSpans = document.querySelectorAll(".card-description span");
+const mediaIcons = document.querySelectorAll(".card-mediaIcons a i");
+
+const renderCard = () => {
+
+  cardImages.forEach((cardImage) => {
+    cardImage.classList.remove("loading");
+  });
+  cardTitles.forEach((cardTitle) => {
+    cardTitle.classList.remove("loading");
+  });
+  cardDescriptions.forEach((cardDescription) => {
+    cardDescription.classList.remove("loading");
+  });
+  cardMediaIcons.forEach((cardMediaIcon) => {
+    cardMediaIcon.classList.remove("loading");
+  });
+
+  //Show the hidden html elements
+  cardImgs.forEach((cardImg) => {
+    cardImg.style.visibility = "visible";
+  });
+  cardTitleSpans.forEach((cardTitleSpan) => {
+    cardTitleSpan.style.visibility = "visible";
+  });
+  cardDescSpans.forEach((cardDescSpan) => {
+    cardDescSpan.style.visibility = "visible";
+  });
+  mediaIcons.forEach((mediaIcon) => {
+    mediaIcon.style.visibility = "visible";
+  });
+}
+
+
+setTimeout(() => {
+  renderCard();
+}, 1000);
+
+
+  
+  </script>
+  </html>

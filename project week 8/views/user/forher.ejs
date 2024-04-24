@@ -37,15 +37,28 @@
                                 <%= product.price %>
                             </div>
                             <div class="product-links">
-                                <a href=""><i class="fa fa-heart"></i></a>
-                                <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"><i class="fa fa-shopping-cart"></i></a>
+                                <!-- Inside the span element -->
+
+                                <span class="heart-icon" data-product-id="<%= product._id %>">
+                                    <i class="fa fa-heart"></i>
+                                </span>
+
+                                
+
+
+                                <!-- Update the anchor tag with the shopping cart icon to include data attributes for productId and quantity -->
+                                <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"
+                                    ><i class="fa fa-shopping-cart"></i
+                                ></a>
                             </div>
+                            
                         </div>
                     </div>
                 </div></a>
             <% }); %>
         </div>
-        
+        <%-include('about')%>
+        <br>
         <%-include('footer')%>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -107,5 +120,99 @@
  });
  
          </script>
+           <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
+                    const productId = heartIcon.dataset.productId;
+                    const isInWishlist = localStorage.getItem(`heart-icon-${productId}`) === "true";
+
+                    // Update the heart icon's color based on the wishlist state
+                    if (isInWishlist) {
+                        heartIcon.querySelector("i").classList.add("heart-icon-filled");
+                    }
+
+                    
+                    heartIcon.addEventListener("click", function () {
+                        const icon = this.querySelector("i");
+                        const isFilled = icon.classList.contains("heart-icon-filled");
+
+                        // Toggle the heart icon's class
+                        icon.classList.toggle("heart-icon-filled");
+
+                        // Determine the action based on the current state
+                        const action = isFilled ? "remove" : "add";
+
+                        // Update localStorage
+                        localStorage.setItem(`heart-icon-${productId}`, !isFilled);
+
+                        // Send a request to the backend
+                        fetch(`/wishlistPage?action=${action}&productId=${productId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                if (!data.success) {
+                                    // Handle error, e.g., revert the icon's state
+                                    icon.classList.toggle("heart-icon-filled");
+                                    localStorage.setItem(`heart-icon-${productId}`, isFilled);
+                                    showAlert("please login or create an account");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                // Handle error, e.g., revert the icon's state
+                                icon.classList.toggle("heart-icon-filled");
+                                localStorage.setItem(`heart-icon-${productId}`, isFilled);
+                                showAlert("Failed to update wishlist");
+                            });
+
+                        function showAlert(message) {
+                            const alertElement = document.createElement("div");
+                            alertElement.classList.add("alert-message");
+                            alertElement.textContent = message;
+                            document.body.appendChild(alertElement);
+
+                            // Remove the alert after 3 seconds
+                            setTimeout(() => {
+                                document.body.removeChild(alertElement);
+                            }, 3000);
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <script>
+            document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
+                heartIcon.addEventListener("click", function () {
+                    const productId = this.dataset.productId;
+
+                    fetch("/wishlistPage", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ productId: productId }),
+                    })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error("Failed to add product to wishlist");
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            // Show a success message or handle response data accordingly
+                            console.log(data);
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            // Show an error message or handle the error accordingly
+                        });
+                });
+            });
+        </script>
     </body>
 </html>

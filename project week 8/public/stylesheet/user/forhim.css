@@ -31,7 +31,9 @@ a {
     background: #fafafa;
 } */
 
-
+.heart-icon-filled {
+    color: red;
+    }
 .product-card {
     width: calc(25% - 20px); /* 25% width with some spacing between cards */
     box-sizing: border-box;
