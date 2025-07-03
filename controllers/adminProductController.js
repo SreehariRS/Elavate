@@ -3,11 +3,11 @@ const Category = require("../models/category");
 
 const productlist = async (req, res) => {
     try {
-        const productdata = await Product.find({ deleted: false });
+        const productdata = await Product.find();
         res.render("admin/productmanage", { products: productdata });
     } catch (error) {
         console.error("Error fetching product list:", error);
-        res.status(500).render("error", { message: "Internal Server Error" });
+        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -17,7 +17,7 @@ const addproduct = async (req, res) => {
         res.render("admin/addproduct", { categories });
     } catch (error) {
         console.error("Error rendering add product page:", error);
-        res.status(500).render("error", { message: "Internal Server Error" });
+        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -27,7 +27,7 @@ const addproductpost = async (req, res) => {
         let productImages = [];
 
         if (req.files && req.files.length > 0) {
-            productImages = req.files.map((file) => `/uploads/${file.filename}`);
+            productImages = req.files.map((file) => `/Uploads/${file.filename}`);
         }
 
         const newProduct = new Product({
@@ -39,7 +39,6 @@ const addproductpost = async (req, res) => {
             stock,
             productImages,
             isListed: true,
-            deleted: false,
         });
 
         await newProduct.save();
@@ -58,13 +57,13 @@ const editproduct = async (req, res) => {
     try {
         const prod = await Product.findById(req.params.Id);
         if (!prod) {
-            return res.status(404).render("error", { message: "Product not found" });
+            return res.status(404).send("Product not found");
         }
         const categories = await Category.distinct("name");
         res.render("admin/editproduct", { prod, categories });
     } catch (error) {
         console.error("Error rendering edit product page:", error);
-        res.status(500).render("error", { message: "Internal Server Error" });
+        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -75,7 +74,7 @@ const editproductpost = async (req, res) => {
         let productImages = [];
 
         if (req.files && req.files.length > 0) {
-            productImages = req.files.map((file) => `/uploads/${file.filename}`);
+            productImages = req.files.map((file) => `/Uploads/${file.filename}`);
         }
 
         const productdata = await Product.findById(id);
@@ -90,12 +89,11 @@ const editproductpost = async (req, res) => {
             price,
             offerprice: offerprice || 0,
             stock,
-            isListed: productdata.isListed,
+            isListed: productdata.isListed, // Retain existing isListed status
             productImages: [
                 ...(existingImages ? JSON.parse(existingImages) : []),
                 ...productImages,
             ],
-            deleted: productdata.deleted,
         };
 
         await Product.findByIdAndUpdate(id, updatedata);
@@ -114,13 +112,13 @@ const deleteproduct = async (req, res) => {
     try {
         const productdata = await Product.findById(req.params.id);
         if (!productdata) {
-            return res.status(404).render("error", { message: "Product not found" });
+            return res.status(404).send("Product not found");
         }
         await Product.findByIdAndUpdate(req.params.id, { deleted: true });
         res.redirect("/admin/productlist");
     } catch (error) {
         console.error("Error deleting product:", error);
-        res.status(500).render("error", { message: "Internal Server Error" });
+        res.status(500).send("Internal Server Error");
     }
 };
 
