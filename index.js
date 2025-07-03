@@ -6,7 +6,7 @@ const nocache = require("nocache");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const flash = require("connect-flash");
-const i = process.env.PORT;
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -14,47 +14,34 @@ require("dotenv").config();
 
 app.set("view engine", "ejs");
 
-const oneday = 1000 * 60 * 60 * 24;
+const oneDay = 1000 * 60 * 60 * 24;
 app.use(nocache());
 app.use(
     session({
         secret: "Your-secret-key",
         resave: false,
-        cookie: { maxAge: oneday },
+        cookie: { maxAge: oneDay },
         saveUninitialized: true,
     })
 );
-console.log(process.env);
 app.use(flash());
 
-app.get("/home", async (req, res) => {
-    try {
-        const products = await products.find();
-
-        res.render("home", { products: products });
-    } catch (error) {
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-// requiring routes
-const userConnection = require("./routs/user");
-
-const adminrouter = require("./routs/admin");
-const collection = require("./config/dbconnect");
-const { productlist } = require("./contorller/admincontroller");
-
-//load assets
-
+// Load assets
 app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet")));
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
-app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
+app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
 
-//setup router
-// app.use('/',userrouter)
-app.use("/admin", adminrouter);
+// Require routes
+const userConnection = require("./routes/user");
+const adminRouter = require("./routes/admin");
+const collection = require("./config/dbconnect");
+
+// Setup router
+app.use("/admin", adminRouter);
 app.use("/", userConnection);
+
+// Catch-all route for undefined routes
 app.get("*", (req, res) => {
     res.render("error");
 });

@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dashboard</title>
-   
-   
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Category Management</title>
+    <link rel="stylesheet" href="/stylesheet/admin/category.css">
 
 </head>
 <body>
-
-
-    <style>
+  <style>
+    
 
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
@@ -389,8 +385,6 @@ button:last-of-type {
 
 
 
-    </style>
-    <style>
       /* Style for the confirmation message */
       .delete-confirmation {
           background-color: #f8d7da; /* Red background color */
@@ -402,265 +396,221 @@ button:last-of-type {
           font-size: 14px; /* Font size */
           font-weight: bold; /* Bold text */
       }
+
+         .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .pagination a:hover:not(.disabled) {
+            background-color: #e0e0e0;
+        }
+        .pagination a.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
   </style>
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />  
+
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
     <main>
-<nav class="sidebar">
-      <header>
-
-        <div class="image-text">
-          <span class="image">
-            <img src="/img/logo.png" alt="logo" />
-          </span>
-          <div class="text header-text">
-            <span class="main">ELAVATE</span>
-            <br>
-            <span class="sub">make your smell</span>
-          </div>
-        </div>
-      </header>
-
-      <div class="menu-bar">
-        <div class="menu">
-          <ul class="menu-links">
-            <li class="nav-link">
-              <a href="/admin/home">
-                <i class="bx bx-home-alt icons"></i>
-                <span class="text nav-text">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/customers">
-                <i class="bx bx-bell icons"></i>
-                <span class="text nav-text">User</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/productlist">
-                <i class="bx bx-bar-chart-alt-2 icons"></i>
-                <span class="text nav-text">Product</span>
-              </a>
-            </li>
-            
-            <li class="nav-link">
-              <a href="/admin/order">
-                <i class="bx bx-pie-chart-alt icons"></i>
-                <span class="text nav-text">order</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/category">
-                <i class="bx bx-heart icons"></i>
-                <span class="text nav-text">Category</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/coupon">
-                <i class="bx bx-wallet-alt icons"></i>
-                <span class="text nav-text">coupon</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/sales">
-                <i class="bx bx-wallet-alt icons"></i>
-                <span class="text nav-text">Sales Report</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="bottom-content">
-          <li class="nav-link">
-            <a href="/admin/signout2">
-              <i class="bx bx-log-out icons"></i>
-              <span class="text nav-text">Log Out</span>
-            </a>
-          </li>
-          
-          </li>
-        </div>
-      </div>
-    </nav>
-    
-<section>
-    <main id="site-main">
-        <div class="container">
-            <!-- <form class="form-inline my-2 my-lg-0">
-                    <input class="form-user mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light my-2 my-sm-0" type="submit"><img src="img/" ></button>
-                  </form> -->
-    
-            <button id="addCategoryBtn">Add Category</button>
-    
-            <div id="addCategoryPopup" class="popup">
-              <div class="popup-content">
-                  <span class="close" onclick="closePopup()">&times;</span> <!-- Close button (x) -->
-                  <h2>Add Category</h2>
-          
-                  <form id="addCategoryForm">
-                      <label for="categoryName">Category Name:</label>
-                      <input type="text" id="categoryName" name="categoryName" required maxlength="21" />
-
-                      <p id="errorMessage" class="error-message"></p>
-          
-                      <button type="button" onclick="addCategory()">Add Category</button>
-                  </form>
-              </div>
-          </div>
-          
-            <form action="" method="">
-                <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% catname.forEach((catname,index) => { %>
-                            <tr>
-                                <td><%= index + 1 %></td>
-                                <td><%= catname.name %></td>
-                                <td>
-                                    <!-- Edit button -->
-                                    <form action="/admin/Editcategory/<%=catname._id %>" method="get">
-                                        <button type="submit" name="categoryName" class="text-gradient">Edit</button>
-                                    </form>
-                                    <!-- Delete button -->
-                                    <form action="/admin/deletecategory/<%= catname._id %>" method="POST" onsubmit="return showDeleteConfirmation(event, this);">
-                                      <input type="hidden" name="_method" value="DELETE">
-                                      <button type="submit" class="text-gradient delete-button">Delete</button>
-                                  </form>
-                                    
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                    
-                </table>
-            </form>
-        </div>
+        <nav class="sidebar">
+            <header>
+                <div class="image-text">
+                    <span class="image">
+                        <img src="/img/logo.png" alt="logo"/>
+                    </span>
+                    <div class="text header-text">
+                        <span class="main">ELAVATE</span><br>
+                        <span class="sub">make your smell</span>
+                    </div>
+                </div>
+            </header>
+            <div class="menu-bar">
+                <div class="menu">
+                    <ul class="menu-links">
+                        <li class="nav-link"><a href="/admin/home"><i class="bx bx-home-alt icons"></i><span class="text nav-text">Dashboard</span></a></li>
+                        <li class="nav-link"><a href="/admin/customers"><i class="bx bx-bell icons"></i><span class="text nav-text">User</span></a></li>
+                        <li class="nav-link"><a href="/admin/productlist"><i class="bx bx-bar-chart-alt-2 icons"></i><span class="text nav-text">Product</span></a></li>
+                        <li class="nav-link"><a href="/admin/order"><i class="bx bx-pie-chart-alt icons"></i><span class="text nav-text">Order</span></a></li>
+                        <li class="nav-link"><a href="/admin/category"><i class="bx bx-heart icons"></i><span class="text nav-text">Category</span></a></li>
+                        <li class="nav-link"><a href="/admin/coupon"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Coupon</span></a></li>
+                        <li class="nav-link"><a href="/admin/sales"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Sales Report</span></a></li>
+                    </ul>
+                </div>
+                <div class="bottom-content">
+                    <li class="nav-link"><a href="/admin/signout2"><i class="bx bx-log-out icons"></i><span class="text nav-text">Log Out</span></a></li>
+                </div>
+            </div>
+        </nav>
+        <section>
+            <main id="site-main">
+                <div class="container">
+                    <button id="addCategoryBtn">Add Category</button>
+                    <div id="addCategoryPopup" class="popup">
+                        <div class="popup-content">
+                            <span class="close" onclick="closePopup()">×</span>
+                            <h2>Add Category</h2>
+                            <form id="addCategoryForm">
+                                <label for="categoryName">Category Name:</label>
+                                <input type="text" id="categoryName" name="categoryName" required maxlength="21"/>
+                                <p id="errorMessage" class="error-message"></p>
+                                <button type="button" onclick="addCategory()">Add Category</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form action="" method="">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% catname.forEach((catname, index) => { %>
+                                    <tr>
+                                        <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+                                        <td><%= catname.name %></td>
+                                        <td>
+                                            <form action="/admin/Editcategory/<%= catname._id %>" method="get" style="display: inline;">
+                                                <button type="submit" class="text-gradient">Edit</button>
+                                            </form>
+                                            <form action="/admin/deletecategory/<%= catname._id %>" method="POST" onsubmit="return showDeleteConfirmation(event, this);" style="display: inline;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="text-gradient delete-button">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <a href="/admin/category?page=<%= currentPage - 1 %>">Previous</a>
+                        <% } else { %>
+                            <a href="#" class="disabled">Previous</a>
+                        <% } %>
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <a href="/admin/category?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                        <% } %>
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/admin/category?page=<%= currentPage + 1 %>">Next</a>
+                        <% } else { %>
+                            <a href="#" class="disabled">Next</a>
+                        <% } %>
+                    </div>
+                </div>
+            </main>
+        </section>
     </main>
-</section>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script>
-  function showDeleteConfirmation(event, form) {
-    event.preventDefault(); // Prevent the form from submitting immediately
-
-    swal({
-        title: "Are you sure?",
-        text: "Once deleted, you will not be able to recover this category!",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-    })
-    .then((willDelete) => {
-        if (willDelete) {
-            // If the user confirms, submit the form programmatically
-            form.submit();
-        }
-    });
-}
-
-</script>
-<script>
-
-function openPopup() {
-        document.getElementById("addCategoryPopup").style.display = "flex";
-    }
-
-    function closePopup() {
-        document.getElementById("addCategoryPopup").style.display = "none";
-    }
-
-    const errorMessageElement = document.getElementById("errorMessage");
-
-    async function addCategory() {
-    const name = document.getElementById("categoryName").value.trim();
-
-    // Regular expression to match disallowed symbols and numbers
-    const disallowedSymbolsAndNumbers =  /[ !@#$%^&,.*()_+={}\[\]|\\":;'?/>.<0-9]/;
-
-    // Check if name is empty or contains disallowed symbols or numbers
-    if (!name) {
-        errorMessageElement.textContent = "Category name cannot be empty.";
-        return;
-    }
-    
-    else if (disallowedSymbolsAndNumbers.test(name)) {
-        errorMessageElement.textContent = "Category name cannot contain symbols or numbers.";
-        return;
-    }
-
-    // Additional validation or processing logic can be added here
-
-    try {
-        const response = await fetch("/admin/category", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name }),
-        });
-        const data = await response.json();
-
-        if (response.status === 400) {
-            // Category already exists
-            errorMessageElement.textContent = data.error;
-            return;
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        function showDeleteConfirmation(event, form) {
+            event.preventDefault();
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this category!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    form.submit();
+                }
+            });
         }
 
-        if (response.ok) {
+        function openPopup() {
+            document.getElementById("addCategoryPopup").style.display = "flex";
+        }
+
+        function closePopup() {
+            document.getElementById("addCategoryPopup").style.display = "none";
+            document.getElementById("errorMessage").textContent = "";
             document.getElementById("categoryName").value = "";
-            closePopup();
-            window.location.reload();
-        } else {
-            // Handle other errors
-            errorMessageElement.textContent = "Failed to add category.";
         }
-    } catch (error) {
-        console.error("Error adding category:", error);
-        showError("An error occurred while adding the category.");
-    }
-}
 
+        async function addCategory() {
+            const name = document.getElementById("categoryName").value.trim();
+            const errorMessageElement = document.getElementById("errorMessage");
+            const disallowedSymbolsAndNumbers = /[ !@#$%^&,.*()_+={}\[\]|\\":;'?/>.<0-9]/;
 
+            if (!name) {
+                errorMessageElement.textContent = "Category name cannot be empty.";
+                return;
+            }
+            if (disallowedSymbolsAndNumbers.test(name)) {
+                errorMessageElement.textContent = "Category name cannot contain symbols or numbers.";
+                return;
+            }
 
-    document.getElementById("addCategoryBtn").addEventListener("click", openPopup);
-// Add event listeners to all edit buttons
-document.querySelectorAll(".edit-btn").forEach((button, index) => {
-    button.addEventListener("click", () => {
-        openEditPopup(index);
-    });
-});
+            try {
+                const response = await fetch("/admin/category", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name }),
+                });
+                const data = await response.json();
 
-// Function to open the edit category popup
-function openEditPopup(index) {
-    const editPopup = document.getElementById("editCategoryPopup" + index);
-    if (editPopup) {
-        editPopup.style.display = "flex";
-    }
-}
+                if (response.status === 400) {
+                    errorMessageElement.textContent = data.error;
+                    return;
+                }
 
-// Function to close the edit category popup
-function closeEditPopup(index) {
-    const editPopup = document.getElementById("editCategoryPopup" + index);
-    if (editPopup) {
-        editPopup.style.display = "none";
-    }
-}
+                if (response.ok) {
+                    closePopup();
+                    window.location.reload();
+                } else {
+                    errorMessageElement.textContent = "Failed to add category.";
+                }
+            } catch (error) {
+                console.error("Error adding category:", error);
+                errorMessageElement.textContent = "An error occurred while adding the category.";
+            }
+        }
 
-// Assuming this function is called when the edit is successful and you want to close the popup
-function editCategorySuccess() {
-    // Close the edit popup after successful edit
-    closePopup();
-}
-
-</script>
-
+        document.getElementById("addCategoryBtn").addEventListener("click", openPopup);
+    </script>
 </body>
 </html>

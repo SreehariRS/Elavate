@@ -1,0 +1,387 @@
+
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+* {
+  font-family: "Poppins", "sans-sarif";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-color: #ffffff;
+  --sidebar-color: #000000;
+  --primary-color: #f4f2f2;
+  --primary-color-light: #f4f2f2;
+  --text-color: #ffffff;
+ 
+
+  --trans-02: all 0.2s ease;
+  --trans-03: all 0.3s ease;
+  --trans-04: all 0.4s ease;
+  --trans-04: all 0.5s ease;
+}
+
+body {
+  height: 100vh;
+  background-color: var(--body-color);
+  transition: var(--trans-02);
+}
+
+.sidebar .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  /* transition: var(--trans-04); */
+  white-space: unset;
+  opacity: 1;
+}
+
+.sidebar .image {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0px;
+  height: 100%;
+  width: 250px;
+  background-color: var(--sidebar-color);
+  padding: 10px 14px;
+  transition: var(--trans-02);
+}
+
+.sidebar header {
+  position: relative;
+}
+.sidebar .image-text img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  align-items: center;
+}
+
+.header .image-text .header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .main {
+  font-weight: 600;
+}
+
+.header-text .sub {
+  margin-top: -2px;
+}
+
+
+.sidebar li {
+  height: 50px;
+  /* background-color: red; */
+  margin-top: 10px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar li .icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  font-size: 20px;
+}
+.sidebar li .icons,
+.sidebar li .text {
+  color: var(--text-color);
+  transition: var(--trans-03);
+}
+
+.sidebar li a {
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding-right: 50px;
+  border-radius: 6px;
+  transition: var(--trans-04);
+  text-align: left;
+}
+
+.sidebar li a:hover {
+  background: var(--primary-color);
+}
+.sidebar li a:hover .icons,
+.sidebar li a:hover .text {
+  color: var(--dark-color);
+}
+
+.sidebar .menu-bar {
+  height: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* dashboard things ............*/
+main {
+    position: relative;
+}
+
+.center1 {
+    background-color: #ecf0f1;
+    width: 400px;
+    height: 200px;
+    text-align: center;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 50px;
+    margin-right: 100px;
+    padding: 20px;
+    position: relative;
+    left:450px;
+    top:50px
+}
+.center1 h2,h4,h5 {
+    color: rgb(47, 46, 46);
+    position: relative;
+   top:10px 
+}
+.center1 h4 {
+    font-weight:500;
+}
+
+
+.center2 {
+    background-color: #e6ce35ec;
+    width: 400px;
+    height: 200px;
+    text-align: center;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 50px;
+    margin-right: 100px;
+    padding: 20px;
+    position: relative;
+    left:450px;
+    top:50px
+
+}
+.center2 h2 {
+    color: rgb(230, 238, 238);
+    position: relative;
+   top:10px 
+}
+.center2 h4 {
+    font-weight:500;
+}
+
+
+section {
+    display: flex;
+    flex-direction: row;
+}
+
+
+/* Resetting margin to create a more centralized layout */
+#site-main {
+    margin: 0 auto;
+    max-width: 1200px; /* Adding a maximum width for better readability */
+    font-family: Arial, sans-serif; /* Changing font family to Arial */
+}
+
+/* Updating table styling */
+table {
+    margin: 20px auto; /* Centering the table */
+    border-collapse: collapse; /* Collapsing borders for a cleaner look */
+    width: 100%; /* Making the table occupy full width */
+    border: 2px solid #333; /* Darkening border */
+    width: 800px;
+}
+
+/* Updating table cell and header styling */
+table td,
+table th {
+    border: 1px solid #777; /* Darkening borders */
+    padding: 12px; /* Increasing padding for better spacing */
+    text-align: left; /* Aligning text to the left */
+}
+
+/* Darkening background color on table row hover */
+table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Changing header background color and text color */
+.table th {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Styling for pop-up */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Darkening the background color */
+    z-index: 999; /* Ensuring it appears on top of other elements */
+    overflow: auto; /* Adding overflow for scrolling content */
+}
+
+.popup-content {
+    background-color: #ffffff;
+    margin: 10% auto; /* Centering the pop-up vertically */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Softening the shadow with black color */
+    max-width: 90%; /* Adjusting maximum width */
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.popup-content form {
+    margin-bottom: 3cqb; /* Adding margin at the bottom of the form */
+}
+
+.popup-content button {
+    margin-top: 30px; /* Adding margin at the top of the button */
+    margin-right: 80px;
+}
+.popup-content label {
+    margin-top: 20px; /* Adjust the margin-top for the label */
+}
+
+.popup-content input[type="text"] {
+    margin-top: 20px; /* Adjust the margin-top for the input field */
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px; /* Adjust as needed */
+    color: #000; /* Close button color */
+}
+
+
+
+/* Changing button style */
+button {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 24px; /* Adjusting padding */
+    border: none;
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s; /* Adding transition */
+}
+
+button:hover {
+    background-color: #2d312d;
+}
+
+/* Changing delete button color */
+.delete-btn {
+    background-color: #f44336; /* Red */
+}
+
+/* Changing edit button color */
+.edit-btn {
+    background-color: #ff1100; /* Blue */
+}
+
+/* Styling for text gradient */
+.text-gradient {
+    cursor: pointer;
+    background: linear-gradient(to right, #8e2de2, #4a00e0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; /* Setting text color to transparent */
+}
+
+/* Style for buttons */
+button {
+    background-color: hsl(0, 0%, 7%);
+    color: white;
+    padding: 10px 20px; /* added padding */
+    border: none;
+    border-radius: 4px; /* added border radius */
+    cursor: pointer;
+    margin-bottom: 10px; /* added margin to separate buttons */
+}
+
+/* Adding style to edit and delete buttons */
+button:nth-of-type(2) {
+    background-color: #2196f3; /* blue */
+    margin-right: 10px; /* added margin to separate buttons */
+}
+
+button:nth-of-type(3) {
+    background-color: #0a0a0a; /* red */
+    margin-right: 10px; /* added margin to separate buttons */
+}
+
+/* Positioning add category button to the right */
+button:last-of-type {
+    float: right;
+    margin-bottom: 10px; /* added margin to separate buttons */
+}
+/* Add this CSS to your existing styles */
+
+/* Edit and Delete Button Styles */
+.text-gradient {
+    background: linear-gradient(to right, #101010, #421a1a);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.text-gradient:hover {
+    background: linear-gradient(to right, #2b2b2b, #3e1e1e);
+}
+
+/* Apply margin to the delete button */
+.text-gradient.delete-button {
+    margin-right: 10px;
+}
+
+/* Optional: You can add margin or padding to separate the buttons */
+.button-container {
+    margin-top: 10px;
+}
+
+.button-container button {
+    margin-right: 10px;
+}
+
+
+
+      /* Style for the confirmation message */
+      .delete-confirmation {
+          background-color: #f8d7da; /* Red background color */
+          color: #721c24; /* Text color */
+          padding: 10px; /* Padding */
+          border-radius: 5px; /* Rounded corners */
+          border: 1px solid #f5c6cb; /* Border color */
+          margin-top: 10px; /* Margin top */
+          font-size: 14px; /* Font size */
+          font-weight: bold; /* Bold text */
+      }

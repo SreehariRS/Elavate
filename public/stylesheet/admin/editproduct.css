@@ -1,3 +1,5 @@
+  
+
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 * {
@@ -31,7 +33,6 @@ body {
   font-size: 16px;
   font-weight: 500;
   color: var(--text-color);
-  /* transition: var(--trans-04); */
   white-space: unset;
   opacity: 1;
 }
@@ -42,7 +43,6 @@ body {
   align-items: center;
 }
 
-/* Sidebar */
 .sidebar {
   position: fixed;
   top: 0;
@@ -57,6 +57,7 @@ body {
 .sidebar header {
   position: relative;
 }
+
 .sidebar .image-text img {
   width: 40px;
   height: 40px;
@@ -81,10 +82,8 @@ body {
   margin-top: -2px;
 }
 
-
 .sidebar li {
   height: 50px;
-  /* background-color: red; */
   margin-top: 10px;
   list-style: none;
   display: flex;
@@ -98,6 +97,7 @@ body {
   min-width: 60px;
   font-size: 20px;
 }
+
 .sidebar li .icons,
 .sidebar li .text {
   color: var(--text-color);
@@ -119,6 +119,7 @@ body {
 .sidebar li a:hover {
   background: var(--primary-color);
 }
+
 .sidebar li a:hover .icons,
 .sidebar li a:hover .text {
   color: var(--dark-color);
@@ -131,8 +132,6 @@ body {
   flex-direction: column;
   justify-content: space-between;
 }
-
-
 
 .editproductcontainer {
   font-family: 'Arial', sans-serif;
@@ -167,7 +166,7 @@ select {
 }
 
 button {
-  margin-left: 37% ;
+  margin-left: 37%;
   width: 30%;
   background-color: #000000;
   color: #fff;
@@ -186,22 +185,23 @@ button {
   margin-top: 5px;
   display: block;
 }
+
 .image-preview {
   display: inline-block;
   margin-right: 10px;
 }
 
 .preview-image {
-  max-width: 100px; /* Adjust the maximum width as needed */
-  max-height: 100px; /* Adjust the maximum height as needed */
-  border: 1px solid #ccc; /* Add a border for better visibility */
+  max-width: 100px;
+  max-height: 100px;
+  border: 1px solid #ccc;
 }
 
 .delete-button {
   display: block;
   margin-top: 5px;
-  background-color: #ff0000; /* Red color for delete button */
-  color: #fff; /* White text color */
+  background-color: #ff0000;
+  color: #fff;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -209,4 +209,63 @@ button {
   width: 70%;
 }
 
-/* Add more styles as needed */
+.not-available {
+    background-color: #ffe5e5;
+    color: #b71c1c;
+    padding: 15px;
+    margin: 20px 0;
+    border: 2px solid #ff5252;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  button {
+    margin-left: 34%;
+    width: 32%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sidebar {
+    width: 150px;
+  }
+
+  button {
+    margin-left: 30%;
+    width: 40%;
+  }
+}
+/* CSS for hiding sidebar when collapsed class is added */
+.sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+

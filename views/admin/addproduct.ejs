@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="stylesheet/admin/addproduct.css">
 </head>
 <body>
-  <style>
+<style>
+  
+    
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 * {
@@ -288,7 +290,10 @@ width: 70px;
 .toggle-sidebar.active {
   color: rgb(255, 255, 255); /* Change the color to red */
 }
+
+
 </style>
+ 
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -382,13 +387,13 @@ width: 70px;
         <label for="productDescription">Product Description:</label>
         <textarea id="productDescription" name="description" required></textarea>
 
-        <label for="productCategory">Product Category:</label>
-        <select id="productCategory" name="category" required>
-            <% categories.forEach(category => { %>
-                <option value="<%= category %>"><%= category%></option>
-            <% }); %>
-            
-        </select>
+     <label for="productCategory">Product Category:</label>
+<select id="productCategory" name="category" required>
+    <option value="" disabled selected>Select Category</option>
+    <% categories.forEach(category => { %>
+        <option value="<%= category %>"><%= category %></option>
+    <% }); %>
+</select>   
 
        
         <label for="productPrice">Product Price:</label>

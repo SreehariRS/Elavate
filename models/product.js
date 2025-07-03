@@ -1,52 +1,32 @@
-const mongoose = require('mongoose');
-// // require("dotenv").config();
-// require('dotenv').config()
-// mongoose.connect(`mongodb://${process.env.LOCALHOST}`)
-// // mongoose.connect(`mongodb://localhost:${process.env.DBport}/try1`)
-// .then(()=>{
-//     console.log("mongodb connected");
-// })
-// .catch(()=>{
-//     console.log("Failed to connect7");
-// })
+const mongoose = require("mongoose");
 
 const productschema = new mongoose.Schema({
     name: {
         type: String,
-       
-      },
-      description: {
+    },
+    description: {
         type: String,
-        
-      },
+    },
 
-      category: {
+    category: {
         type: String,
-      
-      },
-      price: {
+    },
+    price: {
         type: Number,
-       
-      },
-      offerprice: {
+    },
+    offerprice: {
         type: Number,
-       
-      },
-      stock: {
+    },
+    stock: {
         type: Number,
-        
-      },
-      productImages: {
-        type: [String] 
-      
-      },
-      isListed: {
+    },
+    productImages: {
+        type: [String],
+    },
+    isListed: {
         type: Boolean,
-        
-      },
-      deleted: { type: Boolean, default: false } // Add a 'deleted' field with default value 'false'
+    },
+    deleted: { type: Boolean, default: false },
+});
 
-})
-
-
-module.exports = mongoose.model('product',productschema)
+module.exports = mongoose.model("product", productschema);

@@ -6,13 +6,14 @@
         <title><%= products.name %></title>
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
             crossorigin="anonymous"
         />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-        <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script> -->
         <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+
         <style>
             /* Your CSS styles here */
             @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap");
@@ -436,23 +437,17 @@
 }
 
         </style>
-    </head>
-
-    <body>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
         <div class="back-button">
             <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
         </div>
         
         <header class="header">
-          
             <div class="header-text">
                 <h1 id="elavate">ELAVATE</h1>
             </div>
             <div class="profile-icon">
                 <i class="fas fa-user fa-2x"></i>       
-                 </div>
+            </div>
         </header>
 
         <div class="card-wrapper">
@@ -482,101 +477,80 @@
                         <% } %>
                     </div>
                     <div class="product-detail">
-                        <!-- Display product details -->
                         <h2>About This Item:</h2>
                         <p><%= products.description %></p>
                         <ul>
                             <li>Available: <span><%= products.stock > 0 ? 'In Stock' : 'Out of Stock' %></span></li>
                             <li>Category: <span><%= products.category %></span></li>
-                            <!-- You can add more details here -->
                         </ul>
                     </div>
 
-                    <div class="displayNone" style="display: none" data-user-id="<%=loggedInUserEmail%>"></div>
+                    <div class="displayNone" style="display: none" data-user-id="<%= userId %>"></div>
 
                     <div class="purchase-info">
-                        <input type="number" min="1" value="1" id="quantityInput" readonly />
-                        <button type="button" class="btn" id="addToCartBtn" dataa-user-id="<%= products._id %>">
-                            Add to Cart <i class="fas fa-shopping-cart"></i>
-                        </button>
+                        <% if (loggedInUser) { %>
+                            <input type="number" min="1" max="<%= products.stock %>" value="1" id="quantityInput" />
+                            <button type="button" class="btn" id="addToCartBtn" data-user-id="<%= userId %>">
+                                Add to Cart <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        <% } else { %>
+                            <p>Please <a href="/login">log in</a> to add items to your cart.</p>
+                        <% } %>
                     </div>
-
-                    <!-- Handle scenario where user is not logged in -->
-                    <!-- <div class="purchase-info">
-                            <p>Please log in to add items to your cart.</p>
-                         
-                        </div> -->
                 </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-            document.getElementById("addToCartBtn").addEventListener("click", function () {
-                const productId = "<%= products._id %>"; // Assuming products._id is the product ID
-                console.log(productId);
+            document.getElementById("addToCartBtn")?.addEventListener("click", function () {
+                const productId = "<%= products._id %>";
                 const quantity = document.getElementById("quantityInput").value;
-                const stock = "<%= products.stock %>";
-                console.log(stock); // Assuming products.stock is the product stock
-                const maxQuantity = "<%= products.stock %>"; // Assuming maxQuantity represents the maximum available quantity
+                const stock = parseInt("<%= products.stock %>");
+                const userId = this.getAttribute("data-user-id");
 
                 if (stock <= 0) {
-                    // Show a SweetAlert indicating that the product is out of stock
                     Swal.fire({
                         title: "Out of Stock",
                         text: "This product is currently out of stock.",
                         icon: "error",
                     });
-                } else if (quantity > maxQuantity) {
-                    // Show a SweetAlert indicating that the maximum quantity has been reached
+                } else if (parseInt(quantity) > stock) {
                     Swal.fire({
                         title: "Maximum Quantity Reached",
                         text: "You cannot add more of this product to your cart.",
                         icon: "warning",
                     });
                 } else {
-                    const userId = this.getAttribute("dataa-user-id");
-                    // Add logic to navigate to the cart page with the product ID, quantity, and user ID
                     window.location.href = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
                 }
             });
 
-            // Get the product image element
             const productImage = document.getElementById("productImage");
-
-            // Add event listeners for mouse enter and leave events
             productImage.addEventListener("mouseenter", () => {
-                // Add the 'zoomed' class when the mouse enters the image
                 productImage.classList.add("zoomed");
             });
 
             productImage.addEventListener("mouseleave", () => {
-                // Remove the 'zoomed' class when the mouse leaves the image
                 productImage.classList.remove("zoomed");
             });
 
-            // Calculate the zoomed area based on the mouse position
             productImage.addEventListener("mousemove", (event) => {
                 const { offsetX, offsetY, target } = event;
                 const { offsetWidth: width, offsetHeight: height } = target;
                 const xPos = (offsetX / width) * 100;
                 const yPos = (offsetY / height) * 100;
-
-                // Update the transform origin to zoom at the mouse position
                 productImage.style.transformOrigin = `${xPos}% ${yPos}%`;
             });
-        </script>
-        <script>
-            document.querySelector('.profile-icon').addEventListener('click', function() {
-    window.location.href = '/profile';
-});
 
-        </script>
-        <script>
+            document.querySelector('.profile-icon').addEventListener('click', function() {
+                window.location.href = '/profile';
+            });
+
             document.getElementById("elavate").addEventListener("click", function() {
                 window.location.href = "/";
             });
-            </script>
+        </script>
     </body>
 </html>

@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wallet Information</title>
-  <!-- Include Bootstrap CSS -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Information</title>
+    <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+</head>
+<body>
+    
+     <style>
 @media (max-width: 768px) {
   h1 {
     font-size: 30px; /* Smaller font size for smaller screens */
@@ -220,222 +221,258 @@ h1 {
 .profile-icon i {
     font-size: 24px; /* Adjust the size as needed */
 }
-
-   </style>
-   
-</head>
-<body>
-
-  <div class="back-button">
-    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
-</div>
-
-<header class="header">
-    <div class="header-text">
-      <h1 id="elavate">ELAVATE</h1>
-    </div>
-    <div class="profile-icon">
-      <i class="fas fa-user fa-2x"></i>       
-       </div>
-</header>
-
-  <div class="content-container">
-  <div class="container">
-    <h1 class="text-center mb-4">Wallet </h1>
-   
-
-    <!-- Display Wallet Balance -->
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Current Balance</h5>
-        <p class="card-text">Balance:₹ <%= balance%></p>
-      </div>
-    </div>
-
-
-
-
-      
-      <!-- Modal -->
-      <div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Transaction History</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <!-- Static transaction data -->
-            <!-- Your EJS template code -->
-
-<% if (typeof userWallet !== 'undefined' && userWallet && userWallet.transactions) { %>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Transaction History</h5>
-  
-        <!-- Dynamic transaction data from userWallet -->
-        <ul class="list-group">
-          <% userWallet.transactions.forEach(transaction => { %>
-            <li class="list-group-item">
-              <% if (transaction.type === 'deposit') { %>
-                Deposit: ₹<%= transaction.amount %>
-              <% } else if (transaction.type === 'withdrawal') { %>
-                Withdrawal: ₹<%= transaction.amount %>
-              <% } %>
-            </li>
-          <% }); %>
-        </ul>
-      </div>
-    </div>
-  <% } else { %>
-    <p>No transaction data available.</p>
-    <!-- You might want to include a message or some other UI indication -->
-  <% } %>
-  
-  <!-- Your other EJS template code -->
-  
-  
-            </div>
-          </div>
-        </div>
-      </div>
-
-    <!-- Add Balance Form -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Add Balance</h5>
-        
-        <!-- Form for adding balance -->
-        <form id="addBalanceForm">
-          <div class="form-group text-center">
-            <label for="amount">Amount (₹)</label>
-            <input type="number" class="form-control" id="amount" name="amount" required>
-         </div>
-          </form>
-      </div>
-    </div>
-
-     <div class="button-container">
-    <button type="button" class="btn btn animated-button black-touch" id="modal" data-toggle="modal" data-target="#transactionModal">
-        Open Transaction History
-    </button>
-    <button type="button" class="btn btn animated-button black-touch" onclick="handlePayment()">Add Balance</button>
-   </div>
-  </div>
-</div>
-
- 
-   
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-  <!-- Include Bootstrap JS and Popper.js for Bootstrap functionalities -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- Add this in the head section of your HTML -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-
-<script>
-  // Function to handle Razorpay payment
-  function handlePayment() {
-    var amount = document.getElementById('amount').value;
-
-    // Check if the amount is empty
-    if (!amount.trim()) {
-      // If amount is empty, show SweetAlert
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Please enter the amount to add balance!',
-        confirmButtonColor: '#007bff' // Blue color for confirm button
-      });
-      return; // Exit the function if amount is empty
-    }
-
-    // Make an AJAX request to your server to generate a Razorpay order
-    fetch('/generate-razorpay-order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ amount: amount })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Initialize Razorpay checkout
-      var options = {
-        key: 'rzp_test_rJ0yPg6ZIlUOvq',
-        amount: data.amount,
-        currency: 'INR',
-        name: 'elavate',
-        description: 'Add Balance',
-        order_id: data.id,
-        handler: function(response) {
-          // Send the Razorpay payment ID to your server for verification
-          fetch('/verify-razorpay-payment', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ paymentId: response.razorpay_payment_id, amount: amount })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              console.log("SUCCESS");
-              Swal.fire({
-                icon: 'success',
-                title: 'Balance Added Successfully!',
-                position: 'top-end',
-                toast: true,
-                showConfirmButton: false,
-                timer: 1500,  // Display the toast for 1.5 seconds
-                customClass: {
-                  popup: 'swal2-small-toast',  // Apply a custom class for smaller toast
-                },
-              });
-
-              // Optionally, you can add a delay before submitting the form
-              setTimeout(() => {
-                document.getElementById('addBalanceForm').submit();
-              }, 1500);  // Adjust the delay as needed
-            } else {
-              // Handle payment failure
-              alert('Payment failed. Please try again.');
-            }
-          });
+ .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
         }
-      };
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .pagination-btn {
+            min-width: 100px;
+        }
+   </style>
+    <div class="back-button">
+        <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
+    </div>
 
-      var rzp = new Razorpay(options);
-      rzp.open();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  }
-</script>
+    <header class="header">
+        <div class="header-text">
+            <h1 id="elavate">ELAVATE</h1>
+        </div>
+        <div class="profile-icon">
+            <inio</a>
+        </div>
+    </header>
 
+    <div class="content-container">
+        <div class="container">
+            <h1 class="text-center mb-4">Wallet</h1>
 
-<script>
-  document.getElementById('backButton').addEventListener('click', function() {
- window.history.back();
-});
+            <!-- Inject userData for client-side use -->
+            <div id="userData" data-user='<%= JSON.stringify(userData) %>'></div>
 
-</script>
-<script>
-  document.querySelector('.profile-icon').addEventListener('click', function() {
-window.location.href = '/profile';
-});
+            <!-- Display Wallet Balance -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Current Balance</h5>
+                    <p class="card-text">Balance: ₹<%= balance.toFixed(2) %></p>
+                </div>
+            </div>
 
-</script>
-<script>
-  document.getElementById("elavate").addEventListener("click", function() {
-      window.location.href = "/";
-  });
-  </script>
+            <!-- Transaction History Modal -->
+            <div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="transactionModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="transactionModalLabel">Transaction History</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <% if (userWallet && userWallet.transactions && userWallet.transactions.length > 0) { %>
+                                <ul class="list-group">
+                                    <% userWallet.transactions.forEach(transaction => { %>
+                                        <% if (transaction && transaction.type && transaction.amount && transaction.date) { %>
+                                            <li class="list-group-item">
+                                                <strong><%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %></strong>: ₹<%= transaction.amount.toFixed(2) %>
+                                                <br>
+                                                <small>Date: <%= new Date(transaction.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %></small>
+                                                <% if (transaction.paymentId) { %>
+                                                    <br>
+                                                    <small>Payment ID: <%= transaction.paymentId %></small>
+                                                <% } %>
+                                            </li>
+                                        <% } %>
+                                    <% }); %>
+                                </ul>
+                            <% } else { %>
+                                <p>No transaction history available.</p>
+                            <% } %>
+                            <div class="pagination-container">
+                                <button class="btn btn-secondary pagination-btn <%= currentPage === 1 ? 'disabled' : '' %>" 
+                                        onclick="window.location.href='/wallet?page=<%= currentPage - 1 %>'" 
+                                        <%= currentPage === 1 ? 'disabled' : '' %>>
+                                    Previous
+                                </button>
+                                <span class="pagination-info">Page <%= currentPage %> of <%= totalPages %></span>
+                                <button class="btn btn-secondary pagination-btn <%= currentPage === totalPages ? 'disabled' : '' %>" 
+                                        onclick="window.location.href='/wallet?page=<%= currentPage + 1 %>'" 
+                                        <%= currentPage === totalPages ? 'disabled' : '' %>>
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Balance Form -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Add Balance</h5>
+                    <form id="addBalanceForm">
+                        <div class="form-group text-center">
+                            <label for="amount">Amount (₹)</label>
+                            <input type="number" class="form-control" id="amount" name="amount" min="1" required>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="button" class="btn animated-button black-touch" data-toggle="modal" data-target="#transactionModal">
+                    View Transaction History
+                </button>
+                <button type="button" class="btn animated-button" onclick="handlePayment()">Add Balance</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        const userData = JSON.parse(document.getElementById('userData')?.getAttribute('data-user') || '{}');
+
+        document.querySelector('.back-button').addEventListener('click', () => {
+            window.history.back();
+        });
+
+        document.querySelector('.profile-icon').addEventListener('click', () => {
+            window.location.href = '/profile';
+        });
+
+        document.getElementById('elavate').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
+        function handlePayment() {
+            const amount = document.getElementById('amount').value;
+
+            if (!amount || amount <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Amount',
+                    text: 'Please enter a valid amount to add to your wallet!',
+                    confirmButtonColor: '#3085d6',
+                });
+                return;
+            }
+
+            fetch('/generate-razorpay-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to create Razorpay order. Please try again.',
+                            confirmButtonColor: '#3085d6',
+                        });
+                        return;
+                    }
+
+                    const options = {
+                        key: 'rzp_test_rJ0yPg6ZIlUOvq',
+                        amount: data.amount,
+                        currency: 'INR',
+                        name: 'Elavate',
+                        description: 'Add Balance to Wallet',
+                        order_id: data.id,
+                        handler: async function (response) {
+                            const verifyResponse = await fetch('/verify-razorpay-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    paymentId: response.razorpay_payment_id,
+                                    orderId: response.razorpay_order_id,
+                                    signature: response.razorpay_signature,
+                                }),
+                            });
+                            const verifyResult = await verifyResponse.json();
+
+                            if (verifyResult.success) {
+                                const updateResponse = await fetch('/update-wallet', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        amount,
+                                        paymentId: response.razorpay_payment_id,
+                                    }),
+                                });
+                                const updateResult = await updateResponse.json();
+
+                                if (updateResult.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Balance Added',
+                                        text: `₹${amount} has been added to your wallet!`,
+                                        position: 'top-end',
+                                        toast: true,
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        customClass: { popup: 'swal2-small-toast' },
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Failed to update wallet balance.',
+                                        confirmButtonColor: '#3085d6',
+                                    });
+                                }
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Failed',
+                                    text: 'Payment verification failed. Please try again.',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            }
+                        },
+                        prefill: {
+                            name: userData.firstname || 'Customer',
+                            email: userData.email || 'customer@example.com',
+                            contact: userData.mobileNumber || '9999999999',
+                        },
+                        theme: { color: '#A48F7A' },
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function (response) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: response.error.description,
+                            confirmButtonColor: '#3085d6',
+                        });
+                    });
+                    rzp.open();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to initiate payment. Please try again.',
+                        confirmButtonColor: '#3085d6',
+                    });
+                });
+        }
+    </script>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dashboard</title>
-    <link rel="stylesheet" href="stylesheet/admin/editproduct.css">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="/stylesheet/admin/editproduct.css">
 </head>
 <body>
-  <style>
 
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
+      <style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 * {
   font-family: "Poppins", "sans-sarif";
@@ -42,6 +42,7 @@ body {
   font-size: 16px;
   font-weight: 500;
   color: var(--text-color);
+  /* transition: var(--trans-04); */
   white-space: unset;
   opacity: 1;
 }
@@ -52,6 +53,7 @@ body {
   align-items: center;
 }
 
+/* Sidebar */
 .sidebar {
   position: fixed;
   top: 0;
@@ -66,7 +68,6 @@ body {
 .sidebar header {
   position: relative;
 }
-
 .sidebar .image-text img {
   width: 40px;
   height: 40px;
@@ -91,8 +92,10 @@ body {
   margin-top: -2px;
 }
 
+
 .sidebar li {
   height: 50px;
+  /* background-color: red; */
   margin-top: 10px;
   list-style: none;
   display: flex;
@@ -106,7 +109,6 @@ body {
   min-width: 60px;
   font-size: 20px;
 }
-
 .sidebar li .icons,
 .sidebar li .text {
   color: var(--text-color);
@@ -128,7 +130,6 @@ body {
 .sidebar li a:hover {
   background: var(--primary-color);
 }
-
 .sidebar li a:hover .icons,
 .sidebar li a:hover .text {
   color: var(--dark-color);
@@ -141,6 +142,8 @@ body {
   flex-direction: column;
   justify-content: space-between;
 }
+
+
 
 .editproductcontainer {
   font-family: 'Arial', sans-serif;
@@ -175,7 +178,7 @@ select {
 }
 
 button {
-  margin-left: 37%;
+  margin-left: 37% ;
   width: 30%;
   background-color: #000000;
   color: #fff;
@@ -194,23 +197,22 @@ button {
   margin-top: 5px;
   display: block;
 }
-
 .image-preview {
   display: inline-block;
   margin-right: 10px;
 }
 
 .preview-image {
-  max-width: 100px;
-  max-height: 100px;
-  border: 1px solid #ccc;
+  max-width: 100px; /* Adjust the maximum width as needed */
+  max-height: 100px; /* Adjust the maximum height as needed */
+  border: 1px solid #ccc; /* Add a border for better visibility */
 }
 
 .delete-button {
   display: block;
   margin-top: 5px;
-  background-color: #ff0000;
-  color: #fff;
+  background-color: #ff0000; /* Red color for delete button */
+  color: #fff; /* White text color */
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -218,414 +220,285 @@ button {
   width: 70%;
 }
 
-.not-available {
-    background-color: #ffe5e5;
-    color: #b71c1c;
-    padding: 15px;
-    margin: 20px 0;
-    border: 2px solid #ff5252;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-}
+/* Add more styles as needed */
 
-@media screen and (max-width: 768px) {
-  .sidebar {
-    width: 200px;
-  }
-
-  button {
-    margin-left: 34%;
-    width: 32%;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .sidebar {
-    width: 150px;
-  }
-
-  button {
-    margin-left: 30%;
-    width: 40%;
-  }
-}
-/* CSS for hiding sidebar when collapsed class is added */
-.sidebar.hidden {
-  display: none;
-}
-
-.toggle-sidebar {
-  display: none; /* Initially hide the toggle button */
-}
-
-@media screen and (max-width: 1300px) {
-  .toggle-sidebar {
-    display: block;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    z-index: 9999;
-  }
-
-  .sidebar.hidden {
-    display: none;
-  }
-}
-.toggle-sidebar.active {
-  color: rgb(255, 255, 255); /* Change the color to red */
-}
-
-</style>
-
-<link
-  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-  rel="stylesheet"
-/>  
-<!-- Add a toggle button -->
-<div class="toggle-sidebar">
-  <i class="bx bx-menu toggle-icon"></i>
-</div>
-
-<nav class="sidebar">
-  <header>
-    <div class="image-text">
-      <span class="image">
-        <img src="/img/logo.png" alt="logo" />
-      </span>
-      <div class="text header-text">
-        <span class="main">ELAVATE</span>
-        <br>
-        <span class="sub">make your smell</span>
-      </div>
+  </style>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+    <div class="toggle-sidebar">
+        <i class="bx bx-menu toggle-icon"></i>
     </div>
-  </header>
+    <nav class="sidebar">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="/img/logo.png" alt="logo"/>
+                </span>
+                <div class="text header-text">
+                    <span class="main">ELAVATE</span><br>
+                    <span class="sub">make your smell</span>
+                </div>
+            </div>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li class="nav-link"><a href="/admin/home"><i class="bx bx-home-alt icons"></i><span class="text nav-text">Dashboard</span></a></li>
+                    <li class="nav-link"><a href="/admin/customers"><i class="bx bx-bar-chart-alt-2 icons"></i><span class="text nav-text">User</span></a></li>
+                    <li class="nav-link"><a href="/admin/productlist"><i class="bx bx-bell icons"></i><span class="text nav-text">Product</span></a></li>
+                    <li class="nav-link"><a href="/admin/order"><i class="bx bx-pie-chart-alt icons"></i><span class="text nav-text">Order</span></a></li>
+                    <li class="nav-link"><a href="/admin/category"><i class="bx bx-heart icons"></i><span class="text nav-text">Category</span></a></li>
+                    <li class="nav-link"><a href="/admin/coupon"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Coupon</span></a></li>
+                    <li class="nav-link"><a href="/admin/sales"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Sales Report</span></a></li>
+                </ul>
+            </div>
+            <div class="bottom-content">
+                <li class="nav-link"><a href="/admin/login"><i class="bx bx-log-out icons"></i><span class="text nav-text">Log Out</span></a></li>
+            </div>
+        </div>
+    </nav>
+    <div class="editproductcontainer">
+        <h1>Edit Product</h1>
+        <% if (prod) { %>
+        <form action="/admin/editproduct/<%= prod._id %>" id="editProductForm" method="POST" enctype="multipart/form-data">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="name" value="<%= prod.name %>" required>
 
-  <div class="menu-bar">
-    <div class="menu">
-      <ul class="menu-links">
-        <li class="nav-link">
-          <a href="/admin/home">
-            <i class="bx bx-home-alt icons"></i>
-            <span class="text nav-text">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/customers">
-            <i class="bx bx-bar-chart-alt-2 icons"></i>
-            <span class="text nav-text">User</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/productlist">
-            <i class="bx bx-bell icons"></i>
-            <span class="text nav-text">product</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/order">
-            <i class="bx bx-pie-chart-alt icons"></i>
-            <span class="text nav-text">order</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/category">
-            <i class="bx bx-heart icons"></i>
-            <span class="text nav-text">Category</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="#">
-            <i class="bx bx-wallet-alt icons"></i>
-            <span class="text nav-text">coupon</span>
-          </a>
-        </li>
-      </ul>
+            <label for="productDescription">Product Description:</label>
+            <textarea id="productDescription" name="description" required><%= prod.description %></textarea>
+
+            <label for="productCategory">Product Category:</label>
+            <select id="productCategory" name="category" required>
+                <% categories.forEach(category => { %>
+                    <option value="<%= category %>" <%= prod.category === category ? 'selected' : '' %>><%= category %></option>
+                <% }); %>
+            </select>
+
+            <label for="productPrice">Product Price:</label>
+            <input type="number" id="productPrice" name="price" min="0" step="0.01" value="<%= prod.price %>" required>
+
+            <label for="offerprice">Offer Price:</label>
+            <input type="number" id="offerprice" name="offerprice" min="0" step="0.01" value="<%= prod.offerprice %>">
+
+            <label for="productStock">Product Stock:</label>
+            <input type="number" id="productStock" name="stock" value="<%= prod.stock %>" required>
+
+            <label for="productImages">Product Images:</label>
+            <input type="file" id="productImages" name="productImages" accept="image/*" multiple onchange="previewImages()">
+            <input type="hidden" id="existingImages" name="existingImages" value="<%= JSON.stringify(prod.productImages) %>"/>
+            <div id="imagePreviews" class="image-preview-container">
+                <% prod.productImages.forEach((image, index) => { %>
+                    <div class="image-preview" data-index="<%= index %>">
+                        <img src="<%= image %>" alt="Product Image" class="preview-image"/>
+                        <button type="button" class="delete-button" onclick="deleteImage('<%= prod._id %>', '<%= index %>')">✖</button>
+                    </div>
+                <% }); %>
+            </div>
+            <span id="selectedImagesPlaceholder">No files selected</span>
+
+            <button type="submit">Edit Product</button>
+        </form>
+        <% } else { %>
+        <div class="not-available">
+            <p>Product not available</p>
+        </div>
+        <% } %>
     </div>
 
-    <div class="bottom-content">
-      <li class="nav-link">
-        <a href="/admin/login">
-          <i class="bx bx-log-out icons"></i>
-          <span class="text nav-text">Log Out</span>
-        </a>
-      </li>
-    </div>
-  </div>
-</nav>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        const toggleButton = document.querySelector('.toggle-sidebar');
+        const sidebar = document.querySelector('.sidebar');
 
-<div class="editproductcontainer">
-  <h1>Edit Product</h1>
-  <% if (prod) { %>
-  <form action="/admin/editproduct/<%= prod._id %>" id="editProductForm" method="POST" enctype="multipart/form-data">
-    <label for="productName">Product Name:</label>
-    <input type="text" id="productName" name="name" value="<%= prod.name %>" required>
-
-    <label for="productDescription">Product Description:</label>
-    <textarea id="productDescription" name="description" required><%= prod.description %></textarea>
-
-    <label for="productCategory">Product Category:</label>
-    <select id="productCategory" name="category" required>
-        <% categories.forEach(category => { %>
-            <option value="<%= category %>" <%= prod.category === category ? 'selected' : '' %>><%= category %></option>
-        <% }); %>
-    </select>
-
-    <label for="productPrice">Product Price:</label>
-    <input type="number" id="productPrice" name="price" min="0" step="0.01" value="<%= prod.price %>" required>
-    
-
-    <label for="offerprice">Offer Price:</label>
-    <input type="number" id="offerprice" name="offerprice" min="0" step="0.01" value="<%= prod.offerprice %>" >
-
-
-    <label for="productStock">Product Stock:</label>
-    <input type="number" id="productStock" name="stock" value="<%= prod.stock %>" required>
-
-
-
-    <label for="productImages" id="productImagesLabel">Product Images:</label>
-    <input type="file" id="productImages" name="productImages" accept="image/*" multiple onchange="previewImages()">
-    <input
-            type="hidden"
-            name="existingImages"
-            value="<%= JSON.stringify(prod.productImages) %>"
-          /><br />
-
-      <div id="imagePreviews" class="image-preview-container">
-        <% prod.productImages.forEach((image,index) => { %>
-          <div class="image-preview" data-index="<%= index %>">
-            <img src="<%= image %>" alt="Product Image" class="preview-image" />
-            <button class="delete-button" onclick="deleteImage('<%= prod._id %>', '<%= index %>')">&#10006;</button>
-          </div>
-        <% }); %>
-    </div>
-
-    <span id="selectedImagesPlaceholder">No files selected</span>
-
-
-
-   
-
-    <button type="submit">Edit Product</button>
-  </form>
-  <% } else { %>
-    <div class="not-available">
-        <p>Product not available</p>
-    </div>
-  <% } %>
-</div>
-
-<script>
-// JavaScript for automatically toggling sidebar visibility
-const toggleButton = document.querySelector('.toggle-sidebar');
-const sidebar = document.querySelector('.sidebar');
-
-function toggleSidebar() {
-  sidebar.classList.toggle('hidden');
-  toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
-}
-
-function checkViewportWidth() {
-  if (window.innerWidth <= 1300) {
-    sidebar.classList.add('hidden');
-    toggleButton.style.display = 'block';
-  } else {
-    sidebar.classList.remove('hidden');
-    toggleButton.style.display = 'none';
-  }
-}
-
-toggleButton.addEventListener('click', function() {
-  toggleSidebar();
-});
-
-// Check viewport width initially and on resize
-checkViewportWidth();
-window.addEventListener('resize', checkViewportWidth);
-
-</script>
-<script>
-  document.getElementById('offerprice').addEventListener('change', function () {
-    validateOfferPrice();
-});
-document.getElementById('editProductForm').addEventListener('submit', function (event) {
-  event.preventDefault();
-
-  const nameInput = document.getElementById('productName');
-  const descriptionInput = document.getElementById('productDescription');
-  const priceInput = document.getElementById('productPrice');
-  const stockInput = document.getElementById('productStock');
-
-  const name = nameInput.value.trim();
-  const description = descriptionInput.value.trim();
-  const price = parseFloat(priceInput.value);
-  const stock = parseInt(stockInput.value);
-
-  const nameRegex = /^[a-zA-Z ]+$/;
-  const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/;
-
-  if (!nameRegex.test(name)) {
-      alert('Product name should contain only letters and spaces.');
-      return;
-  }
-
-  if (!description || !descriptionRegex.test(description)) {
-      alert('Please enter a valid product description.');
-      return;
-  }
-
-  if (price <= 0 || stock < 0) {
-      alert("Price and stock should be positive numbers.");
-      return;
-  }
-
-  if (!validateOfferPrice()) {
-        return;
-    }
-  const formData = new FormData(this);
-  const formAction = this.getAttribute('action');
-
-  fetch(formAction, {
-      method: 'POST',
-      body: formData,
-  })
-  .then(response => {
-      if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-  })
-  .then(data => {
-      console.log('Product edited successfully:', data);
-      window.location.href = '/admin/productlist';
-  })
-  .catch(error => {
-      console.error('Error editing product:', error);
-  });
-});
-
-
-function validateOfferPrice() {
-    const offerPriceInput = document.getElementById('offerprice');
-    const productPriceInput = document.getElementById('productPrice');
-
-    const offerPrice = parseFloat(offerPriceInput.value);
-    const productPrice = parseFloat(productPriceInput.value);
-
-    if (offerPrice > productPrice) {
-        swal({
-            title: "Error!",
-            text: "Offer Price cannot be greater than Product Price.",
-            icon: "error",
-            button: "OK",
-        });
-        return false;
-    }
-    return true;
-}
-</script>
-
-
-
-
-<script>
-  let selectedFiles = []; // Keep track of selected files
-
-  function previewImages() {
-    const input = document.getElementById("productImages");
-    const container = document.getElementById("imagePreviews");
-    container.innerHTML = ""; // Clear previous previews
-
-    if (input.files) {
-      for (const file of input.files) {
-        selectedFiles.push(file); // Add file to selectedFiles array
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          const imgContainer = document.createElement("div");
-          imgContainer.className = "image-preview"; // Changed class name
-          const index = selectedFiles.indexOf(file); // Get index of the file
-          imgContainer.setAttribute("data-index", index); // Set data-index attribute
-
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          img.alt = "Product Image";
-          img.className = "preview-image"; // Added class name for styling
-
-          const deleteButton = document.createElement("button");
-          deleteButton.innerText = "Delete";
-          deleteButton.type = "button";
-          deleteButton.className = "delete-button"; // Apply the CSS class
-          deleteButton.onclick = function () {
-            container.removeChild(imgContainer);
-            removeFileFromArray(file); // Remove file from selectedFiles array
-            input.value = ""; // Remove the corresponding file from the input
-          };
-
-          imgContainer.appendChild(img);
-          imgContainer.appendChild(deleteButton);
-          container.appendChild(imgContainer);
-        };
-
-        reader.readAsDataURL(file);
-      }
-    }
-  }
-
-  function removeFileFromArray(fileToRemove) {
-    selectedFiles = selectedFiles.filter((file) => file !== fileToRemove);
-  }
-
-  function deleteImage(productId, index) {
-    const container = document.getElementById("imagePreviews");
-    const imgContainer = container.querySelector(`[data-index='${index}']`);
-    container.removeChild(imgContainer);
-    // Assuming you want to remove the corresponding file from selectedFiles array
-    selectedFiles.splice(index, 1);
-  }
-
-  function submitForm() {
-    const form = document.getElementById("editProductForm"); // Corrected form ID
-    const formData = new FormData(form);
-
-    // Append selectedFiles to formData
-    for (const file of selectedFiles) {
-      formData.append("productImages", file); // Corrected key name
-    }
-
-    // Assuming you want to submit the form programmatically
-    // You can uncomment the below line if needed
-    // form.submit();
-  }
-</script>
-
-
-<script>
-  function deleteImage(productId, index) {
-    // Send a request to the backend to delete the image
-    fetch(`/admin/deleteimage/${productId}/${index}`, {
-        method: 'DELETE',
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+        function toggleSidebar() {
+            sidebar.classList.toggle('hidden');
+            toggleButton.classList.toggle('active');
         }
-        // Remove the image preview from the DOM if the deletion was successful
-        const container = document.getElementById("imagePreviews");
-        const imgContainer = container.querySelector(`[data-index='${index}']`);
-        container.removeChild(imgContainer);
-    })
-    .catch(error => {
-        console.error('Error deleting image:', error);
-    });
-}
 
-</script>
+        function checkViewportWidth() {
+            if (window.innerWidth <= 1300) {
+                sidebar.classList.add('hidden');
+                toggleButton.style.display = 'block';
+            } else {
+                sidebar.classList.remove('hidden');
+                toggleButton.style.display = 'none';
+            }
+        }
 
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        toggleButton.addEventListener('click', toggleSidebar);
+        checkViewportWidth();
+        window.addEventListener('resize', checkViewportWidth);
+
+        // Offer price and form validation
+        document.getElementById('offerprice').addEventListener('change', validateOfferPrice);
+        document.getElementById('editProductForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('productName');
+            const descriptionInput = document.getElementById('productDescription');
+            const priceInput = document.getElementById('productPrice');
+            const stockInput = document.getElementById('productStock');
+            const existingImagesInput = document.getElementById('existingImages');
+            const fileInput = document.getElementById('productImages');
+
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            const stock = parseInt(stockInput.value);
+            const existingImages = JSON.parse(existingImagesInput.value || "[]");
+            const newFiles = fileInput.files;
+
+            const nameRegex = /^[a-zA-Z ]+$/;
+            const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/;
+
+            if (!nameRegex.test(name)) {
+                swal("Error!", "Product name should contain only letters and spaces.", "error");
+                return;
+            }
+
+            if (!description || !descriptionRegex.test(description)) {
+                swal("Error!", "Please enter a valid product description.", "error");
+                return;
+            }
+
+            if (price <= 0 || stock < 0) {
+                swal("Error!", "Price and stock should be positive numbers.", "error");
+                return;
+            }
+
+            if (!validateOfferPrice()) {
+                return;
+            }
+
+            // Check if there is at least one image
+            if (existingImages.length === 0 && newFiles.length === 0) {
+                swal("Error!", "At least one product image is required.", "error");
+                return;
+            }
+
+            const form = this;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    swal("Success!", data.message, "success").then(() => {
+                        window.location.href = '/admin/productlist';
+                    });
+                } else {
+                    swal("Error!", data.error || "Failed to update product.", "error");
+                }
+            })
+            .catch(error => {
+                console.error('Error editing product:', error);
+                swal("Error!", "An error occurred while updating the product.", "error");
+            });
+        });
+
+        function validateOfferPrice() {
+            const offerPriceInput = document.getElementById('offerprice');
+            const productPriceInput = document.getElementById('productPrice');
+            const offerPrice = parseFloat(offerPriceInput.value) || 0;
+            const productPrice = parseFloat(productPriceInput.value);
+
+            if (offerPrice > productPrice) {
+                swal("Error!", "Offer Price cannot be greater than Product Price.", "error");
+                return false;
+            }
+            return true;
+        }
+
+        // Image preview and management
+        let selectedFiles = [];
+
+        function previewImages() {
+            const input = document.getElementById("productImages");
+            const container = document.getElementById("imagePreviews");
+            const placeholder = document.getElementById("selectedImagesPlaceholder");
+
+            if (input.files && input.files.length > 0) {
+                selectedFiles = Array.from(input.files);
+                placeholder.textContent = `${selectedFiles.length} file(s) selected`;
+
+                // Append new previews without clearing existing ones
+                for (const file of input.files) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const imgContainer = document.createElement("div");
+                        imgContainer.className = "image-preview";
+                        const index = selectedFiles.indexOf(file) + (container.childElementCount - prod.productImages.length);
+                        imgContainer.setAttribute("data-index", `new-${index}`);
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.alt = "Product Image";
+                        img.className = "preview-image";
+
+                        const deleteButton = document.createElement("button");
+                        deleteButton.type = "button";
+                        deleteButton.className = "delete-button";
+                        deleteButton.textContent = "✖";
+                        deleteButton.onclick = function () {
+                            container.removeChild(imgContainer);
+                            selectedFiles = selectedFiles.filter(f => f !== file);
+                            placeholder.textContent = selectedFiles.length > 0 ? `${selectedFiles.length} file(s) selected` : "No files selected";
+                        };
+
+                        imgContainer.appendChild(img);
+                        imgContainer.appendChild(deleteButton);
+                        container.appendChild(imgContainer);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                selectedFiles = [];
+                placeholder.textContent = "No files selected";
+            }
+        }
+
+        function deleteImage(productId, index) {
+            fetch(`/admin/deleteimage/${productId}/${index}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById("imagePreviews");
+                    const imgContainer = container.querySelector(`[data-index='${index}']`);
+                    if (imgContainer) {
+                        container.removeChild(imgContainer);
+                    }
+
+                    // Update existingImages hidden input
+                    const existingImagesInput = document.getElementById("existingImages");
+                    let existingImages = JSON.parse(existingImagesInput.value || "[]");
+                    existingImages.splice(index, 1);
+                    existingImagesInput.value = JSON.stringify(existingImages);
+
+                    swal("Success!", data.message, "success");
+                } else {
+                    swal("Error!", data.error || "Failed to delete image.", "error");
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting image:', error);
+                swal("Error!", "Failed to delete image.", "error");
+            });
+        }
+    </script>
 </body>
 </html>

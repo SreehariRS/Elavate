@@ -1,0 +1,212 @@
+      
+            @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+            body {
+                font-family: "Poppins", sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 900px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px rgba(242, 255, 0, 0.1);
+                position: relative;
+                height: auto; /* Remove fixed height */
+            }
+            a {
+                color: #2319b0;
+                text-decoration: none;
+            }
+            .container::-webkit-scrollbar {
+                display: none; /* Hide the scrollbar */
+            }
+
+            .order-details {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            .order-details label {
+                font-weight: bold;
+            }
+
+            .product-info {
+                display: block; /* Changed from flex to block */
+            }
+            .product-info img {
+                max-width: 100%;
+                max-height: 150px; /* Adjust as needed */
+                margin-right: 0; /* Remove right margin */
+                margin-bottom: 10px; /* Add bottom margin */
+                position: static; /* Remove relative positioning */
+            }
+            .product-details {
+                position: static; /* Remove relative positioning */
+                text-align: center; /* Center align on smaller screens */
+            }
+
+            h2 {
+                margin-top: 0;
+                font-weight: 600;
+            }
+            p {
+                margin: 5px 0;
+                font-weight: 400;
+            }
+            /* Added CSS rules for different order statuses */
+            .confirmed {
+                color: rgb(0, 255, 0);
+            }
+            .shipped {
+                color: rgb(255, 81, 0);
+            }
+            .returned {
+                color: rgb(47, 0, 255);
+            }
+            .cancelled {
+                color: rgb(255, 0, 0);
+            }
+            .delivered {
+                color: rgb(255, 0, 242);
+            }
+
+            /* Custom CSS for SweetAlert */
+            .swal-title {
+                font-size: 20px; /* Adjust title font size */
+            }
+
+            .swal-text {
+                font-size: 16px; /* Adjust text font size */
+            }
+
+            .swal-input {
+                border-radius: 8px; /* Add border radius to input */
+                padding: 10px; /* Add padding to input */
+                font-size: 14px; /* Adjust input font size */
+            }
+
+            .swal-button {
+                border-radius: 8px; /* Add border radius to buttons */
+                padding: 10px 20px; /* Add padding to buttons */
+                font-size: 16px; /* Adjust button font size */
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Add box shadow to buttons */
+                background-color: #070707;
+            }
+
+            .swal-button:hover {
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Adjust box shadow on hover */
+                color: aqua;
+                background-color: #070707;
+            }
+
+            .swal-button:focus {
+                outline: none; /* Remove focus outline */
+                color: aqua;
+                background-color: #070707;
+            }
+
+            .swal-footer {
+                border-top: none; /* Remove top border from footer */
+            }
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 0;
+            }
+            @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
+            * {
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                padding-top: 56px; /* Adjust based on the height of your navbar */
+                font-family: "Poppins", sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f5;
+                /* display: flex; */
+            }
+
+            .section-padding {
+                padding: 100px 0;
+            }
+
+            .cancel-order-btn {
+                margin-top: 10px; /* Adjust as needed */
+            }
+
+            .cancel-btn,
+            .return-btn {
+                background-color: #070707;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+                bottom: 20px;
+                right: 20px;
+                z-index: 1;
+            }
+
+            .cancel-btn:hover,
+            .return-btn:hover {
+                background-color: #353434;
+            }
+
+            .back-button {
+                position: absolute;
+                top: 25px;
+                left: 80px;
+                z-index: 1000; /* Ensure the button is above other elements */
+            }
+
+            .back-button a {
+                font-size: 24px; /* Increase the font size of the icon */
+                padding: 10px; /* Add some padding around the icon */
+                color: #000; /* Adjust the color as needed */
+                text-decoration: none;
+            }
+
+            .back-button a:hover {
+                color: #333; /* Change the color on hover */
+            }
+            .header {
+                position: relative;
+                width: 100%;
+                height: 60px; /* Adjust the height as needed */
+                background-color: #f8f9fa; /* Background color of the header */
+            }
+
+            .header-text {
+                position: absolute;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
+            .container {
+                position: relative;
+                top: 5px; /* Adjust this value as needed */
+            }
+
+            /* Default styles */
+            .header-text h1 {
+                font-size: 3rem;
+            }
+            .profile-icon {
+    position: absolute;
+    right: 60px;
+    top: 25px;
+    cursor: pointer;
+}
+.profile-icon i {
+    font-size: 24px; /* Adjust the size as needed */
+}
+     

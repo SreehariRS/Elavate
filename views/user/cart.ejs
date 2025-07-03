@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-HjWTaj0X2ZqbuxOXz5m9pfRqCsI0i2O3evR5Fn2TtrNT6Zmd25FuXtRT5U9M1efTTrT7oLh+j/Y9BKcRnNQ8IQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
 
-    
     <style>
         /* Your CSS styles here */
         body {
@@ -261,17 +252,14 @@ body {
     color: #333; /* Change the color on hover */
 }
     </style>
-</head>
-<body>
+    <%- include('nav2') %>
 
-    <%-include('nav2')%>
-    
     <div class="back-button">
         <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
     </div>
     <div class="cart">
         <div class="cart-title">Shopping Cart</div>
-        <% if (cart.length === 0) { %>
+        <% if (!cart || cart.items.length === 0) { %>
             <div class="empty-cart-message" style="display: block;">
                 Your cart is empty. <a href="/" class="shop-now-btn" style="text-decoration: none;">Shop Now</a>
             </div>
@@ -288,291 +276,214 @@ body {
                 </tr>
             </thead>
             <tbody class="cart-items">
-             <% cart.forEach(item => { %>
-    <tr>
-
-        <!-- Display the product image -->
-        <td><img src="<%= item.productDetails && item.productDetails.productImages[0] %>" alt="Product Image" class="product-image" /></td>
-
-        <!-- Display the product name -->
-        <td><%= item.productDetails && item.productDetails.name %></td>
-        <!-- Display the product price -->
-        <td>
-            <% if (item.productDetails && item.productDetails.price !== null && item.productDetails.price !== undefined) { %>
-                <% if (item.productDetails.offerprice !== null && item.productDetails.offerprice !== undefined) { %>
-                    ₹<%= Math.min(item.productDetails.offerprice, item.productDetails.price) %>
-                <% } else { %>
-                    ₹<%= item.productDetails.price %>
-                <% } %>
-            <% } else { %>
-                <!-- Handle the case where price is not available -->
-                <span>No Price</span>
-            <% } %>
-        </td>
-        
-<td class="quantity-cell">
-    <button class="quantity-btn quantity-minus" onclick="decreaseQuantity('<%= item.productDetails._id %>')">
-        <i class="fas fa-minus"></i>
-    </button>
-    <input type="number" class="quantity-input" id="quantity_<%= item.productDetails._id %>" value="<%= item.quantity %>" min="1" max="<%= item.productDetails.stock %>" disabled>
-    <button class="quantity-btn quantity-plus" onclick="increaseQuantity('<%= item.productDetails._id %>')">
-        <i class="fas fa-plus"></i>
-    </button>
-</td>
-
-        
-<!-- Display the total price for this item -->
-<td class="subtotal">₹<%= (item.productDetails.offerprice ? item.productDetails.offerprice : item.productDetails.price) * item.quantity %></td>
-
-        <td>
-            <button class="remove-btn" onclick="removeFromCart('<%= item.productDetails._id %>')">Remove</button>
-        </td>
-        
-    </tr>
-<% }) %>   
-                
-                
+                <% cart.items.forEach(item => { %>
+                    <% if (item.productId) { %>
+                    <tr id="row_<%= item.productId._id %>">
+                        <td><img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.name || 'Product Image' %>" class="product-image" /></td>
+                        <td><%= item.productId.name || 'Unknown Product' %></td>
+                        <td>
+                            <% if (item.productId.price !== null && item.productId.price !== undefined) { %>
+                                <% if (item.productId.offerprice !== null && item.productId.offerprice !== undefined) { %>
+                                    ₹<%= Math.min(item.productId.offerprice, item.productId.price) %>
+                                <% } else { %>
+                                    ₹<%= item.productId.price %>
+                                <% } %>
+                            <% } else { %>
+                                <span>No Price</span>
+                            <% } %>
+                        </td>
+                        <td class="quantity-cell">
+                            <button class="quantity-btn quantity-minus" onclick="decreaseQuantity('<%= item.productId._id %>')">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="quantity-input" id="quantity_<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="<%= item.productId.stock %>" disabled>
+                            <button class="quantity-btn quantity-plus" onclick="increaseQuantity('<%= item.productId._id %>')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </td>
+                        <td class="subtotal">₹<%= (item.productId.offerprice || item.productId.price) * item.quantity %></td>
+                        <td>
+                            <button class="remove-btn" onclick="removeFromCart('<%= item.productId._id %>')">Remove</button>
+                        </td>
+                    </tr>
+                    <% } %>
+                <% }) %>
             </tbody>
         </table>
-      
-          <% } %>
-          <% if (cart.length > 0) { %>
-            <div class="cart-footer">
-                <div class="total-price">Total: ₹<span class="cart-total"><%= totalPrice.toFixed(2) %></span></div>
-                <a href="#" onclick="handleCheckout()"><button class="checkout-btn">Checkout</button></a>
-            </div>
-        <% } else { %>
-            <!-- Optionally, you can display a message or leave this section empty if you don't want to show anything when the cart is empty -->
+        <div class="cart-footer">
+            <div class="total-price">Total: ₹<span class="cart-total"><%= totalPrice.toFixed(2) %></span></div>
+            <a href="#" onclick="handleCheckout()"><button class="checkout-btn">Checkout</button></a>
+        </div>
         <% } %>
-        
-      
-
     </div>
-    
-   >
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-
-
-
-<script>
-    function handleCheckout() {
-        const cartTotal = parseFloat(document.querySelector(".cart-total").innerText);
-        if (cartTotal === 0) {
-            // Display a SweetAlert indicating no product selected
-            Swal.fire({
-                title: 'Oops!',
-                text: 'Please select a product before checking out.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        } else {
-            window.location.href = "/checkout";
-        }
-    }
-</script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-    // Add validation to check the stock limit
-    function updateQuantity(productId) {
-    const inputField = document.getElementById(`quantity_${productId}`);
-    const newQuantity = parseInt(inputField.value);
-    const maxStock = parseInt(inputField.getAttribute('max'));
-
-    // Check if the input is a positive number
-    if (isNaN(newQuantity) || newQuantity < 0) {
-        // Display an error message or alert
-        alert('Quantity must be a positive number.');
-        // Reset the input to the previous valid quantity
-        inputField.value = inputField.dataset.prevValue || 1;
-        return;
-    }
-
-    // Check if the input exceeds the stock limit
-    if (newQuantity > maxStock) {
-        // Display a SweetAlert indicating the maximum stock limit reached
-        Swal.fire({
-            title: 'Error',
-            text: 'Maximum stock limit reached',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        // Reset the input to the maximum stock value
-        inputField.value = maxStock;
-        return;
-    }
-
-    // Send a request to update the quantity to the server
-    fetch('/updateQuantity', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, newQuantity }), // Send the productId and newQuantity in the request body
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update the quantity input field with the new quantity
-            inputField.value = data.cart.items.find(item => item.productDetails._id === productId).quantity;
-            console.log('Quantity updated successfully');
-            // Optionally, you might want to update the total price here if needed
-        } else {
-            console.error('Failed to update quantity');
-            if (data.message === 'Product already exists in the cart') {
-                // Show a popup indicating that the product already exists
-                alert('Product already exists in your cart');
+        function handleCheckout() {
+            const cartTotal = parseFloat(document.querySelector(".cart-total")?.innerText || 0);
+            if (cartTotal === 0) {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Please select a product before checking out.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                window.location.href = "/checkout";
             }
         }
-    })
-    .catch(error => {
-        console.error('Error updating quantity:', error);
-    });
-}
 
-      
+        function updateQuantity(productId, quantity) {
+            const inputField = document.getElementById(`quantity_${productId}`);
+            const maxStock = parseInt(inputField.getAttribute('max'));
 
-    </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const cartItems = document.querySelector(".cart-items");
-            const emptyCartMessage = document.querySelector(".empty-cart-message");
-
-            const cartTotal = document.querySelector(".cart-total");
-            const quantityInputs = document.querySelectorAll(".quantity-input");
-            const removeButtons = document.querySelectorAll(".remove-btn");
-            const shopNowBtn = document.querySelector(".shop-now-btn");
-            
-            function updateTotal() {
-        const subtotals = document.querySelectorAll(".subtotal");
-        let total = 0;
-
-        subtotals.forEach(subtotal => {
-            total += parseFloat(subtotal.innerText.replace('₹', ''));
-        });
-
-        const totalPriceElement = document.querySelector(".cart-total");
-        totalPriceElement.innerText = total.toFixed(2);
-        
-    }
-
-    
-            // Function to update total price
-           
-            // Remove button click event
-            removeButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            this.closest("tr").remove();
-            updateTotal();
-            if (cartItems.children.length === 0) {
-                emptyCartMessage.style.display = "block";
+            if (isNaN(quantity) || quantity < 1) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Quantity must be a positive number.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                inputField.value = inputField.dataset.prevValue || 1;
+                return;
             }
-        });
-    });
 
-            // Initially update total
-            updateTotal();
+            if (quantity > maxStock) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Maximum stock limit reached',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                inputField.value = maxStock;
+                return;
+            }
 
-            // Shop Now button click event
-            shopNowBtn.addEventListener("click", function () {
-                // Add your logic to navigate to the shop page
-                console.log("Redirecting to shop page...");
-            });
-        });
-        // Modify the removeFromCart function to send a request to the server
-        function removeFromCart(productId) {
-    // Display a confirmation dialog using SweetAlert
-    Swal.fire({
-    title: 'Are you sure?',
-    text: 'You are about to remove this product from your cart.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, remove it!',
-    cancelButtonText: 'Cancel',
-    customClass: {
-        container: 'custom-swal-container',
-        title: 'custom-swal-title',
-        text: 'custom-swal-text',
-        confirmButton: 'custom-swal-confirm-button',
-        cancelButton: 'custom-swal-cancel-button',
-    },
-        // You can also add HTML content to customize the dialog further
-        // html: '<span style="color: red;">Custom HTML content goes here</span>'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // If confirmed, send a request to the server to remove the product
-            fetch(`/removeFromCart/${productId}`, {
+            fetch('/updateQuantity', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ productId, quantity }),
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Product removed successfully');
-                    // Remove the item visually from the cart
-                    document.getElementById(`row_${productId}`).remove();
-                    // Update the total price
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    inputField.value = data.cart.items.find(item => item.productId._id === productId).quantity;
                     updateTotal();
                 } else {
-                    console.error('Failed to remove product');
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'Failed to update quantity',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
             })
             .catch(error => {
-                console.error('Error removing product:', error);
+                console.error('Error updating quantity:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while updating quantity',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             });
         }
-    });
-}
 
+        function decreaseQuantity(productId) {
+            const inputField = document.getElementById(`quantity_${productId}`);
+            let newValue = parseInt(inputField.value) - 1;
+            newValue = newValue < 1 ? 1 : newValue;
+            inputField.value = newValue;
+            updateQuantity(productId, newValue);
+        }
 
-    </script>
-    <script>
-        // Function to decrease quantity
-function decreaseQuantity(productId) {
-    const inputField = document.getElementById(`quantity_${productId}`);
-    let newValue = parseInt(inputField.value) - 1;
-    newValue = newValue < 1 ? 1 : newValue; // Ensure quantity doesn't go below 1
-    inputField.value = newValue;
-        
-    updateQuantity(productId, newValue); // Call function to update quantity
+        function increaseQuantity(productId) {
+            const inputField = document.getElementById(`quantity_${productId}`);
+            const maxStock = parseInt(inputField.getAttribute('max'));
+            let newValue = parseInt(inputField.value) + 1;
 
-}
+            if (newValue > maxStock) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Maximum stock limit reached',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-// Function to increase quantity
-// Function to increase quantity
-function increaseQuantity(productId) {
-    const inputField = document.getElementById(`quantity_${productId}`);
-    const maxStock = parseInt(inputField.getAttribute('max'));
-    let newValue = parseInt(inputField.value) + 1;
-    
-    // Check if newValue exceeds max stock limit
-    if (newValue > maxStock) {
-        // Display a SweetAlert indicating the maximum stock limit reached
-        Swal.fire({
-            title: 'Error',
-            text: 'Maximum stock limit reached',
-            icon: 'error',
-            confirmButtonText: 'OK'
+            inputField.value = newValue;
+            updateQuantity(productId, newValue);
+        }
+
+        function removeFromCart(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to remove this product from your cart.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/removeFromCart/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(response => response.ok ? response : Promise.reject('Failed to remove product'))
+                    .then(() => {
+                        document.getElementById(`row_${productId}`)?.remove();
+                        updateTotal();
+                        if (!document.querySelector(".cart-items").children.length) {
+                            document.querySelector(".empty-cart-message").style.display = "block";
+                            document.querySelector(".cart-footer").style.display = "none";
+                        }
+                        Swal.fire({
+                            title: 'Removed!',
+                            text: 'The product has been removed from your cart.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error removing product:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to remove product from cart',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                }
+            });
+        }
+
+        function updateTotal() {
+            const subtotals = document.querySelectorAll(".subtotal");
+            let total = 0;
+            subtotals.forEach(subtotal => {
+                total += parseFloat(subtotal.innerText.replace('₹', '')) || 0;
+            });
+            const totalPriceElement = document.querySelector(".cart-total");
+            if (totalPriceElement) {
+                totalPriceElement.innerText = total.toFixed(2);
+            }
+            if (total === 0) {
+                document.querySelector(".empty-cart-message").style.display = "block";
+                document.querySelector(".cart-footer").style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateTotal();
         });
-        return; // Exit function without updating quantity
-    }
-    
-    // Update quantity if not exceeding max stock limit
-    inputField.value = newValue;
-    updateQuantity(productId, newValue); // Call function to update quantity
-}
-
-
     </script>
-<script>
-    
-</script>
 </body>
 </html>

@@ -1,702 +1,750 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Product Details</title>
-        <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order History</title>
+    <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
 
-        <style>
-            @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-            body {
-                font-family: "Poppins", sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .container {
-                max-width: 900px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: #fff;
-                border-radius: 10px;
-                box-shadow: 0px 0px 10px rgba(242, 255, 0, 0.1);
-                position: relative;
-                height: auto; /* Remove fixed height */
-            }
-            a {
-                color: #2319b0;
-                text-decoration: none;
-            }
-            .container::-webkit-scrollbar {
-                display: none; /* Hide the scrollbar */
-            }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
 
-            .order-details {
-                margin-bottom: 20px;
-                text-align: center;
-            }
-            .order-details label {
-                font-weight: bold;
-            }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
 
-            .product-info {
-                display: block; /* Changed from flex to block */
-            }
-            .product-info img {
-                max-width: 100%;
-                max-height: 150px; /* Adjust as needed */
-                margin-right: 0; /* Remove right margin */
-                margin-bottom: 10px; /* Add bottom margin */
-                position: static; /* Remove relative positioning */
-            }
-            .product-details {
-                position: static; /* Remove relative positioning */
-                text-align: center; /* Center align on smaller screens */
-            }
+        a:hover {
+            color: #1e40af;
+        }
 
-            h2 {
-                margin-top: 0;
-                font-weight: 600;
-            }
-            p {
-                margin: 5px 0;
-                font-weight: 400;
-            }
-            /* Added CSS rules for different order statuses */
-            .confirmed {
-                color: rgb(0, 255, 0);
-            }
-            .shipped {
-                color: rgb(255, 81, 0);
-            }
-            .returned {
-                color: rgb(47, 0, 255);
-            }
-            .cancelled {
-                color: rgb(255, 0, 0);
-            }
-            .delivered {
-                color: rgb(255, 0, 242);
-            }
+        .header {
+            background-color: #ffffff;
+            padding: 20px 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-            /* Custom CSS for SweetAlert */
-            .swal-title {
-                font-size: 20px; /* Adjust title font size */
-            }
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
 
-            .swal-text {
-                font-size: 16px; /* Adjust text font size */
-            }
+        .header-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: #1e293b;
+            cursor: pointer;
+        }
 
-            .swal-input {
-                border-radius: 8px; /* Add border radius to input */
-                padding: 10px; /* Add padding to input */
-                font-size: 14px; /* Adjust input font size */
-            }
+        .profile-icon i {
+            font-size: 1.5rem;
+            color: #475569;
+            transition: color 0.2s ease;
+        }
 
-            .swal-button {
-                border-radius: 8px; /* Add border radius to buttons */
-                padding: 10px 20px; /* Add padding to buttons */
-                font-size: 16px; /* Adjust button font size */
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Add box shadow to buttons */
-                background-color: #070707;
-            }
+        .profile-icon:hover i {
+            color: #2563eb;
+        }
 
-            .swal-button:hover {
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Adjust box shadow on hover */
-                color: aqua;
-                background-color: #070707;
-            }
+        .back-button {
+            display: flex;
+            align-items: center;
+        }
 
-            .swal-button:focus {
-                outline: none; /* Remove focus outline */
-                color: aqua;
-                background-color: #070707;
-            }
+        .back-button a {
+            font-size: 1.2rem;
+            color: #475569;
+            transition: color 0.2s ease;
+        }
 
-            .swal-footer {
-                border-top: none; /* Remove top border from footer */
-            }
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f9f9f9;
-                margin: 0;
-                padding: 0;
-            }
-            @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
-            * {
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                padding-top: 56px; /* Adjust based on the height of your navbar */
-                font-family: "Poppins", sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f5f5f5;
-                /* display: flex; */
-            }
+        .back-button a:hover {
+            color: #2563eb;
+        }
 
-            .section-padding {
-                padding: 100px 0;
-            }
+        h2.main-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 30px 0;
+        }
 
-            .cancel-order-btn {
-                margin-top: 10px; /* Adjust as needed */
-            }
+        .order-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease;
+        }
 
-            .cancel-btn,
-            .return-btn {
-                background-color: #070707;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-                bottom: 20px;
-                right: 20px;
-                z-index: 1;
-            }
+        .order-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
 
-            .cancel-btn:hover,
-            .return-btn:hover {
-                background-color: #353434;
-            }
+        .product-info img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
 
-            .back-button {
-                position: absolute;
-                top: 25px;
-                left: 80px;
-                z-index: 1000; /* Ensure the button is above other elements */
-            }
+        .order-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-            .back-button a {
-                font-size: 24px; /* Increase the font size of the icon */
-                padding: 10px; /* Add some padding around the icon */
-                color: #000; /* Adjust the color as needed */
-                text-decoration: none;
-            }
+        .product-details {
+            flex: 2;
+        }
 
-            .back-button a:hover {
-                color: #333; /* Change the color on hover */
-            }
-            .header {
-                position: relative;
-                width: 100%;
-                height: 60px; /* Adjust the height as needed */
-                background-color: #f8f9fa; /* Background color of the header */
-            }
+        .order-details h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
 
-            .header-text {
-                position: absolute;
-                top: 70%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-            }
+        p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #475569;
+        }
 
-            .container {
-                position: relative;
-                top: 5px; /* Adjust this value as needed */
-            }
+        .status-confirmed {
+            color: #22c55e;
+            font-weight: 500;
+        }
 
-            /* Default styles */
-            .header-text h1 {
-                font-size: 3rem;
-            }
-            .profile-icon {
-    position: absolute;
-    right: 60px;
-    top: 25px;
-    cursor: pointer;
-}
-.profile-icon i {
-    font-size: 24px; /* Adjust the size as needed */
-}
-        </style>
-    </head>
-    <body>
-        <div class="back-button">
-            <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
-        </div>
+        .status-shipped {
+            color: #f97316;
+            font-weight: 500;
+        }
 
-        <header class="header">
+        .status-returned {
+            color: #7c3aed;
+            font-weight: 500;
+        }
+
+        .status-cancelled {
+            color: #ef4444;
+            font-weight: 500;
+        }
+
+        .status-delivered {
+            color: #ec4899;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .action-btn.primary {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .action-btn.secondary {
+            background-color: #6b7280;
+            color: #ffffff;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(90%);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .pagination .page-link {
+            color: #2563eb;
+            border-radius: 6px;
+            margin: 0 4px;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #eff6ff;
+        }
+
+        .debug-info {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .swal2-container {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .swal2-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+        }
+
+        .swal2-html-container {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .swal2-input {
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .swal2-confirm {
+            background-color: #2563eb;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .swal2-cancel {
+            background-color: #6b7280;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="back-button">
+                <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i></a>
+            </div>
             <div class="header-text">
-             <h1 id="elavate">ELAVATE</h1>
+                <h1 id="elavate">ELAVATE</h1>
             </div>
             <div class="profile-icon">
-                <i class="fas fa-user fa-2x"></i>       
-                 </div>
-        </header>
-        <h2 style="text-align: center; margin-top: 25px; color: #424244; font-family: Arial, sans-serif">YOUR ORDERS</h2>
-        <!-- Loop through orders -->
-        <% ordersi.slice().reverse().forEach(order => { %>
-
-        <!-- Loop through items in each order -->
-        <% order.items.forEach(item => { %>
-        <div class="container">
-            <div class="order-item">
-                <div class="order-details">
-                    <div>
-                        <h2>Order_ID <%= String(order._id).slice(-4) %></h2> 
-                    <p>Date & Time: <%= order.date.toLocaleString() %></p>
-                
-                    <% if (order.status === 'delivered') { %>
-                        <div class="return-order-btn">
-                            <button class="return-btn" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
-
-                            <button class="return-btn" onclick="initiateReturn('<%= order._id %>')">Return Order</button>
-                        </div>
-                    <% }
-                    else if (order.status === 'pending') { %>
-                       
-                        <button id="payBtn" onclick="failedpay('<%= order.totalprice %>','<%= order._id %>')" class="cancel-btn cancel-order-btn">Re-try payment</button>
-
-
-                    <% }
-                     else if (order.status === 'returned' || order.status === 'cancelled') { %>
-                        <!-- Show generate invoice button for returned orders -->
-                        
-                    <% }
-                     else { %>
-                        <!-- Show the cancel and generate invoice buttons for other cases -->
-                        <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
-                            <!-- Product details available, display button -->
-                            <div class="cancel-order-btn">
-                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" class="cancel-btn cancel-order-btn">Cancel Order</button>
-                            </div>
-                        <% } else { %>
-                            <!-- Product details not available, disable button -->
-                            <div class="cancel-order-btn">
-                                <button id="cancelBtn_<%= order._id %>" onclick="cancelOrder('<%= order._id %>')" class="cancel-btn cancel-order-btn">Cancel Order</button>
-                            </div>
-                        <% } %>
-                        
-                    <% } %>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <!-- Display product details -->
-                    <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
-                    <img
-                        src="<%= item.productId.productImages[0] %>"
-                        alt="Product Image"
-                        style="max-width: 100px; max-height: 100px; height: auto"
-                    />
-                    <div class="product-details">
-                        <h2><%= item.productId.name %></h2>
-                        <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                        <p><strong>Total:</strong> ₹<%= item.productId.price * item.quantity %></p>
-
-                        <p><strong>Address:</strong> <%= order.selectedAddress %></p>
-                        <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                        <li>
-                            (Discount/Offer) Amount: ₹<span class="highlights" style="color: red; font-size: 16px"
-                                ><%= order.totalprice ? order.items.reduce((acc, item) => acc + (item.productId.price *
-                                item.quantity), 0) - order.totalprice : 0 %></span
-                            >
-                        </li>
-                        <li>
-                            Net Amount(After Discount): ₹<span
-                                class="highlight"
-                                style="color: rgb(8, 0, 255); font-size: 16px"
-                                ><%= order.totalprice %></span
-                            >
-                        </li>
-
-                        <p>
-                            <strong>Order Status:</strong>
-                            <span class="<%= order.status.toLowerCase() %>"><%= order.status %></span>
-                        </p>
-                    </div>
-                    <% } else { %>
-                    <div class="product-details">
-                        <p><em>Apologies, the product is currently unavailable.</em></p>
-                    </div>
-                    <% } %>
-                </div>
+                <i class="fas fa-user"></i>
             </div>
         </div>
-        <% }); %> <% }); %>
+    </header>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <h2 class="main-title">Your Orders</h2>
 
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-            crossorigin="anonymous"
-        ></script>
-</script>
+    <div id="userData" data-user='<%= JSON.stringify(userData) %>'></div>
+    <div id="ordersData" data-orders='<%= JSON.stringify(orders) %>'></div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <div class="container">
+     
 
-<script>
-function failedpay(price , orderId ){
-    
-    fetch('/generate-razorpay-order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: price }),
-    })
-    .then(response => response.json())
-    .then(order => {
-        var options = {
-            key: "rzp_test_rJ0yPg6ZIlUOvq", // Enter the Key ID generated from the Dashboard
-            amount: order.amount, 
-            currency: "INR",
-            name: "Elavate",
-            description: "Payment for your order",
-            image: "https://example.com/your_logo",
-            order_id: order.id, 
-            handler: function (response){
-                // After payment successfully made, you can verify the payment
-                // by sending request to your server with necessary data
-                console.log(response);
-               
-            console.log('Order',orderId);
-                // Update the order status to 'confirmed'
-                updateOrderStatus(orderId);
-                
-            },
-            prefill: {
-                name: "sreehari",
-                email: "sreeharikannan373@gmail.com",
-                contact: "9645277856",
-            },
-            theme: {
-                color: "#3399cc"
-            }
-        };
-        var paymentObject = new Razorpay(options);
-        paymentObject.open();
-    })
-    .catch(error => console.error('Error:', error));
-}
-function updateOrderStatus(orderId) {
-    fetch('/update-order-status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId: orderId, status: 'confirmed' }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data.message);
-        window.location.reload()
-        // Optionally, update the UI to reflect the new order status
-    })
-    .catch(error => console.error('Error updating order status:', error));
-}
-</script>
-<script>
-   
-async function continuePayment() {
-    const orderData = {
-        userId: '<%= userId %>',
-        cartItems: [], // Populate this array based on your form
-        
-        totalPrice: discountedPrice, // Use discounted price instead of totalPrice
-        paymentMethod,
-        couponCode: selectedCouponCode, // Include the selected coupon code
-    };
-    const orderDataa = {
-userId: '<%= userId %>',
-cartItems: [], // Populate this array based on your form
-selectedAddress,
-totalPrice: discountedPrice, // Use discounted price instead of totalPrice
-paymentMethod,
-couponCode: selectedCouponCode, // Include the selected coupon code
-status: 'failedpayment' // Add an empty status field initially
-};
-    try {
-        // Fetch discounted price
-        const discountedPrice = parseFloat(document.querySelector('.highlight').innerText.replace('₹', ''));
-console.log(discountedPrice);
-        // Fetch order details from your server
-        const createOrderResponse = await fetch('/create-razorpay-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ amount: discountedPrice }), // Pass discountedPrice to Razorpay
+        <% if (orders && orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+                <% order.items.forEach(item => { %>
+                    <div class="order-item">
+                        <div class="product-info">
+                            <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
+                                <img src="<%= item.productId.productImages[0] %>" alt="Product Image" />
+                            <% } %>
+                        </div>
+                        <div class="order-details">
+                            <h2>Order ID: <%= String(order._id).slice(-4) %></h2>
+                            <p>Date & Time: <%= order.date ? new Date(order.date).toLocaleString() : 'Not Available' %></p>
+                            <% if (order.status === 'delivered') { %>
+                                <div class="action-buttons">
+                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+                                    <button class="action-btn secondary" onclick="initiateReturn('<%= order._id %>')">Request Return</button>
+                                    <button class="action-btn secondary" onclick="initiateRefund('<%= order._id %>')">Request Refund</button>
+                                </div>
+                            <% } else if (order.status === 'pending' || order.status === 'paymentfailed') { %>
+                                <div class="action-buttons">
+                                    <button class="action-btn primary" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
+                                </div>
+                            <% } else if (order.status === 'return-requested' || order.status === 'refund-requested' || order.status === 'cancellation-requested') { %>
+                                <p><strong>Status:</strong> <span class="status-<%= order.status.toLowerCase() %>"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %> (Pending Admin Approval)</span></p>
+                                <div class="action-buttons">
+                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+                                </div>
+                            <% } else if (order.status === 'returned' || order.status === 'refunded' || order.status === 'cancelled') { %>
+                                <div class="action-buttons">
+                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+                                </div>
+                            <% } else { %>
+                                <div class="action-buttons">
+                                    <button class="action-btn secondary" onclick="cancelOrder('<%= order._id %>')">Request Cancellation</button>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="product-details">
+                            <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
+                                <h2><%= item.productId.name %></h2>
+                                <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                                <p><strong>Item Total:</strong> ₹<%= (item.productId.offerprice || item.productId.price) * item.quantity %></p>
+                                <p><strong>Address:</strong> <%= order.selectedAddress %></p>
+                                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                <p><strong>Discount Amount:</strong> ₹<span style="color: #dc2626;">
+                                    <%= order.couponId ? (order.items.reduce((acc, item) => acc + ((item.productId.offerprice || item.productId.price) * item.quantity), 0) - order.totalPrice) : 0 %>
+                                </span></p>
+                                <p><strong>Net Amount:</strong> ₹<span style="color: #2563eb;"><%= order.totalPrice %></span></p>
+                                <p><strong>Order Status:</strong> <span class="status-<%= order.status.toLowerCase() %>"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span></p>
+                                <div class="debug-info">
+                                    <p><strong>Debug Product:</strong></p>
+                                    <p>Product ID: <%= item.productId._id %></p>
+                                    <p>Product Name: <%= item.productId.name %></p>
+                                </div>
+                            <% } else { %>
+                                <p><em>Apologies, the product is currently unavailable.</em></p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% }); %>
+        <% } else { %>
+            <div class="text-center mt-4">
+                <p>No orders found.</p>
+            </div>
+        <% } %>
+
+        <nav aria-label="Order history pagination">
+            <ul class="pagination">
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="/orderhistory?page=<%= currentPage - 1 %>">Previous</a>
+                </li>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link" href="/orderhistory?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="/orderhistory?page=<%= currentPage + 1 %>">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        const userData = JSON.parse(document.getElementById('userData')?.getAttribute('data-user') || '{}');
+        let orders = JSON.parse(document.getElementById('ordersData')?.getAttribute('data-orders') || '[]');
+
+        document.querySelector('.profile-icon').addEventListener('click', () => {
+            window.location.href = '/profile';
         });
 
-        const createOrderResult = await createOrderResponse.json();
-console.log("createOrderResult",createOrderResult);
-        if (createOrderResult.error) {
-            Swal.fire({
-                title: 'Failed to create Razorpay order',
-                text: 'Please try again later or choose a different payment method.',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 3000, // 3 seconds timer
-                timerProgressBar: true,
-                onClose: () => {
-                    window.location.href = '/orderhistory'; // Redirect to order history page
-                }
-            });
-            return;
-        }
-
-        const razorpayOrderId = createOrderResult.orderId;
-console.log(razorpayOrderId);
-        const options = {
-            key: 'rzp_test_rJ0yPg6ZIlUOvq', // Replace with your Razorpay key ID
-            amount: discountedPrice * 100, // Amount in paisa
-            currency: 'INR',
-            name: 'Elavate',
-            description: 'Payment for your order',
-            order_id: razorpayOrderId,
-            handler: function (response) {
-                console.log(response);
-                submitOrderToServer(orderData);
-            },
-            prefill: {
-                name: "sreehari",
-                email: "sreeharikannan373@gmail.com",
-                contact: "9645277856",
-            },
-            theme: {
-                color: '#A48F7A',
-            },
-        };
-
-        const razorpayInstance = new Razorpay(options);
-        razorpayInstance.open();
-
-        // Handling payment failure
-        razorpayInstance.on('payment.failed', function (response) {
-            Swal.fire({
-                title: 'Payment Failed',
-                text: response.error.description,
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 3000, // 3 seconds timer
-                timerProgressBar: true,
-                onClose: () => {
-                    // Redirect to order history page with payment failed status
-                    const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
-                    submitOrderWithFailedPaymentToServer(orderDataWithStatus);
-                    window.location.href = '/orderhistory'; // Redirect to order history page
-                }
-            });
+        document.getElementById("elavate").addEventListener('click', () => {
+            window.location.href = '/';
         });
-    } catch (error) {
-        console.error('Error:', error);
-    }
 
-
-    async function submitOrderToServer(orderData) {
-        try {
-            console.log("TRYY");
-            const response = await fetch('/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData),
-            });
-
-            const result = await response.json();
-            console.log(result);
-            window.location.href = "/order";
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    async function submitOrderWithFailedPaymentToServer(orderDataa) {
-try {
-    // Add status as paymentfailed to orderData
-    const orderDataWithStatus = { ...orderDataa, status: 'paymentfailed' };
-console.log("FAILED",orderDataWithStatus);
-    const response = await fetch('/checkouterror', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderDataWithStatus),
-    });
-
-    const result = await response.json();
-    console.log(result);
-    // Handle redirect based on the result if necessary
-   // window.location.href = "/orderhistory"; // Example redirect
-} catch (error) {
-    console.error(error);
-}
-}
-
-}
-</script>
-
-<script>
-async function generateInvoice(orderId) {
-try {
-  const response = await fetch(`/generate-invoice/${orderId}`);
-  if (response.ok) {
-    // Trigger a download of the generated invoice
-    const blob = await response.blob();
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = `invoice_${orderId}.pdf`;
-    link.click();
-  } else {
-    // Handle the case where generating the invoice failed
-    console.error('Error generating invoice:', response.statusText);
-  }
-} catch (error) {
-  console.error('Error generating invoice:', error);
-}
-}
-</script>
-
-
-        <script>
-        async function generateInvoice(orderId) {
-          try {
-            const response = await fetch(`/generate-invoice/${orderId}`);
-            if (response.ok) {
-              // Trigger a download of the generated invoice
-              const blob = await response.blob();
-              const link = document.createElement('a');
-              link.href = window.URL.createObjectURL(blob);
-              link.download = `invoice_${orderId}.pdf`;
-              link.click();
-            } else {
-              // Handle the case where generating the invoice failed
-              console.error('Error generating invoice:', response.statusText);
+        async function refreshOrderData() {
+            try {
+                const response = await fetch('/orderhistory-data', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const data = await response.json();
+                if (data.success) {
+                    orders = data.orders;
+                    window.location.reload();
+                } else {
+                    console.error('Failed to refresh order data');
+                }
+            } catch (error) {
+                console.error('Error refreshing order data:', error);
             }
-          } catch (error) {
-            console.error('Error generating invoice:', error);
-          }
         }
-      </script>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        if (window.location.search.includes('success=true')) {
+            refreshOrderData();
+        }
 
-        <script>
-            async function initiateReturn(orderId) {
-                try {
-                    const { value: reason } = await Swal.fire({
-                        title: "Initiate Return",
-                        input: "text",
-                        inputLabel: "Reason for Return",
-                        inputPlaceholder: "Enter your reason here",
-                        showCancelButton: true,
-                        confirmButtonColor: "#d9534f",
-                        cancelButtonColor: "#3085d6",
-                        confirmButtonText: "Initiate Return",
+        async function retryPayment(orderId) {
+            try {
+                const order = orders.find(o => o._id === orderId);
+                if (!order) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Not Found',
+                        text: 'The order could not be found.',
                     });
-
-                    if (reason) {
-                        const response = await fetch(`/initiate-return/${orderId}`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ reason }),
-                        });
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            // Update the UI or show a success message
-                            console.log("Return initiated successfully");
-                        } else {
-                            console.error("Error initiating return:", data.message);
-                            // Handle the case where return initiation failed
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error initiating return:", error);
-                    // Handle network or other errors
-                }
-            }
-
-            async function cancelOrder(orderId) {
-                // Check if the order has already been cancelled locally
-                if (localStorage.getItem(`cancelledOrder_${orderId}`)) {
-                    // Update the button text and style
-                    const cancelButton = document.getElementById(`cancelBtn_${orderId}`);
-                    cancelButton.innerText = "Cancelled";
-                    cancelButton.classList.add("cancelled");
-                    cancelButton.disabled = true;
-
-                    Swal.fire("Already Cancelled", "This order has already been cancelled.", "info");
                     return;
                 }
+
+                const createOrderResponse = await fetch('/create-razorpay-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: order.totalPrice }),
+                });
+                const createOrderResult = await createOrderResponse.json();
+
+                if (createOrderResult.error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Create Razorpay Order',
+                        text: 'Please try again later.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                    return;
+                }
+
+                const orderData = {
+                    orderId: order._id,
+                    userId: '<%= userId %>',
+                    cartItems: order.items.map(item => ({
+                        productId: item.productId._id,
+                        quantity: item.quantity,
+                    })),
+                    selectedAddress: order.selectedAddress,
+                    totalPrice: order.totalPrice,
+                    paymentMethod: 'Razor Pay',
+                    couponId: order.couponId || null,
+                    razorpayOrderId: createOrderResult.id,
+                };
+
+                const options = {
+                    key: 'rzp_test_rJ0yPg6ZIlUOvq',
+                    amount: order.totalPrice * 100,
+                    currency: 'INR',
+                    name: 'Elavate',
+                    description: 'Retry Payment for Order ' + orderId,
+                    order_id: createOrderResult.id,
+                    handler: async function (response) {
+                        const verifyResponse = await fetch('/verify-razorpay-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id,
+                                signature: response.razorpay_signature,
+                            }),
+                        });
+                        const verifyResult = await verifyResponse.json();
+
+                        if (verifyResult.success) {
+                            orderData.paymentId = response.razorpay_payment_id;
+                            await updateOrderStatus(orderData);
+                        } else {
+                            orderData.status = 'paymentfailed';
+                            await submitOrderWithFailedPayment(orderData);
+                        }
+                    },
+                    prefill: {
+                        name: userData.firstname || 'Customer',
+                        email: userData.email || 'customer@example.com',
+                        contact: userData.mobileNumber || '9999999999',
+                    },
+                    theme: {
+                        color: '#2563eb',
+                    },
+                };
+
+                const razorpayInstance = new Razorpay(options);
+                razorpayInstance.on('payment.failed', async function (response) {
+                    orderData.status = 'paymentfailed';
+                    await submitOrderWithFailedPayment(orderData);
+                });
+                razorpayInstance.open();
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Retry Payment Failed',
+                    text: 'An error occurred while retrying the payment. Please try again.',
+                });
+            }
+        }
+
+        async function updateOrderStatus(orderData) {
+            try {
+                const response = await fetch('/retry-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderData.orderId,
+                        razorpayOrderId: orderData.razorpayOrderId,
+                        paymentId: orderData.paymentId,
+                        status: 'confirmed',
+                    }),
+                });
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Confirmed',
+                        text: 'Your payment was successful and the order is confirmed!',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = '/orderhistory?success=true';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Update Failed',
+                        text: 'Failed to confirm the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Update Failed',
+                    text: 'An error occurred while confirming the order.',
+                });
+            }
+        }
+
+        async function submitOrderWithFailedPayment(orderData) {
+            try {
+                const response = await fetch('/retry-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderData.orderId,
+                        razorpayOrderId: orderData.razorpayOrderId,
+                        paymentId: orderData.paymentId || null,
+                        status: 'paymentfailed',
+                    }),
+                });
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: 'Your payment failed. The order has been recorded as pending.',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = '/orderhistory';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Update Failed',
+                        text: 'Failed to record the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Update Failed',
+                    text: 'An error occurred while recording the order.',
+                });
+            }
+        }
+
+        async function generateInvoice(orderId) {
+            try {
+                const response = await fetch(`/generate-invoice/${orderId}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `invoice_${orderId}.pdf`;
+                    link.click();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invoice Generation Failed',
+                        text: 'Failed to generate the invoice. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error generating invoice:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invoice Generation Failed',
+                    text: 'An error occurred while generating the invoice.',
+                });
+            }
+        }
+
+        async function initiateReturn(orderId) {
+            try {
                 const { value: reason } = await Swal.fire({
-                    title: "Cancel Order",
-                    input: "text",
-                    inputLabel: "Reason for cancellation",
-                    inputPlaceholder: "Enter your reason here",
+                    title: 'Initiate Return',
+                    input: 'text',
+                    inputLabel: 'Reason for Return',
+                    inputPlaceholder: 'Enter your reason here',
                     showCancelButton: true,
-                    confirmButtonColor: "#d9534f",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Confirm Cancellation",
+                    confirmButtonText: 'Request Return',
                 });
 
                 if (reason) {
-                    try {
-                        // Send an AJAX request to your server to cancel the order
-                        const response = await fetch(`/cancel-order/${orderId}`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ reason }),
+                    const response = await fetch(`/initiate-return/${orderId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cancellationReason: reason }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Return Requested',
+                            text: 'Your return request has been submitted for admin approval.',
+                            timer: 2000,
+                        }).then(() => {
+                            window.location.reload();
                         });
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            // Update the button text and style
-                            localStorage.setItem(`cancelledOrder_${orderId}`, "true"); // Store in local storage
-                            const cancelButton = document.getElementById(`cancelBtn_${orderId}`);
-                            cancelButton.innerText = "Cancelled";
-                            cancelButton.classList.add("cancelled");
-                            cancelButton.disabled = true;
-
-                            // Show a success message
-                            Swal.fire({
-                                title: "Order Cancelled!",
-                                text: `Your order has been cancelled. Reason: ${reason}`,
-                                icon: "success",
-                            });
-                        } else {
-                            // Handle the case where the cancellation was not successful
-                            console.error("Error cancelling order:", data.message);
-                            Swal.fire("Error", "Failed to cancel order. Please try again.", "error");
-                        }
-                    } catch (error) {
-                        console.error("Error cancelling order:", error);
-                        Swal.fire("Error", "Failed to cancel order. Please try again.", "error");
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Return Request Failed',
+                            text: 'Failed to request return. Please try again.',
+                        });
                     }
                 }
+            } catch (error) {
+                console.error('Error initiating return:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Return Request Failed',
+                    text: 'An error occurred while requesting the return.',
+                });
             }
-        </script>
-            <script>
-                document.querySelector('.profile-icon').addEventListener('click', function() {
-        window.location.href = '/profile';
-    });
-    
-            </script>
-                    
-                    
-    </body>
+        }
+
+        async function initiateRefund(orderId) {
+            try {
+                const { value: reason } = await Swal.fire({
+                    title: 'Initiate Refund',
+                    input: 'text',
+                    inputLabel: 'Reason for Refund',
+                    inputPlaceholder: 'Enter your reason here',
+                    showCancelButton: true,
+                    confirmButtonText: 'Request Refund',
+                });
+
+                if (reason) {
+                    const response = await fetch(`/initiate-refund/${orderId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cancellationReason: reason }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Refund Requested',
+                            text: 'Your refund request has been submitted for admin approval.',
+                            timer: 2000,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Refund Request Failed',
+                            text: 'Failed to request refund. Please try again.',
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error initiating refund:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Refund Request Failed',
+                    text: 'An error occurred while requesting the refund.',
+                });
+            }
+        }
+
+        async function cancelOrder(orderId) {
+            try {
+                const { value: reason } = await Swal.fire({
+                    title: 'Request Cancellation',
+                    input: 'text',
+                    inputLabel: 'Reason for Cancellation',
+                    inputPlaceholder: 'Enter your reason here',
+                    showCancelButton: true,
+                    confirmButtonText: 'Request Cancellation',
+                });
+
+                if (reason) {
+                    const response = await fetch(`/cancel-order/${orderId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cancellationReason: reason }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cancellation Requested',
+                            text: 'Your cancellation request has been submitted for admin approval.',
+                            timer: 2000,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cancellation Request Failed',
+                            text: 'Failed to request cancellation. Please try again.',
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error requesting cancellation:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Cancellation Request Failed',
+                    text: 'An error occurred while requesting the cancellation.',
+                });
+            }
+        }
+    </script>
+</body>
 </html>

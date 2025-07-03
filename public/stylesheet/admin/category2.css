@@ -1,0 +1,78 @@
+
+    /* Add this CSS to your existing styles */
+    /* General reset */
+    body, h2, input, button {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70vh;
+    }
+
+    .container {
+      position: relative; /* Ensure close button is positioned relative to container */
+      max-width: 400px; /* Adjust the width as needed */
+      width: 80%; /* Add width to the container */
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 30px; /* Increase padding for larger appearance */
+      border-radius: 12px; /* Increase border-radius for rounded corners */
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Increase box shadow for depth */
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-bottom: 30px; /* Increase margin-bottom for spacing */
+      color: #333;
+      text-align: center;
+      font-size: 24px; /* Increase font size for larger heading */
+    }
+
+    .edit-form {
+      display: flex;
+      flex-direction: column; /* Align items vertically */
+    }
+
+    .edit-form input[type="text"] {
+      padding: 12px; /* Increase padding for input field */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 16px; /* Increase font size for input field */
+      margin-bottom: 20px; /* Increase margin-bottom for spacing */
+    }
+
+    .edit-form button {
+      padding: 12px 24px; /* Increase padding for button */
+      background-color: #0e0e0e;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+      font-size: 16px; /* Increase font size for button */
+    }
+
+    .edit-form button:hover {
+      background-color: #282828;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
+  

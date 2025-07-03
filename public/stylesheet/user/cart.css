@@ -1,0 +1,241 @@
+
+        /* Your CSS styles here */
+        body {
+                font-family: Arial, sans-serif;
+                background-color: #1c1b1b;
+                margin: 0;
+                padding: 0;
+            }
+            @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+*
+{
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    padding-top: 56px; /* Adjust based on the height of your navbar */
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    /* display: flex; */
+    
+}
+
+
+
+
+
+.section-padding{
+    padding: 100px 0; 
+    }
+
+            .cart {
+                max-width: 800px;
+                margin: 90px auto;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .home-link {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 20px;
+            text-decoration: none;
+            color: #080808;
+            background-color: #00000000;
+            border-radius: 10px;
+            transition: background-color 1s, color 2s;
+        }
+
+        .home-link:hover {
+            background-color: #0000006d;
+            color: rgb(255, 255, 255);
+        }
+
+            .cart-title {
+                padding: 20px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .cart-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .cart-table th,
+            .cart-table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+
+            .cart-table th:first-child,
+            .cart-table td:first-child {
+                padding-left: 20px;
+            }
+
+            .cart-table th:last-child,
+            .cart-table td:last-child {
+                padding-right: 20px;
+            }
+
+            .product-image {
+                max-width: 80px;
+                max-height: 80px;
+                border-radius: 4px;
+            }
+
+            .quantity-input {
+                width: 60px;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                text-align: center;
+            }
+
+            .remove-btn {
+                padding: 8px 15px;
+                background-color: #ff4c57;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .remove-btn:hover {
+                background-color: #d1404a;
+            }
+
+            .cart-footer {
+                padding: 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .total-price {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+            .checkout-btn {
+                padding: 12px 25px;
+                background-color: #4caf50;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .checkout-btn:hover {
+                background-color: #45a049;
+            }
+
+            .empty-cart-message {
+                text-align: center;
+                padding: 20px;
+                display: none;
+                animation: fadeIn 0.5s ease-out forwards;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .shop-now-btn {
+                padding: 10px 20px;
+                background-color: #ff4c57;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                animation: slideIn 0.5s ease-out forwards;
+            }
+
+            .shop-now-btn:hover {
+                background-color: #d1404a;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(50px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            .custom-swal-container {
+            font-family: 'Roboto', sans-serif;
+        }
+        .custom-swal-title {
+            color: #3085d6;
+            font-size: 24px;
+        }
+        .custom-swal-text {
+            color: #777;
+            font-size: 16px;
+        }
+        .custom-swal-confirm-button {
+            background-color: #3085d6;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .custom-swal-cancel-button {
+            background-color: #d33;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+            
+        .quantity-btn {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        cursor: pointer;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 14px;
+    }
+
+    .quantity-btn:hover {
+        background-color: #f0f0f0;
+    }
+    .cart {
+    position: relative;
+    top: -35px; /* Adjust this value as needed */
+}
+.back-button {
+    position: absolute;
+    top: 85px;
+    left: 80px;
+    z-index: 1000; /* Ensure the button is above other elements */
+}
+
+.back-button a {
+    font-size: 24px; /* Increase the font size of the icon */
+    padding: 10px; /* Add some padding around the icon */
+    color: #000; /* Adjust the color as needed */
+    text-decoration: none;
+}
+
+.back-button a:hover {
+    color: #333; /* Change the color on hover */
+}

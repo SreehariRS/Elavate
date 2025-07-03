@@ -1,4 +1,4 @@
-const orders = require("../models/order")
+const orders = require("../models/order");
 
 const fetchGraphData = async (duration) => {
     try {
@@ -8,31 +8,31 @@ const fetchGraphData = async (duration) => {
                 $match: {
                     date: {
                         $gte: initialDate,
-                        $lt: new Date(2024, 0, 1) // Corrected year format
-                    }
-                }
+                        $lt: new Date(2024, 0, 1), // Corrected year format
+                    },
+                },
             },
             {
-                $unwind: "$items" // Unwind 'items' array
+                $unwind: "$items", // Unwind 'items' array
             },
             {
                 $group: {
                     _id: "$items.status",
-                    count: { $sum: 1 }
-                }
+                    count: { $sum: 1 },
+                },
             },
             {
                 $project: {
                     _id: 0,
                     label: "$_id",
-                    value: "$count"
-                }
+                    value: "$count",
+                },
             },
             {
                 $sort: {
-                    label: 1
-                }
-            }
+                    label: 1,
+                },
+            },
         ]);
 
         return data;
@@ -49,7 +49,7 @@ const handleGraphRequest = async (req, res, graphType) => {
             day: 1,
             week: 7,
             month: 28,
-            year: 365
+            year: 365,
         };
         const data = await fetchGraphData(duration[filter]);
         console.log("dataaaa", data);
@@ -60,12 +60,10 @@ const handleGraphRequest = async (req, res, graphType) => {
     }
 };
 
-
-
 const doughnutGraph = async (req, res) => {
     try {
         const topSellingProducts = await getTopSellingProducts();
-        console.log("ggggggggggggggggggggg",topSellingProducts);
+        console.log("ggggggggggggggggggggg", topSellingProducts);
         res.json(topSellingProducts);
     } catch (error) {
         console.error("Error fetching top selling products:", error);
@@ -82,7 +80,7 @@ const getTopSellingProducts = async () => {
             { $project: { _id: 1, name: { $arrayElemAt: ["$product.name", 0] }, count: 1 } }, // Include product name in projection
             { $sort: { count: -1 } },
             { $limit: 10 },
-          ]);
+        ]);
         return topSellingProducts;
     } catch (error) {
         throw error;
@@ -107,7 +105,7 @@ const getTopSellingCategories = async () => {
             { $unwind: "$product" },
             { $group: { _id: "$product.category", count: { $sum: "$items.quantity" } } },
             { $sort: { count: -1 } },
-            { $limit: 5 }
+            { $limit: 5 },
         ]);
         return topSellingCategories;
     } catch (error) {
@@ -115,9 +113,7 @@ const getTopSellingCategories = async () => {
     }
 };
 
-
 module.exports = {
-
     doughnutGraph,
-    doughnutGraph2
+    doughnutGraph2,
 };

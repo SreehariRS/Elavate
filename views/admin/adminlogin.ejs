@@ -10,8 +10,11 @@
     <div id="algn">
         <div id="container">
             <p class="head">Admin Login</p>
+            <% if (message) { %>
+                <p style="color: red;"><%= message %></p>
+            <% } %>
             <form action="/admin/login" method="post" class="input-container" onsubmit="return validateForm()">
-                <label for="username">User Name</label>
+                <label for="name">User Name</label>
                 <br>
                 <input type="text" id="name" name="adminName" placeholder="Enter username" class="inpt" required>
                 <br>
@@ -26,19 +29,17 @@
 
     <script>
         function validateForm() {
-            var usernameInput = document.getElementById('username');
+            var usernameInput = document.getElementById('name'); // Fixed ID from 'username' to 'name'
             var passwordInput = document.getElementById('password');
 
-            var usernameValue = usernameInput.value.trim(); // Trim to remove leading/trailing spaces
+            var usernameValue = usernameInput.value.trim();
             var passwordValue = passwordInput.value.trim();
 
-            // Check if username and password are not empty
             if (usernameValue === '' || passwordValue === '') {
                 alert('Please enter both username and password.');
                 return false;
             }
 
-            // If all validations pass, the form will be submitted
             return true;
         }
     </script>

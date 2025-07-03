@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-
-
 const walletSchema = new mongoose.Schema({
   userId: {
     type: String,
@@ -21,7 +19,15 @@ const walletSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+    paymentId: {
+      type: String,
+      required: false,
+    }
   }],
 });
 

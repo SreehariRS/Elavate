@@ -224,6 +224,51 @@ padding: 0 10px;
 
 }
 
+  
+    .sidebar.hidden {
+  display: none;
+}
+
+.toggle-sidebar {
+  display: none; /* Initially hide the toggle button */
+}
+
+@media screen and (max-width: 1300px) {
+  .toggle-sidebar {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .sidebar.hidden {
+    display: none;
+  }
+}
+.toggle-sidebar.active {
+  color: rgb(255, 255, 255); /* Change the color to red */
+}
+@media screen and (max-width: 768px) {
+            .sidebar {
+                width: 200px; /* Adjust sidebar width for smaller screens */
+            }
+            .main-content {
+                margin-left: 200px; /* Adjust main content margin */
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .sidebar {
+                display: none; /* Hide sidebar on smaller screens */
+            }
+            .main-content {
+                margin-left: 0; /* Adjust main content margin */
+            }
+        }
+
+
 
 
 

@@ -1,0 +1,211 @@
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 30px; /* Smaller font size for smaller screens */
+  }
+}
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700; /* For bold text */
+  font-size: 36px; /* Adjust the size as needed */
+  color: #333; /* Change the color as desired */
+  text-align: center; /* Center the text */
+  margin-bottom: 20px; /* Add some space below the heading */
+}
+@media (max-width: 768px) {
+      h1 {
+        font-size: 30px; /* Smaller font size for smaller screens */
+      }
+    }
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700; /* For bold text */
+      font-size: 36px; /* Adjust the size as needed */
+      color: #333; /* Change the color as desired */
+      text-align: center; /* Center the text */
+      margin-bottom: 20px; /* Add some space below the heading */
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa; /* Light gray background */
+      color: #333; /* Dark text color */
+      padding-top: 20px; /* Add some space at the top */
+    }
+    .container {
+      max-width: 600px; /* Limit container width */
+      margin: 0 auto; /* Center container */
+      padding: 0 15px; /* Add some padding to the sides */
+    }
+    .card {
+ background: linear-gradient(to right, #ffffff, #ffffffaf);
+ border-radius: 10px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ transition: transform 0.3s ease-in-out;
+ margin-bottom: 20px; 
+}
+
+.card:hover {
+ transform: scale(1.05);
+}
+
+.card-body {
+ padding: 20px;
+}
+
+.card-title {
+ color: #292525;
+ font-weight: bold;
+}
+
+.card-text {
+ color: #322c2c;
+}
+
+
+    .form-group {
+      margin-bottom: 15px; /* Add space below form fields */
+    }
+    button[type="button"] {
+      cursor: pointer; /* Change cursor to pointer for buttons */
+    }
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animated {
+      animation-name: fadeIn;
+      animation-duration: 1s;
+    }
+    /* Additional styles */
+    .modal-content {
+      background-color: #f8f9fa; /* Light gray background for modal */
+      border-radius: 10px; /* Rounded corners for modal */
+      overflow: hidden; /* Hide overflow content */
+    }
+    .modal-header {
+      background-color: #232424; /* Blue background for modal header */
+      color: #fff; /* White text color for modal header */
+      border-bottom: none; /* Remove border bottom for modal header */
+    }
+    .modal-title {
+      font-size: 24px; /* Font size for modal title */
+    }
+    .modal-body {
+      padding: 20px; /* Add padding to modal body */
+    }
+    .modal-footer {
+      border-top: none; /* Remove border top for modal footer */
+    }
+    .btn {
+      background-color: #1c1d1e; /* Blue background for primary button */
+      border-color: #161616; /* Blue border color for primary button */
+    }
+    .btn:hover {
+      background-color: #1b1c1c; /* Darker blue background on hover */
+      border-color: #151515; /* Darker blue border color on hover */
+    }
+    .card-title {
+ text-align: center; 
+}
+.card-text{
+  text-align: center;
+}
+.black-touch {
+  background-color: #000; /* Black background color */
+  border-color: #000; /* Black border color */
+  color: #fff; /* White text color */
+}
+
+.black-touch:hover {
+  background-color: #383737; 
+  border-color: #ffffff; 
+  color: white;
+}
+.button-container {
+ display: flex;
+ justify-content: center; /* Center the buttons horizontally */
+ gap: 10px; /* Adjust the gap between buttons as needed */
+ margin-top: 20px;
+}
+
+@media (max-width: 359px) {
+ .button-container {
+    flex-direction: column; /* Stack buttons vertically */
+ }
+}
+.content-container {
+ background: linear-gradient(to right, #ffffff, #e4f8e7, #c5f4cb);
+ border-radius: 10px; /* Adjust the border radius as needed */
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust the box shadow as needed */
+ padding: 20px; /* Add some padding inside the container */
+}
+
+
+.content-container  {
+ max-width: 1000px; /* Set the maximum width of the container */
+ margin: 0 auto; /* Center the container horizontally */
+}
+
+@media (max-width: 1200px) {
+  .content-container  {
+    max-width: 90%; /* Reduce the maximum width for smaller screens */
+ }
+}
+.back-button {
+                position: absolute;
+                top: 25px;
+                left: 80px;
+                z-index: 1000; /* Ensure the button is above other elements */
+            }
+
+            .back-button a {
+                font-size: 24px; /* Increase the font size of the icon */
+                padding: 10px; /* Add some padding around the icon */
+                color: #000; /* Adjust the color as needed */
+                text-decoration: none;
+            }
+
+            .back-button a:hover {
+                color: #333; /* Change the color on hover */
+            }
+            .header {
+                position: relative;
+                width: 100%;
+                height: 60px; /* Adjust the height as needed */
+                background-color: #f8f9fa; /* Background color of the header */
+            }
+
+            .header-text {
+                position: absolute;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
+            .content-container {
+                position: relative;
+                top: 25px; /* Adjust this value as needed */
+            }
+
+            /* Default styles */
+            .header-text h1 {
+                font-size: 3rem;
+            }
+            .profile-icon {
+    position: absolute;
+    right: 60px;
+    top: 12px;
+    cursor: pointer;
+}
+.profile-icon i {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
