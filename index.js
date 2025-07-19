@@ -51,6 +51,6 @@ app.get("*", (req, res) => {
     res.render("error");
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`http://localhost:${process.env.PORT}`);
+app.listen(process.env.PORT, '0.0.0.0', () => {
+    console.log(`http://0.0.0.0:${process.env.PORT}`);
 });
