@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const addressSchema = new mongoose.Schema({
     addressType: {
         type: String,
-        enum: ["home", "work"], // Address type can be 'home' or 'work'
+        enum: ["home", "work"],
     },
     country: {
         type: String,
@@ -18,7 +18,7 @@ const addressSchema = new mongoose.Schema({
     flat: {
         type: String,
     },
-    district: { // Corrected field name to lowercase 'street'
+    district: {
         type: String,
     },
     state: {

@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const userAuthController = require("../controllers/userAuthController");
+const checkblock = require("../middleware/checkblock");
 
-router.get('/', (req, res) => {
-  res.render('user/home');
-});
+router.get("/login", checkblock, userAuthController.getLogin);
 
 module.exports = router;

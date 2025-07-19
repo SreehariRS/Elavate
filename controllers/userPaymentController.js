@@ -2,6 +2,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 require('dotenv').config();
 const orders = require('../models/order');
+const Wallet = require('../models/wallet');
 
 const razorpay = new Razorpay({
     key_id: process.env.KEY_ID,
@@ -24,7 +25,7 @@ const createrazorpayorder = async (req, res) => {
         const order = await razorpay.orders.create(options);
         res.json({ id: order.id, amount: order.amount, currency: order.currency });
     } catch (error) {
-        console.log(error);
+        console.log("Error in createrazorpayorder:", error);
         res.status(500).json({ error: "Failed to create Razorpay order" });
     }
 };
@@ -43,26 +44,63 @@ const verifyRazorpayPayment = async (req, res) => {
             res.status(400).json({ success: false, message: "Invalid signature" });
         }
     } catch (error) {
-        console.log(error);
+        console.log("Error in verifyRazorpayPayment:", error);
         res.status(500).json({ error: "Failed to verify payment" });
     }
 };
 
 const updateOrderStatus = async (req, res) => {
     try {
-        const { orderId, paymentId, status } = req.body;
+        const { orderId, paymentId, status, userId, paymentMethod } = req.body;
         const order = await orders.findOne({ razorpayOrderId: orderId });
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
 
         order.paymentId = paymentId || order.paymentId;
-        order.status = status === 'confirmed' ? 'confirmed' : 'paymentfailed'; // Set to confirmed for successful payments
+        order.status = status === 'confirmed' ? 'confirmed' : 'paymentfailed';
+
+        // Handle wallet payment deduction
+        if (paymentMethod === 'wallet' && status === 'confirmed') {
+            let wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                wallet = new Wallet({
+                    userId,
+                    balance: 0,
+                    transactions: [],
+                });
+            }
+
+            if (wallet.balance < order.totalPrice) {
+                order.status = 'paymentfailed';
+                await order.save();
+                return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
+            }
+
+            wallet.balance -= parseFloat(order.totalPrice);
+            wallet.transactions.push({
+                type: "withdrawal",
+                amount: parseFloat(order.totalPrice),
+                date: new Date(),
+                paymentId: paymentId || `order_${orderId}`,
+            });
+            await wallet.save();
+        }
+
+        // Set item statuses to match order status for confirmed orders
+        if (order.status === 'confirmed') {
+            order.items.forEach(item => {
+                if (item.status !== 'cancelled' && item.status !== 'returned' && item.status !== 'refunded') {
+                    item.status = 'confirmed';
+                }
+            });
+        }
+
         await order.save();
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Failed to update order status" });
+        console.log("Error in updateOrderStatus:", error);
+        res.status(500).json({ success: false, message: "Failed to update order status" });
     }
 };
 
@@ -82,7 +120,7 @@ const generatewalletRazorpay = async (req, res) => {
         const order = await razorpay.orders.create(options);
         res.json({ id: order.id, amount: order.amount, currency: order.currency });
     } catch (error) {
-        console.log(error);
+        console.log("Error in generatewalletRazorpay:", error);
         res.status(500).json({ error: "Failed to create Razorpay order for wallet" });
     }
 };

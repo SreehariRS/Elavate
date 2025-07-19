@@ -350,50 +350,80 @@
             document.getElementById("heartIcon").addEventListener("click", goToWishlistPage);
         </script>
 
-        <script>
-            // Function to extract and parse the price from the product element
-            function extractPrice(productElement) {
-                const priceText = productElement.querySelector(".product-price").innerText.trim();
-                // Extracting the numeric part of the price and parsing it as a float
-                return parseFloat(priceText.replace(/[^\d.]/g, ""));
-            }
+    <script>
+    // Function to extract and parse the price from the product element
+    function extractPrice(productElement) {
+        const priceText = productElement.querySelector(".product-price").innerText.trim();
+        // Handle cases with offerprice and original price
+        const match = priceText.match(/₹\s*([\d,.]+)/); // Extract the first price (offerprice if present)
+        return match ? parseFloat(match[1].replace(/,/g, '')) : 0; // Default to 0 if no price found
+    }
 
-            // Function to sort products based on price (low to high)
-            function sortProductsByPriceLowToHigh() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const priceA = extractPrice(a);
-                    const priceB = extractPrice(b);
-                    return priceA - priceB;
-                });
-                // Clear the container and re-append sorted products
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
+    // Function to extract product name
+    function extractName(productElement) {
+        return productElement.querySelector(".product-details h4 a").textContent.trim().toLowerCase();
+    }
 
-            // Function to sort products based on price (high to low)
-            function sortProductsByPriceHighToLow() {
-                const productContainer = document.querySelector(".product-container");
-                const products = Array.from(productContainer.querySelectorAll(".product-card"));
-                products.sort((a, b) => {
-                    const priceA = extractPrice(a);
-                    const priceB = extractPrice(b);
-                    return priceB - priceA;
-                });
-                // Clear the container and re-append sorted products
-                productContainer.innerHTML = "";
-                products.forEach((product) => {
-                    productContainer.appendChild(product);
-                });
-            }
+    // Function to sort products based on price (low to high)
+    function sortProductsByPriceLowToHigh() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const priceA = extractPrice(a);
+            const priceB = extractPrice(b);
+            return priceA - priceB;
+        });
+        productContainer.innerHTML = "";
+        products.forEach((product) => productContainer.appendChild(product));
+    }
 
-            // Attach event listeners to filter buttons or dropdowns
-            document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
-            document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
-        </script>
+    // Function to sort products based on price (high to low)
+    function sortProductsByPriceHighToLow() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const priceA = extractPrice(a);
+            const priceB = extractPrice(b);
+            return priceB - priceA;
+        });
+        productContainer.innerHTML = "";
+        products.forEach((product) => productContainer.appendChild(product));
+    }
+
+    // Function to sort products by name (A to Z)
+    function sortProductsByAlphabeticalAZ() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const nameA = extractName(a);
+            const nameB = extractName(b);
+            return nameA.localeCompare(nameB);
+        });
+        productContainer.innerHTML = "";
+        products.forEach((product) => productContainer.appendChild(product));
+    }
+
+    // Function to sort products by name (Z to A)
+    function sortProductsByAlphabeticalZA() {
+        const productContainer = document.querySelector(".product-container");
+        const products = Array.from(productContainer.querySelectorAll(".product-card"));
+        products.sort((a, b) => {
+            const nameA = extractName(a);
+            const nameB = extractName(b);
+            return nameB.localeCompare(nameA);
+        });
+        productContainer.innerHTML = "";
+        products.forEach((product) => productContainer.appendChild(product));
+    }
+
+    // Attach event listeners to filter buttons
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
+        document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
+        document.querySelector("#sortByAlphabeticalAZ").addEventListener("click", sortProductsByAlphabeticalAZ);
+        document.querySelector("#sortByAlphabeticalZA").addEventListener("click", sortProductsByAlphabeticalZA);
+    });
+</script>
 
         <script>
             document.getElementById("filterButton").addEventListener("click", function () {

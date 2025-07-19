@@ -84,7 +84,7 @@
                                 <tr data-product-id="<%= item.productId._id %>">
                                     <td>
                                         <% if (item.productId.productImages && item.productId.productImages.length > 0) { %>
-                                            <img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.name || 'Product Image' %>" class="img-fluid" />
+                                            <img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.name || 'Payment Failure' %>" class="img-fluid" />
                                         <% } else { %>
                                             <img src="/img/default-product.jpg" alt="Default Product Image" class="img-fluid" />
                                         <% } %>
@@ -93,14 +93,11 @@
                                     <td><%= item.productId.description || 'No description available' %></td>
                                     <td><%= item.quantity %></td>
                                     <td>
-                                        <% if (item.productId.price !== null && item.productId.price !== undefined) { %>
-                                            <% if (item.productId.offerprice !== null && item.productId.offerprice !== undefined) { %>
-                                                ₹<%= Math.min(item.productId.offerprice, item.productId.price) %>
-                                            <% } else { %>
-                                                ₹<%= item.productId.price %>
-                                            <% } %>
+                                        <% const price = item.productId.offerprice || item.productId.price || 0; %>
+                                        <% if (price > 0) { %>
+                                            ₹<%= price.toFixed(2) %>
                                         <% } else { %>
-                                            <span>No Price</span>
+                                            <span style="color: red;">Price unavailable</span>
                                         <% } %>
                                     </td>
                                 </tr>
@@ -115,6 +112,7 @@
             <h3>Order Summary</h3>
             <h1>Total: ₹<span id="totalPrice"><%= totalPrice %></span></h1>
             <p>Discount: <span id="discountAmount">0%</span></p>
+            <p>Applicable Amount: <span id="applicableAmount"><%= totalPrice %></span></p>
         </div>
 
         <div class="section">
@@ -150,6 +148,7 @@
                 </div>
             </form>
             <button class="btn btn-secondary" type="button" onclick="applyCoupon()" id="applyCouponBtn">Apply Coupon</button>
+            <button type="button" class="btn btn-secondary" id="removeCouponBtn" style="display: none;" onclick="removeCoupon()">Remove Coupon</button>
         </div>
 
         <div id="userData" data-user='<%= JSON.stringify(userData) %>'></div>
@@ -221,26 +220,23 @@
     <script>
         const userData = JSON.parse(document.getElementById('userData')?.getAttribute('data-user') || '{}');
         const cartItems = JSON.parse(document.getElementById('cartItemsData')?.getAttribute('data-cart-items') || '[]');
-        const coupons = JSON.parse(document.getElementById('couponsData')?.getAttribute('data-coupons') || '[]');
         let couponApplied = false;
+        let originalPrice = parseFloat(document.getElementById('totalPrice')?.innerText || 0);
 
-        document.querySelector('.profile-icon').addEventListener('click', () => {
+        if (isNaN(originalPrice)) {
+            console.error('Original price is not a valid number');
+            originalPrice = 0;
+        }
+
+        document.querySelector('.profile-icon')?.addEventListener('click', () => {
             window.location.href = '/profile';
         });
 
-        document.getElementById("elavate").addEventListener("click", () => {
+        document.getElementById("elavate")?.addEventListener("click", () => {
             window.location.href = "/";
         });
 
-        function calculateDiscountedPrice(originalPrice, coupon) {
-            if (coupon && typeof coupon.discountValue === 'number') {
-                return originalPrice - (originalPrice * (coupon.discountValue / 100));
-            }
-            console.error('Invalid coupon or discountValue:', coupon);
-            return originalPrice;
-        }
-
-        function applyCoupon() {
+        async function applyCoupon() {
             if (couponApplied) {
                 Swal.fire({
                     icon: 'info',
@@ -251,27 +247,84 @@
             }
 
             const selectedCouponElement = document.getElementById('coupon');
-            const selectedCouponValue = selectedCouponElement.value;
-            const selectedCoupon = coupons.find(coupon => coupon.code === selectedCouponValue);
+            const couponCode = selectedCouponElement?.value;
 
-            if (selectedCoupon) {
-                const originalPrice = parseFloat(document.getElementById('totalPrice').innerText);
-                const discountedPrice = calculateDiscountedPrice(originalPrice, selectedCoupon);
-                document.getElementById('totalPrice').innerText = discountedPrice.toFixed(2);
-                document.getElementById('discountAmount').innerText = `${selectedCoupon.discountValue}%`;
-                couponApplied = true;
-                document.getElementById('applyCouponBtn').disabled = true;
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Coupon Applied',
-                    text: `Coupon ${selectedCoupon.code} applied successfully!`,
-                });
-            } else {
+            if (!couponCode) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Invalid Coupon',
-                    text: 'Please select a valid coupon.',
+                    title: 'No Coupon Selected',
+                    text: 'Please select a coupon.',
                 });
+                return;
+            }
+
+            try {
+                const response = await fetch('/validate-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: couponCode, cartTotal: originalPrice }),
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                const result = await response.json();
+
+                if (result.success && result.coupon) {
+                    const { discountValue, applicableAmount } = result.coupon;
+                    if (isNaN(applicableAmount) || isNaN(discountValue)) {
+                        throw new Error('Invalid coupon data received');
+                    }
+                    const discount = applicableAmount * (discountValue / 100);
+                    const discountedPrice = originalPrice - discount;
+                    const totalPriceElement = document.getElementById('totalPrice');
+                    const discountAmountElement = document.getElementById('discountAmount');
+                    const applicableAmountElement = document.getElementById('applicableAmount');
+                    if (totalPriceElement && discountAmountElement && applicableAmountElement) {
+                        totalPriceElement.innerText = discountedPrice.toFixed(2);
+                        discountAmountElement.innerText = `${discountValue}% (₹${discount.toFixed(2)})`;
+                        applicableAmountElement.innerText = `₹${applicableAmount.toFixed(2)}`;
+                        couponApplied = true;
+                        document.getElementById('applyCouponBtn').disabled = true;
+                        document.getElementById('removeCouponBtn').style.display = 'inline-block';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied',
+                            text: `Coupon ${couponCode} applied successfully!`,
+                        });
+                    } else {
+                        throw new Error('DOM elements not found');
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Coupon',
+                        text: result.message || 'Please select a valid coupon.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error applying coupon:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Coupon Application Failed',
+                    text: 'An error occurred while applying the coupon. Please try again.',
+                });
+            }
+        }
+
+        function removeCoupon() {
+            if (!couponApplied) return;
+
+            const totalPriceElement = document.getElementById('totalPrice');
+            const discountAmountElement = document.getElementById('discountAmount');
+            const applicableAmountElement = document.getElementById('applicableAmount');
+            if (totalPriceElement && discountAmountElement && applicableAmountElement) {
+                totalPriceElement.innerText = originalPrice.toFixed(2);
+                discountAmountElement.innerText = '0%';
+                applicableAmountElement.innerText = `₹${originalPrice.toFixed(2)}`;
+                couponApplied = false;
+                document.getElementById('applyCouponBtn').disabled = false;
+                document.getElementById('removeCouponBtn').style.display = 'none';
+                document.getElementById('coupon').value = '';
+            } else {
+                console.error('DOM elements not found for removing coupon');
             }
         }
 
@@ -300,8 +353,14 @@
 
                 const paymentMethod = paymentMethodElements[0].value;
                 const selectedCouponElement = document.getElementById('coupon');
-                const couponCode = selectedCouponElement.value;
-                const totalPrice = parseFloat(document.getElementById('totalPrice').innerText);
+                const couponCode = selectedCouponElement?.value;
+                const totalPrice = parseFloat(document.getElementById('totalPrice')?.innerText || 0);
+
+                if (isNaN(totalPrice)) {
+                    throw new Error('Total price is not a valid number');
+                }
+
+                console.log('Submitting order:', { paymentMethod, totalPrice, couponCode, selectedAddress });
 
                 const orderData = {
                     selectedAddress,
@@ -328,29 +387,14 @@
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' },
                     });
+                    if (!walletCheckResponse.ok) throw new Error('Wallet check failed');
                     const walletCheckResult = await walletCheckResponse.json();
 
-                    if (walletCheckResult.balance < totalPrice) {
+                    if (!walletCheckResult.success || walletCheckResult.balance < totalPrice) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Insufficient Wallet Balance',
                             text: 'Top up your wallet or choose another payment method.',
-                        });
-                        return;
-                    }
-
-                    const updateWalletResponse = await fetch('/update-wallet', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: totalPrice }),
-                    });
-                    const updateWalletResult = await updateWalletResponse.json();
-
-                    if (!updateWalletResult.success) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Wallet Update Failed',
-                            text: 'Please try again or choose another payment method.',
                         });
                         return;
                     }
@@ -362,6 +406,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ amount: totalPrice }),
                     });
+                    if (!createOrderResponse.ok) throw new Error('Failed to create Razorpay order');
                     const createOrderResult = await createOrderResponse.json();
 
                     if (createOrderResult.error) {
@@ -392,6 +437,7 @@
                                     signature: response.razorpay_signature,
                                 }),
                             });
+                            if (!verifyResponse.ok) throw new Error('Payment verification failed');
                             const verifyResult = await verifyResponse.json();
 
                             if (verifyResult.success) {
@@ -430,59 +476,81 @@
                     await submitOrderToServer(orderData);
                 }
             } catch (error) {
-                console.error(error);
+                console.error('Error during submitOrder:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Checkout Failed',
-                    text: 'An error occurred during checkout. Please try again.',
+                    text: 'An error occurred during checkout. Please try again or contact support.',
                 });
             }
         }
 
         async function submitOrderToServer(orderData) {
-            const response = await fetch('/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData),
-            });
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Placed',
-                    text: 'Your order has been successfully placed!',
-                    timer: 2000,
-                }).then(() => {
-                    window.location.href = "/order";
+            try {
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData),
                 });
-            } else {
+                if (!response.ok) throw new Error(`Order submission failed with status ${response.status}`);
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Placed',
+                        text: 'Your order has been successfully placed!',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = result.redirect || "/orderhistory";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: result.message || 'Failed to place the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error in submitOrderToServer:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Order Failed',
-                    text: 'Failed to place the order. Please try again.',
+                    title: 'Server Error',
+                    text: 'An error occurred on the server. Please try again later.',
                 });
             }
         }
 
         async function submitOrderWithFailedPaymentToServer(orderData) {
-            const response = await fetch('/checkouterror', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData),
-            });
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed',
-                    text: 'Your payment failed. The order has been recorded as pending.',
-                    timer: 2000,
-                }).then(() => {
-                    window.location.href = "/orderhistory";
+            try {
+                const response = await fetch('/checkouterror', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData),
                 });
-            } else {
+                if (!response.ok) throw new Error(`Failed payment submission failed with status ${response.status}`);
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: 'Your payment failed. The order has been recorded as pending.',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = result.redirect || "/orderhistory";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: 'Failed to record the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error in submitOrderWithFailedPaymentToServer:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Order Failed',
-                    text: 'Failed to record the order. Please try again.',
+                    title: 'Server Error',
+                    text: 'An error occurred on the server. Please try again later.',
                 });
             }
         }

@@ -20,6 +20,21 @@ const userblock = async (req, res) => {
         // Toggle the isBlocked status
         user.isBlocked = !user.isBlocked;
         await user.save();
+
+        // Invalidate the user's session if blocking
+        if (user.isBlocked) {
+            // Find and destroy the session for this user
+            const sessions = req.sessionStore.sessions;
+            for (let sessionId in sessions) {
+                const sessionData = JSON.parse(sessions[sessionId]);
+                if (sessionData.user === userId) {
+                    req.sessionStore.destroy(sessionId, (err) => {
+                        if (err) console.error("Error destroying session:", err);
+                    });
+                }
+            }
+        }
+
         res.redirect("/admin/customers");
     } catch (error) {
         console.error("Error updating user block status:", error);

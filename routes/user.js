@@ -8,6 +8,7 @@ const userOrderController = require("../controllers/userOrderController");
 const userWalletController = require("../controllers/userWalletController");
 const userPaymentController = require("../controllers/userPaymentController");
 const checkblock = require("../middleware/checkblock");
+const couponController = require("../controllers/couponcontroller"); 
 
 router.get("/", userOrderController.home);
 router.get("/login", checkblock, userAuthController.getLogin);
@@ -42,12 +43,12 @@ router.get("/resendforgototp", userAuthController.resendforgototp);
 router.get("/changeCpassword", userAuthController.changeCpassword);
 router.get("/otpget", userAuthController.mailsender);
 router.get("/resendotp", userAuthController.resendotp);
-router.post("/login", userAuthController.postLogin);
+router.post("/login", checkblock, userAuthController.postLogin);
 router.post("/register", userAuthController.postRegister);
 router.post("/logout", userAuthController.postLogout);
 router.post("/updateQuantity", userCartController.updateQuantity);
 router.post("/removeFromCart/:productId", userCartController.removeFromCart);
-router.post("/cancel-order/:orderId", userOrderController.cancelOrder);
+router.post("/cancel-order/:orderId", userOrderController.cancelOrder); 
 router.post("/changepass", userAuthController.changepasspost);
 router.post("/forgotpassword", userAuthController.forgotpasswordpost);
 router.post("/verifyforgototp", userAuthController.verifyforgototp);
@@ -69,5 +70,6 @@ router.post("/wishlistRemove", userWishlistController.removeProductFromWishlist)
 router.get("/wallet", userWalletController.wallet);
 router.post("/generate-razorpay-order", userPaymentController.generatewalletRazorpay);
 router.post("/createReferral", userProfileController.createReferral);
+router.post("/validate-coupon", checkblock, couponController.validateCoupon); 
 
 module.exports = router;

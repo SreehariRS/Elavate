@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Coupon</title>
-  <!-- Include Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- Your custom styles go here -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
   <style>
     body {
       background-color: #f8f9fa;
@@ -252,93 +253,80 @@ body {
     /* box-shadow: 2px  4px 8px rgba(0, 0, 0, 0.5); */
 }
   </style>
-</head>
-<body>
-
-
-  <link
-  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-  rel="stylesheet"
-/>  
-<div class="toggle-sidebar">
-  <i class="bx bx-menu toggle-icon"></i>
-</div>
-<nav class="sidebar">
-  <header>
-    <div class="image-text">
-      <span class="image">
-        <img src="/img/logo.png" alt="logo" />
-      </span>
-      <div class="text header-text">
-        <span class="main">ELAVATE</span>
-        <br>
-        <span class="sub">make your smell</span>
+  <div class="toggle-sidebar">
+    <i class="bx bx-menu toggle-icon"></i>
+  </div>
+  <nav class="sidebar">
+    <header>
+      <div class="image-text">
+        <span class="image">
+          <img src="/img/logo.png" alt="logo" />
+        </span>
+        <div class="text header-text">
+          <span class="main">ELAVATE</span>
+          <br>
+          <span class="sub">make your smell</span>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div class="menu-bar">
-    <div class="menu">
-      <ul class="menu-links">
-        <li class="nav-link">
-          <a href="/admin/home">
-            <i class="bx bx-home-alt icons"></i>
-            <span class="text nav-text">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/customers">
-            <i class="bx bx-bell icons"></i>
-            <span class="text nav-text">User</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/productlist">
-            <i class="bx bx-bar-chart-alt-2 icons"></i>
-            <span class="text nav-text">Product</span>
-          </a>
-        </li>
-       
-        <li class="nav-link">
-          <a href="/admin/order">
-            <i class="bx bx-pie-chart-alt icons"></i>
-            <span class="text nav-text">order</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/category">
-            <i class="bx bx-heart icons"></i>
-            <span class="text nav-text">Category</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/coupon">
-            <i class="bx bx-wallet-alt icons"></i>
-            <span class="text nav-text">coupon</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/sales">
-            <i class="bx bx-wallet-alt icons"></i>
-            <span class="text nav-text">Sales Report</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    <div class="menu-bar">
+      <div class="menu">
+        <ul class="menu-links">
+          <li class="nav-link">
+            <a href="/admin/home">
+              <i class="bx bx-home-alt icons"></i>
+              <span class="text nav-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/customers">
+              <i class="bx bx-bell icons"></i>
+              <span class="text nav-text">User</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/productlist">
+              <i class="bx bx-bar-chart-alt-2 icons"></i>
+              <span class="text nav-text">Product</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/order">
+              <i class="bx bx-pie-chart-alt icons"></i>
+              <span class="text nav-text">order</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/category">
+              <i class="bx bx-heart icons"></i>
+              <span class="text nav-text">Category</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/coupon">
+              <i class="bx bx-wallet-alt icons"></i>
+              <span class="text nav-text">coupon</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/admin/sales">
+              <i class="bx bx-wallet-alt icons"></i>
+              <span class="text nav-text">Sales Report</span>
+            </a>
+          </li>
+        </ul>
+      </div>
 
-  
       <li class="nav-link">
         <a href="/admin/login">
           <i class="bx bx-log-out icons"></i>
           <span class="text nav-text">Log Out</span>
         </a>
       </li>
-      
-      </li>
-   
-  </div>
-</nav>
-  
+    </div>
+  </nav>
+
   <div class="container">
     <h1>Create Coupon</h1>
     <form action="/admin/coupon" method="POST" onsubmit="return validateForm()">
@@ -350,8 +338,15 @@ body {
         <label for="discountValue">Discount Percentage:</label>
         <input type="number" class="form-control" id="discountValue" name="discountValue" required min="1" max="99">
         <span id="discountError" class="text-danger"></span>
-       </div>
-       
+      </div>
+      <div class="form-group">
+        <label for="minPurchaseAmount">Minimum Purchase Amount (₹):</label>
+        <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label for="maxApplicableAmount">Maximum Applicable Amount (₹):</label>
+        <input type="number" class="form-control" id="maxApplicableAmount" name="maxApplicableAmount" min="0" step="0.01">
+      </div>
       <div class="form-group">
         <label for="expirationDate">Expiration Date:</label>
         <input type="date" class="form-control" id="expirationDate" name="expirationDate" required>
@@ -359,23 +354,20 @@ body {
 
       <p style="color: red;"> <%= msg %></p>
 
-
       <button type="submit" class="btn btn-primary" onclick="showPopup()">Create Coupon</button>
 
-      <!-- Button to open the modal -->
       <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#couponModal" onclick="fetchCoupons()">
         View Available Coupons
       </button>
     </form>
 
-    <!-- Available Coupons Modal -->
     <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-hidden="true">×</span>
             </button>
           </div>
           <div class="modal-body">
@@ -385,14 +377,13 @@ body {
       </div>
     </div>
 
-    <!-- Confirmation Modal for Deleting Coupons -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span aria-hidden="true">×</span>
             </button>
           </div>
           <div class="modal-body">
@@ -407,56 +398,47 @@ body {
     </div>
   </div>
 
-  <!-- Include Bootstrap JS and Popper.js for Bootstrap functionalities -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <script>
+    function validateForm() {
+      var codeInput = document.getElementById("code");
+      var code = codeInput.value.trim();
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      if (code === "") {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Coupon code cannot be empty',
+        });
+        return false;
+      }
 
-<script>
-  function validateForm() {
-     // Validation for Coupon Code
-     var codeInput = document.getElementById("code");
-     var code = codeInput.value.trim(); // Trim whitespace
- 
-     // Check if coupon code is empty
-     if (code === "") {
-       Swal.fire({
-         icon: 'error',
-         title: 'Oops...',
-         text: 'Coupon code cannot be empty',
-       });
-       return false;
-     }
- 
-     // Check for special characters
-     var specialChars = /^[a-zA-Z0-9]+$/; // Allow only alphanumeric characters
-     if (!specialChars.test(code)) {
-       Swal.fire({
-         icon: 'error',
-         title: 'Oops...',
-         text: 'Coupon code can only contain alphanumeric characters',
-       });
-       return false;
-     }
- 
-     // Check for spaces
-     if (code.indexOf(" ") !== -1) {
-       Swal.fire({
-         icon: 'error',
-         title: 'Oops...',
-         text: 'Coupon code cannot contain spaces',
-       });
-       return false;
-     }
- 
-     // If all validations pass, return true
-     return true;
-  }
- </script>
- 
+      var specialChars = /^[a-zA-Z0-9]+$/;
+      if (!specialChars.test(code)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Coupon code can only contain alphanumeric characters',
+        });
+        return false;
+      }
+
+      if (code.indexOf(" ") !== -1) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Coupon code cannot contain spaces',
+        });
+        return false;
+      }
+
+      return true;
+    }
+  </script>
 
   <script>
     function hidePopup() {
@@ -464,8 +446,8 @@ body {
       popup.style.display = "none";
     }
   </script>
+
   <script>
-    // Fetch and populate available coupons in the modal
     function fetchCoupons() {
       fetch('/admin/available')
         .then(response => {
@@ -475,10 +457,8 @@ body {
           return response.json();
         })
         .then(coupons => {
-          // Clear existing content in the coupon container
           document.getElementById('couponContainer').innerHTML = '';
 
-          // Append each coupon to the container
           coupons.forEach(coupon => {
             const couponElement = document.createElement('div');
             couponElement.className = 'card mb-2';
@@ -486,7 +466,9 @@ body {
               <div class="card-body">
                 <h5 class="card-title">${coupon.code}</h5>
                 <p class="card-text">
-                  Discount: ${coupon.discountValue}<br>
+                  Discount: ${coupon.discountValue}%<br>
+                  Min Purchase: ₹${coupon.minPurchaseAmount || 0}<br>
+                  Max Applicable: ₹${coupon.maxApplicableAmount === Infinity ? 'No Limit' : coupon.maxApplicableAmount}<br>
                   Expires on: ${new Date(coupon.expirationDate).toLocaleDateString('en-US')}
                 </p>
                 <button class="btn btn-danger" onclick="deleteCoupon('${coupon._id}')">Delete</button>
@@ -501,14 +483,11 @@ body {
     }
 
     function deleteCoupon(couponId) {
-      // Store the coupon ID in a data attribute of the confirmation modal
       $('#confirmationModal').data('coupon-id', couponId);
-      // Open the confirmation modal
       $('#confirmationModal').modal('show');
     }
 
     function confirmDeleteCoupon() {
-      // Retrieve the coupon ID from the data attribute
       const couponId = $('#confirmationModal').data('coupon-id');
 
       fetch(`/admin/coupon/${couponId}`, {
@@ -522,9 +501,7 @@ body {
         })
         .then(data => {
           console.log('Coupon deleted successfully:', data);
-          // Close the confirmation modal
           $('#confirmationModal').modal('hide');
-          // Refresh the modal content after deletion
           fetchCoupons();
         })
         .catch(error => {
@@ -532,16 +509,16 @@ body {
         });
     }
   </script>
+
   <script>
-    // JavaScript for automatically toggling sidebar visibility
     const toggleButton = document.querySelector('.toggle-sidebar');
     const sidebar = document.querySelector('.sidebar');
-    
+
     function toggleSidebar() {
       sidebar.classList.toggle('hidden');
-      toggleButton.classList.toggle('active'); // Toggle the active class on the toggle button
+      toggleButton.classList.toggle('active');
     }
-    
+
     function checkViewportWidth() {
       if (window.innerWidth <= 1300) {
         sidebar.classList.add('hidden');
@@ -551,55 +528,49 @@ body {
         toggleButton.style.display = 'none';
       }
     }
-    
-    toggleButton.addEventListener('click', function() {
-      toggleSidebar();
-    });
-    
-    // Check viewport width initially and on resize
+
+    toggleButton.addEventListener('click', toggleSidebar);
     checkViewportWidth();
     window.addEventListener('resize', checkViewportWidth);
-    
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      document.getElementById('yourFormId').addEventListener('submit', function(event) {
-       event.preventDefault();
-       const formData = new FormData(event.target);
-       fetch('/admin/coupon', {
-          method: 'POST',
-          body: formData
-       })
-       .then(response => response.json())
-       .then(data => {
-          if (data.error) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: data.error, // This will display the error message from the backend
-            });
-          } else {
-            // Handle success, e.g., redirect or show success message
-          }
-       })
-       .catch(error => {
-          console.error('Error:', error);
-       });
+  </script>
+
+  <script>
+    document.getElementById('yourFormId').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      fetch('/admin/coupon', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: data.error,
+          });
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
       });
-      </script>
-      <script>
-        document.getElementById('discountValue').addEventListener('input', function() {
-           var discountValue = this.value;
-           var discountError = document.getElementById('discountError');
-       
-           if (discountValue < 1 || discountValue > 99) {
-             discountError.textContent = 'Discount must be between 1 and 99';
-           } else {
-             discountError.textContent = '';
-           }
-        });
-       </script>
-       
-      
+    });
+  </script>
+
+  <script>
+    document.getElementById('discountValue').addEventListener('input', function() {
+      var discountValue = this.value;
+      var discountError = document.getElementById('discountError');
+
+      if (discountValue < 1 || discountValue > 99) {
+        discountError.textContent = 'Discount must be between 1 and 99';
+      } else {
+        discountError.textContent = '';
+      }
+    });
+  </script>
 </body>
 </html>

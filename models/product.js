@@ -26,7 +26,7 @@ const productschema = new mongoose.Schema({
     isListed: {
         type: Boolean,
     },
-    deleted: { type: Boolean, default: false },
+    deleted: { type: Boolean, default: false }, // Add a 'deleted' field with default value 'false'
 });
 
 module.exports = mongoose.model("product", productschema);

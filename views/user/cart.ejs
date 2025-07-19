@@ -9,8 +9,7 @@
     <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
 </head>
 <body>
-
-    <style>
+                <style>
         /* Your CSS styles here */
         body {
                 font-family: Arial, sans-serif;
@@ -122,13 +121,13 @@ body {
             .remove-btn:hover {
                 background-color: #d1404a;
             }
-
-            .cart-footer {
-                padding: 20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
+.cart-footer {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
 
             .total-price {
                 font-size: 1.2rem;
@@ -252,6 +251,7 @@ body {
     color: #333; /* Change the color on hover */
 }
     </style>
+
     <%- include('nav2') %>
 
     <div class="back-button">
@@ -259,10 +259,16 @@ body {
     </div>
     <div class="cart">
         <div class="cart-title">Shopping Cart</div>
+        <div class="empty-cart-message" style="display: none;">
+            Your cart is empty. <a href="/" class="shop-now-btn" style="text-decoration: none;">Shop Now</a>
+        </div>
         <% if (!cart || cart.items.length === 0) { %>
-            <div class="empty-cart-message" style="display: block;">
-                Your cart is empty. <a href="/" class="shop-now-btn" style="text-decoration: none;">Shop Now</a>
-            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const emptyMsg = document.querySelector('.empty-cart-message');
+                    if (emptyMsg) emptyMsg.style.display = 'block';
+                });
+            </script>
         <% } else { %>
         <table class="cart-table">
             <thead>
@@ -282,28 +288,21 @@ body {
                         <td><img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.name || 'Product Image' %>" class="product-image" /></td>
                         <td><%= item.productId.name || 'Unknown Product' %></td>
                         <td>
-                            <% if (item.productId.price !== null && item.productId.price !== undefined) { %>
-                                <% if (item.productId.offerprice !== null && item.productId.offerprice !== undefined) { %>
-                                    ₹<%= Math.min(item.productId.offerprice, item.productId.price) %>
-                                <% } else { %>
-                                    ₹<%= item.productId.price %>
-                                <% } %>
-                            <% } else { %>
-                                <span>No Price</span>
-                            <% } %>
+                            <% const price = item.productId.offerprice || item.productId.price || 0; %>
+                            ₹<%= price.toFixed(2) %>
                         </td>
                         <td class="quantity-cell">
-                            <button class="quantity-btn quantity-minus" onclick="decreaseQuantity('<%= item.productId._id %>')">
+                            <button class="quantity-btn quantity-minus" data-product-id="<%= item.productId._id %>" data-price="<%= price %>">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <input type="number" class="quantity-input" id="quantity_<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="<%= item.productId.stock %>" disabled>
-                            <button class="quantity-btn quantity-plus" onclick="increaseQuantity('<%= item.productId._id %>')">
+                            <input type="number" class="quantity-input" id="quantity_<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="<%= item.productId.stock %>" data-prev-value="<%= item.quantity %>">
+                            <button class="quantity-btn quantity-plus" data-product-id="<%= item.productId._id %>" data-price="<%= price %>">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </td>
-                        <td class="subtotal">₹<%= (item.productId.offerprice || item.productId.price) * item.quantity %></td>
+                        <td class="subtotal">₹<span id="subtotal_<%= item.productId._id %>"><%= (price * item.quantity).toFixed(2) %></span></td>
                         <td>
-                            <button class="remove-btn" onclick="removeFromCart('<%= item.productId._id %>')">Remove</button>
+                            <button class="remove-btn" data-product-id="<%= item.productId._id %>" data-price="<%= price %>">Remove</button>
                         </td>
                     </tr>
                     <% } %>
@@ -311,7 +310,7 @@ body {
             </tbody>
         </table>
         <div class="cart-footer">
-            <div class="total-price">Total: ₹<span class="cart-total"><%= totalPrice.toFixed(2) %></span></div>
+            <div class="total-price">Total: ₹<span class="cart-total" id="cart-total"><%= totalPrice.toFixed(2) %></span></div>
             <a href="#" onclick="handleCheckout()"><button class="checkout-btn">Checkout</button></a>
         </div>
         <% } %>
@@ -321,7 +320,7 @@ body {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function handleCheckout() {
-            const cartTotal = parseFloat(document.querySelector(".cart-total")?.innerText || 0);
+            const cartTotal = parseFloat(document.getElementById("cart-total")?.innerText || 0);
             if (cartTotal === 0) {
                 Swal.fire({
                     title: 'Oops!',
@@ -334,9 +333,12 @@ body {
             }
         }
 
-        function updateQuantity(productId, quantity) {
+        function updateQuantity(productId, quantity, price) {
             const inputField = document.getElementById(`quantity_${productId}`);
+            if (!inputField) return;
+
             const maxStock = parseInt(inputField.getAttribute('max'));
+            const prevValue = parseInt(inputField.dataset.prevValue) || 1;
 
             if (isNaN(quantity) || quantity < 1) {
                 Swal.fire({
@@ -345,7 +347,8 @@ body {
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
-                inputField.value = inputField.dataset.prevValue || 1;
+                inputField.value = prevValue;
+                updateSubtotalAndTotal(productId, prevValue, price);
                 return;
             }
 
@@ -357,6 +360,7 @@ body {
                     confirmButtonText: 'OK'
                 });
                 inputField.value = maxStock;
+                updateSubtotalAndTotal(productId, maxStock, price);
                 return;
             }
 
@@ -367,11 +371,23 @@ body {
                 },
                 body: JSON.stringify({ productId, quantity }),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log("Server response:", data);
                 if (data.success) {
-                    inputField.value = data.cart.items.find(item => item.productId._id === productId).quantity;
-                    updateTotal();
+                    const updatedItem = data.cart.items.find(item => item.productId._id.toString() === productId);
+                    if (updatedItem) {
+                        inputField.value = updatedItem.quantity;
+                        inputField.dataset.prevValue = updatedItem.quantity;
+                        updateSubtotalAndTotal(productId, updatedItem.quantity, price);
+                    } else {
+                        throw new Error("Updated item not found in response");
+                    }
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -379,47 +395,83 @@ body {
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
+                    inputField.value = prevValue;
+                    updateSubtotalAndTotal(productId, prevValue, price);
                 }
             })
             .catch(error => {
                 console.error('Error updating quantity:', error);
                 Swal.fire({
                     title: 'Error',
-                    text: 'An error occurred while updating quantity',
+                    text: `An error occurred while updating quantity: ${error.message}`,
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
+                inputField.value = prevValue;
+                updateSubtotalAndTotal(productId, prevValue, price);
             });
         }
 
-        function decreaseQuantity(productId) {
-            const inputField = document.getElementById(`quantity_${productId}`);
-            let newValue = parseInt(inputField.value) - 1;
-            newValue = newValue < 1 ? 1 : newValue;
-            inputField.value = newValue;
-            updateQuantity(productId, newValue);
-        }
+        function decreaseQuantity(event) {
+            try {
+                const button = event.target.closest('button');
+                if (!button) return;
+                
+                const productId = button.dataset.productId;
+                const price = parseFloat(button.dataset.price);
+                const inputField = document.getElementById(`quantity_${productId}`);
+                
+                if (!inputField || !productId) return;
 
-        function increaseQuantity(productId) {
-            const inputField = document.getElementById(`quantity_${productId}`);
-            const maxStock = parseInt(inputField.getAttribute('max'));
-            let newValue = parseInt(inputField.value) + 1;
-
-            if (newValue > maxStock) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Maximum stock limit reached',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return;
+                let newValue = parseInt(inputField.value) - 1;
+                newValue = newValue < 1 ? 1 : newValue;
+                inputField.value = newValue;
+                updateQuantity(productId, newValue, price);
+            } catch (error) {
+                console.error('Error in decreaseQuantity:', error);
             }
-
-            inputField.value = newValue;
-            updateQuantity(productId, newValue);
         }
 
-        function removeFromCart(productId) {
+        function increaseQuantity(event) {
+            try {
+                const button = event.target.closest('button');
+                if (!button) return;
+                
+                const productId = button.dataset.productId;
+                const price = parseFloat(button.dataset.price);
+                const inputField = document.getElementById(`quantity_${productId}`);
+                
+                if (!inputField || !productId) return;
+
+                const maxStock = parseInt(inputField.getAttribute('max'));
+                let newValue = parseInt(inputField.value) + 1;
+
+                if (newValue > maxStock) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Maximum stock limit reached',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                inputField.value = newValue;
+                updateQuantity(productId, newValue, price);
+            } catch (error) {
+                console.error('Error in increaseQuantity:', error);
+            }
+        }
+
+        function removeFromCart(event) {
+            const button = event.target.closest('button');
+            if (!button) return;
+            
+            const productId = button.dataset.productId;
+            const price = parseFloat(button.dataset.price);
+            
+            if (!productId) return;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'You are about to remove this product from your cart.',
@@ -437,26 +489,76 @@ body {
                             'Content-Type': 'application/json'
                         },
                     })
-                    .then(response => response.ok ? response : Promise.reject('Failed to remove product'))
-                    .then(() => {
-                        document.getElementById(`row_${productId}`)?.remove();
-                        updateTotal();
-                        if (!document.querySelector(".cart-items").children.length) {
-                            document.querySelector(".empty-cart-message").style.display = "block";
-                            document.querySelector(".cart-footer").style.display = "none";
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${response.statusText}`);
                         }
-                        Swal.fire({
-                            title: 'Removed!',
-                            text: 'The product has been removed from your cart.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const rowElement = document.getElementById(`row_${productId}`);
+                            if (rowElement) {
+                                rowElement.remove();
+                            }
+                            
+                            // Force recalculation of total
+                            setTimeout(() => {
+                                try {
+                                    const subtotals = document.querySelectorAll(".subtotal span");
+                                    let total = 0;
+                                    
+                                    if (subtotals && subtotals.length > 0) {
+                                        subtotals.forEach(subtotal => {
+                                            if (subtotal && subtotal.innerText) {
+                                                const value = parseFloat(subtotal.innerText) || 0;
+                                                total += value;
+                                            }
+                                        });
+                                    }
+                                    
+                                    const totalPriceElement = document.getElementById("cart-total");
+                                    if (totalPriceElement) {
+                                        totalPriceElement.innerText = total.toFixed(2);
+                                    }
+                                    
+                                    const cartItemsContainer = document.querySelector(".cart-items");
+                                    const hasItems = cartItemsContainer && cartItemsContainer.children.length > 0;
+                                    
+                                    if (!hasItems) {
+                                        const emptyMsg = document.querySelector(".empty-cart-message");
+                                        const cartFooter = document.querySelector(".cart-footer");
+                                        const cartTable = document.querySelector(".cart-table");
+                                        
+                                        if (emptyMsg) emptyMsg.style.display = "block";
+                                        if (cartFooter) cartFooter.style.display = "none";
+                                        if (cartTable) cartTable.style.display = "none";
+                                    }
+                                } catch (error) {
+                                    console.error("Error updating cart after removal:", error);
+                                }
+                            }, 100);
+                            
+                            Swal.fire({
+                                title: 'Removed!',
+                                text: 'The product has been removed from your cart.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Failed to remove product from cart',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
                     })
                     .catch(error => {
                         console.error('Error removing product:', error);
                         Swal.fire({
                             title: 'Error',
-                            text: 'Failed to remove product from cart',
+                            text: `Failed to remove product from cart: ${error.message}`,
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -465,24 +567,111 @@ body {
             });
         }
 
-        function updateTotal() {
-            const subtotals = document.querySelectorAll(".subtotal");
+        function updateSubtotalAndTotal(productId, quantity, price) {
+            // Only update subtotal if productId and elements exist
+            if (productId && quantity !== undefined && price !== undefined) {
+                const subtotalElement = document.getElementById(`subtotal_${productId}`);
+                if (subtotalElement) {
+                    const newSubtotal = (price * quantity).toFixed(2);
+                    subtotalElement.innerText = newSubtotal;
+                }
+            }
+
+            // Calculate total from all visible subtotals
+            const subtotals = document.querySelectorAll(".subtotal span");
             let total = 0;
-            subtotals.forEach(subtotal => {
-                total += parseFloat(subtotal.innerText.replace('₹', '')) || 0;
-            });
-            const totalPriceElement = document.querySelector(".cart-total");
+            
+            if (subtotals && subtotals.length > 0) {
+                subtotals.forEach(subtotal => {
+                    if (subtotal && subtotal.innerText) {
+                        const value = parseFloat(subtotal.innerText) || 0;
+                        total += value;
+                    }
+                });
+            }
+            
+            // Update total display
+            const totalPriceElement = document.getElementById("cart-total");
             if (totalPriceElement) {
                 totalPriceElement.innerText = total.toFixed(2);
             }
-            if (total === 0) {
-                document.querySelector(".empty-cart-message").style.display = "block";
-                document.querySelector(".cart-footer").style.display = "none";
+            
+            // Handle empty cart display
+            try {
+                const emptyMsg = document.querySelector(".empty-cart-message");
+                const cartFooter = document.querySelector(".cart-footer");
+                const cartTable = document.querySelector(".cart-table");
+                const cartItemsContainer = document.querySelector(".cart-items");
+                
+                // Check if cart is actually empty
+                const hasItems = cartItemsContainer && cartItemsContainer.children.length > 0;
+                
+                if (!hasItems || total === 0) {
+                    if (emptyMsg) emptyMsg.style.display = "block";
+                    if (cartFooter) cartFooter.style.display = "none";
+                    if (cartTable) cartTable.style.display = "none";
+                } else {
+                    if (emptyMsg) emptyMsg.style.display = "none";
+                    if (cartFooter) cartFooter.style.display = "block";
+                    if (cartTable) cartTable.style.display = "table";
+                }
+            } catch (error) {
+                console.error("Error updating cart display:", error);
             }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            updateTotal();
+            document.querySelectorAll('.quantity-minus').forEach(button => {
+                button.addEventListener('click', decreaseQuantity);
+            });
+            document.querySelectorAll('.quantity-plus').forEach(button => {
+                button.addEventListener('click', increaseQuantity);
+            });
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', removeFromCart);
+            });
+
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    try {
+                        const productId = this.id.replace('quantity_', '');
+                        const row = this.closest('tr');
+                        if (!row) return;
+                        
+                        const priceCell = row.querySelector('td:nth-child(3)');
+                        if (priceCell && priceCell.innerText) {
+                            const price = parseFloat(priceCell.innerText.replace('₹', ''));
+                            if (!isNaN(price)) {
+                                updateQuantity(productId, this.value, price);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error in quantity input change:', error);
+                    }
+                });
+            });
+
+            // Initial calculation with error handling
+            try {
+                const subtotals = document.querySelectorAll(".subtotal span");
+                let total = 0;
+                
+                if (subtotals && subtotals.length > 0) {
+                    subtotals.forEach(subtotal => {
+                        if (subtotal && subtotal.innerText) {
+                            const value = parseFloat(subtotal.innerText) || 0;
+                            total += value;
+                        }
+                    });
+                }
+                
+                const totalPriceElement = document.getElementById("cart-total");
+                if (totalPriceElement) {
+                    totalPriceElement.innerText = total.toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error in initial calculation:', error);
+            }
         });
     </script>
 </body>

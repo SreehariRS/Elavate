@@ -2,15 +2,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About us</title>
-    <link rel="stylesheet" href="{% static 'about.css' %}" />
+    <link rel="stylesheet" href="/css/about.css" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link rel="icon" href="{% static 'PICO-LOGO-SHORT.png' %}" type="image/gif">
-  </head>
+    <link rel="icon" href="/img/PICO-LOGO-SHORT.png" type="image/gif">
+</head>
   
-  <body>
-    <style>
+<body>
+      <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 * {
@@ -124,68 +124,59 @@ body {
     <div class="company">
         <div class="img">
             <img src="/img/pppppppppppppp.jpg" alt="" class="moving-image" style="width: 60%; height: auto; margin-left: 80px;" />
-
-          </div>
-          <div class="company-info">
+        </div>
+        <div class="company-info">
             <span>SCENTS <span class="our">FOR EVERYONE</span></span>
             <p>
                 <b>Elavate</b> is a global perfume platform that brings together the finest fragrances from around the world. Our mission is to curate a vast collection of unique and exquisite scents, ensuring that every individual can find the perfect fragrance to complement their lifestyle. At Aroma, we strive to be a leading supplier of premium perfumes online, offering a wide range of options for men, women, and children.
             </p>
         </div>
-        
-        
     </div>
     <!-- ---------------------------------------------------------------------------------------------------------------------- -->
 
-    
-
     <!-- -------------------------------------------------------------------------------------------- -->
-  <script>
-    const cardImages = document.querySelectorAll(".card-image");
-const cardTitles = document.querySelectorAll(".card-title");
-const cardDescriptions = document.querySelectorAll(".card-description");
-const cardMediaIcons = document.querySelectorAll(".card-mediaIcons a");
-const cardImgs = document.querySelectorAll(".card-image img");
-const cardTitleSpans = document.querySelectorAll(".card-title span");
-const cardDescSpans = document.querySelectorAll(".card-description span");
-const mediaIcons = document.querySelectorAll(".card-mediaIcons a i");
+    <script>
+        const cardImages = document.querySelectorAll(".card-image");
+        const cardTitles = document.querySelectorAll(".card-title");
+        const cardDescriptions = document.querySelectorAll(".card-description");
+        const cardMediaIcons = document.querySelectorAll(".card-mediaIcons a");
+        const cardImgs = document.querySelectorAll(".card-image img");
+        const cardTitleSpans = document.querySelectorAll(".card-title span");
+        const cardDescSpans = document.querySelectorAll(".card-description span");
+        const mediaIcons = document.querySelectorAll(".card-mediaIcons a i");
 
-const renderCard = () => {
+        const renderCard = () => {
+            cardImages.forEach((cardImage) => {
+                cardImage.classList.remove("loading");
+            });
+            cardTitles.forEach((cardTitle) => {
+                cardTitle.classList.remove("loading");
+            });
+            cardDescriptions.forEach((cardDescription) => {
+                cardDescription.classList.remove("loading");
+            });
+            cardMediaIcons.forEach((cardMediaIcon) => {
+                cardMediaIcon.classList.remove("loading");
+            });
 
-  cardImages.forEach((cardImage) => {
-    cardImage.classList.remove("loading");
-  });
-  cardTitles.forEach((cardTitle) => {
-    cardTitle.classList.remove("loading");
-  });
-  cardDescriptions.forEach((cardDescription) => {
-    cardDescription.classList.remove("loading");
-  });
-  cardMediaIcons.forEach((cardMediaIcon) => {
-    cardMediaIcon.classList.remove("loading");
-  });
+            //Show the hidden html elements
+            cardImgs.forEach((cardImg) => {
+                cardImg.style.visibility = "visible";
+            });
+            cardTitleSpans.forEach((cardTitleSpan) => {
+                cardTitleSpan.style.visibility = "visible";
+            });
+            cardDescSpans.forEach((cardDescSpan) => {
+                cardDescSpan.style.visibility = "visible";
+            });
+            mediaIcons.forEach((mediaIcon) => {
+                mediaIcon.style.visibility = "visible";
+            });
+        }
 
-  //Show the hidden html elements
-  cardImgs.forEach((cardImg) => {
-    cardImg.style.visibility = "visible";
-  });
-  cardTitleSpans.forEach((cardTitleSpan) => {
-    cardTitleSpan.style.visibility = "visible";
-  });
-  cardDescSpans.forEach((cardDescSpan) => {
-    cardDescSpan.style.visibility = "visible";
-  });
-  mediaIcons.forEach((mediaIcon) => {
-    mediaIcon.style.visibility = "visible";
-  });
-}
-
-
-setTimeout(() => {
-  renderCard();
-}, 1000);
-
-
-  
-  </script>
-  </html>
+        setTimeout(() => {
+            renderCard();
+        }, 1000);
+    </script>
+</body>
+</html>

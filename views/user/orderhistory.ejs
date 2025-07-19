@@ -7,7 +7,9 @@
     <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
+</head>
+<body>
+        <style>
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -94,9 +96,7 @@
             margin: 30px 0;
         }
 
-        .order-item {
-            display: flex;
-            gap: 20px;
+        .order-block {
             padding: 20px;
             margin-bottom: 20px;
             background-color: #f8fafc;
@@ -105,39 +105,61 @@
             transition: transform 0.2s ease;
         }
 
-        .order-item:hover {
+        .order-block:hover {
             transform: translateY(-2px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .product-info img {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .order-details {
-            flex: 1;
+        .order-header {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .product-details {
-            flex: 2;
-        }
-
-        .order-details h2 {
-            font-size: 1.2rem;
+        .order-header h2 {
+            font-size: 1.4rem;
             font-weight: 600;
             margin: 0;
         }
 
-        p {
+        .order-details {
+            margin-bottom: 15px;
+        }
+
+        .order-details p {
             margin: 5px 0;
             font-size: 0.9rem;
             color: #475569;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .items-table th, .items-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .items-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .items-table td {
+            font-size: 0.85rem;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
         }
 
         .status-confirmed {
@@ -165,17 +187,27 @@
             font-weight: 500;
         }
 
+        .status-pending, .status-paymentfailed {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .status-return-requested, .status-refund-requested, .status-cancellation-requested {
+            color: #d97706;
+            font-weight: 500;
+        }
+
         .action-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             border: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
@@ -220,10 +252,10 @@
 
         .debug-info {
             background-color: #f1f5f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.8rem;
             color: #64748b;
         }
 
@@ -262,8 +294,6 @@
             font-size: 0.9rem;
         }
     </style>
-</head>
-<body>
     <header class="header">
         <div class="header-content">
             <div class="back-button">
@@ -284,68 +314,104 @@
     <div id="ordersData" data-orders='<%= JSON.stringify(orders) %>'></div>
 
     <div class="container">
-     
-
         <% if (orders && orders.length > 0) { %>
             <% orders.forEach(order => { %>
-                <% order.items.forEach(item => { %>
-                    <div class="order-item">
-                        <div class="product-info">
-                            <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
-                                <img src="<%= item.productId.productImages[0] %>" alt="Product Image" />
-                            <% } %>
-                        </div>
-                        <div class="order-details">
-                            <h2>Order ID: <%= String(order._id).slice(-4) %></h2>
-                            <p>Date & Time: <%= order.date ? new Date(order.date).toLocaleString() : 'Not Available' %></p>
-                            <% if (order.status === 'delivered') { %>
-                                <div class="action-buttons">
-                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
-                                    <button class="action-btn secondary" onclick="initiateReturn('<%= order._id %>')">Request Return</button>
-                                    <button class="action-btn secondary" onclick="initiateRefund('<%= order._id %>')">Request Refund</button>
-                                </div>
-                            <% } else if (order.status === 'pending' || order.status === 'paymentfailed') { %>
-                                <div class="action-buttons">
-                                    <button class="action-btn primary" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
-                                </div>
-                            <% } else if (order.status === 'return-requested' || order.status === 'refund-requested' || order.status === 'cancellation-requested') { %>
-                                <p><strong>Status:</strong> <span class="status-<%= order.status.toLowerCase() %>"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %> (Pending Admin Approval)</span></p>
-                                <div class="action-buttons">
-                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
-                                </div>
-                            <% } else if (order.status === 'returned' || order.status === 'refunded' || order.status === 'cancelled') { %>
-                                <div class="action-buttons">
-                                    <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
-                                </div>
-                            <% } else { %>
-                                <div class="action-buttons">
-                                    <button class="action-btn secondary" onclick="cancelOrder('<%= order._id %>')">Request Cancellation</button>
-                                </div>
-                            <% } %>
-                        </div>
-                        <div class="product-details">
-                            <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
-                                <h2><%= item.productId.name %></h2>
-                                <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                                <p><strong>Item Total:</strong> ₹<%= (item.productId.offerprice || item.productId.price) * item.quantity %></p>
-                                <p><strong>Address:</strong> <%= order.selectedAddress %></p>
-                                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                                <p><strong>Discount Amount:</strong> ₹<span style="color: #dc2626;">
-                                    <%= order.couponId ? (order.items.reduce((acc, item) => acc + ((item.productId.offerprice || item.productId.price) * item.quantity), 0) - order.totalPrice) : 0 %>
-                                </span></p>
-                                <p><strong>Net Amount:</strong> ₹<span style="color: #2563eb;"><%= order.totalPrice %></span></p>
-                                <p><strong>Order Status:</strong> <span class="status-<%= order.status.toLowerCase() %>"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span></p>
-                                <div class="debug-info">
-                                    <p><strong>Debug Product:</strong></p>
-                                    <p>Product ID: <%= item.productId._id %></p>
-                                    <p>Product Name: <%= item.productId.name %></p>
-                                </div>
-                            <% } else { %>
-                                <p><em>Apologies, the product is currently unavailable.</em></p>
+                <%
+                    // Calculate total before discount for this order
+                    const totalBeforeDiscount = order.items.reduce((acc, item) => {
+                        return acc + (item.status !== 'cancelled' ? (item.productId.offerprice || item.productId.price) * item.quantity : 0);
+                    }, 0);
+                    
+                    // Calculate discount amount
+                    const discountAmount = order.couponId ? (totalBeforeDiscount - order.totalPrice) : 0;
+                    
+                    // Calculate discount percentage for proportional distribution
+                    const discountPercentage = totalBeforeDiscount > 0 ? (discountAmount / totalBeforeDiscount) : 0;
+                %>
+                <div class="order-block">
+                    <div class="order-header">
+                        <h2>Order ID: <%= String(order._id).slice(-4) %></h2>
+                        <div class="action-buttons">
+                            <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+                            <% if (order.status === 'confirmed' || order.status === 'paymentfailed') { %>
+                                <button class="action-btn primary" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
                             <% } %>
                         </div>
                     </div>
-                <% }); %>
+                    <div class="order-details">
+                        <p><strong>Date & Time:</strong> <%= order.date ? new Date(order.date).toLocaleString() : 'Not Available' %></p>
+                        <p><strong>Address:</strong> <%= order.selectedAddress %></p>
+                        <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                        <p><strong>Discount Amount:</strong> ₹<span style="color: #dc2626;"><%= discountAmount %></span></p>
+                        <p><strong>Net Amount:</strong> ₹<span style="color: #2563eb;"><%= order.totalPrice %></span></p>
+                    </div>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Item Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% order.items.forEach((item, index) => { %>
+                                <%
+                                    // Calculate item total before discount
+                                    const itemTotalBeforeDiscount = item.productId ? (item.productId.offerprice || item.productId.price) * item.quantity : 0;
+                                    
+                                    // Calculate proportional discount for this item
+                                    const itemDiscount = itemTotalBeforeDiscount * discountPercentage;
+                                    
+                                    // Calculate final item total after discount
+                                    const itemTotalAfterDiscount = item.status !== 'cancelled' ? (itemTotalBeforeDiscount - itemDiscount) : itemTotalBeforeDiscount;
+                                %>
+                                <tr>
+                                    <td>
+                                        <% if (item.productId && item.productId.productImages && item.productId.productImages.length > 0) { %>
+                                            <img src="<%= item.productId.productImages[0] %>" alt="Product Image" class="product-image" />
+                                        <% } else { %>
+                                            <span>N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= item.productId ? item.productId.name : 'N/A' %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>
+                                        <% if (item.productId) { %>
+                                            <% if (discountAmount > 0 && item.status !== 'cancelled') { %>
+                                                <span style="text-decoration: line-through; color: #666; font-size: 0.9em;">₹<%= itemTotalBeforeDiscount %></span>
+                                                <br>
+                                                <span style="color: #2563eb; font-weight: 500;">₹<%= Math.round(itemTotalAfterDiscount) %></span>
+                                            <% } else { %>
+                                                ₹<%= Math.round(itemTotalAfterDiscount) %>
+                                            <% } %>
+                                        <% } else { %>
+                                            N/A
+                                        <% } %>
+                                    </td>
+                                    <td><span class="status-<%= item.status.toLowerCase() %>"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <% if (item.status === 'delivered') { %>
+                                                <button class="action-btn secondary" onclick="initiateReturn('<%= order._id %>', '<%= index %>')">Request Return</button>
+                                                <button class="action-btn secondary" onclick="initiateRefund('<%= order._id %>', '<%= index %>')">Request Refund</button>
+                                            <% } else if (item.status === 'return-requested' || item.status === 'refund-requested' || item.status === 'cancellation-requested') { %>
+                                                <span>Pending Admin Approval</span>
+                                            <% } else if (item.status !== 'returned' && item.status !== 'refunded' && item.status !== 'cancelled') { %>
+                                                <button class="action-btn secondary" onclick="cancelOrder('<%= order._id %>', '<%= index %>')">Request Cancellation</button>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                    <td><%= item.cancellationReason || 'N/A' %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                   
+                </div>
             <% }); %>
         <% } else { %>
             <div class="text-center mt-4">
@@ -611,7 +677,7 @@
             }
         }
 
-        async function initiateReturn(orderId) {
+        async function initiateReturn(orderId, itemId) {
             try {
                 const { value: reason } = await Swal.fire({
                     title: 'Initiate Return',
@@ -626,7 +692,7 @@
                     const response = await fetch(`/initiate-return/${orderId}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cancellationReason: reason }),
+                        body: JSON.stringify({ itemId, cancellationReason: reason }),
                     });
 
                     if (response.ok) {
@@ -656,7 +722,7 @@
             }
         }
 
-        async function initiateRefund(orderId) {
+        async function initiateRefund(orderId, itemId) {
             try {
                 const { value: reason } = await Swal.fire({
                     title: 'Initiate Refund',
@@ -671,7 +737,7 @@
                     const response = await fetch(`/initiate-refund/${orderId}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cancellationReason: reason }),
+                        body: JSON.stringify({ itemId, cancellationReason: reason }),
                     });
 
                     if (response.ok) {
@@ -701,7 +767,7 @@
             }
         }
 
-        async function cancelOrder(orderId) {
+        async function cancelOrder(orderId, itemId) {
             try {
                 const { value: reason } = await Swal.fire({
                     title: 'Request Cancellation',
@@ -716,7 +782,7 @@
                     const response = await fetch(`/cancel-order/${orderId}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cancellationReason: reason }),
+                        body: JSON.stringify({ itemId, cancellationReason: reason }),
                     });
 
                     if (response.ok) {
@@ -725,8 +791,6 @@
                             title: 'Cancellation Requested',
                             text: 'Your cancellation request has been submitted for admin approval.',
                             timer: 2000,
-                        }).then(() => {
-                            window.location.reload();
                         });
                     } else {
                         Swal.fire({

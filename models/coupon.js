@@ -10,11 +10,10 @@ const couponSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    usedBy: {
+    usedBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        default: null,
-    },
+    }],
     expirationDate: {
         type: Date,
         required: true,
@@ -23,7 +22,16 @@ const couponSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    minPurchaseAmount: {
+        type: Number,
+        default: 0,
+    },
+    maxApplicableAmount: {
+        type: Number,
+        default: Infinity,
+    },
 });
+
 const Coupon = mongoose.model("Coupon", couponSchema);
 
 module.exports = Coupon;

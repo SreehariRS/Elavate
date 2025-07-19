@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order History</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Admin Order History</title>
+    <link rel="stylesheet" href="/styles.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
-      <style>
+        <style>
     
 
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -477,13 +477,13 @@ body {
                     <li class="nav-link">
                         <a href="/admin/productlist">
                             <i class="bx bx-bell icons"></i>
-                            <span class="text nav-text">product</span>
+                            <span class="text nav-text">Product</span>
                         </a>
                     </li>
                     <li class="nav-link">
                         <a href="/admin/order">
                             <i class="bx bx-pie-chart-alt icons"></i>
-                            <span class="text nav-text">order</span>
+                            <span class="text nav-text">Order</span>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -495,7 +495,7 @@ body {
                     <li class="nav-link">
                         <a href="/admin/coupon">
                             <i class="bx bx-wallet-alt icons"></i>
-                            <span class="text nav-text">coupon</span>
+                            <span class="text nav-text">Coupon</span>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -517,20 +517,20 @@ body {
         </div>
     </nav>
 
-    <div class="container">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search..." id="searchInput">
-            <button class="search-button" onclick="searchOrders()"><i class="fas fa-search"></i></button>
+    <div class="container mt-4">
+        <div class="search-bar mb-3">
+            <input type="text" class="search-input form-control d-inline-block w-50" placeholder="Search..." id="searchInput">
+            <button class="search-button btn btn-primary" onclick="searchOrders()"><i class="fas fa-search"></i> Search</button>
         </div>
         
-        <div class="price-filter">
-            <input type="number" id="minPrice" placeholder="Min Price">
-            <input type="number" id="maxPrice" placeholder="Max Price">
-            <button id="filterPrice">Filter</button>
+        <div class="price-filter mb-3">
+            <input type="number" id="minPrice" class="form-control d-inline-block w-25" placeholder="Min Price">
+            <input type="number" id="maxPrice" class="form-control d-inline-block w-25" placeholder="Max Price">
+            <button id="filterPrice" class="btn btn-primary">Filter by Price</button>
         </div>
         
         <h1>Order History</h1>
-        <table id="orderTable">
+        <table id="orderTable" class="table table-striped">
             <thead>
                 <tr>
                     <th>Order ID</th>
@@ -538,55 +538,71 @@ body {
                     <th>Address</th>
                     <th>Date & Time</th>
                     <th>Product Name</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
+                    <th>Quantity</th>
+                    <th>Item Total</th>
+                    <th>Order Total</th>
+                    <th>Item Status</th>
                     <th>Payment Method</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-               <% for (const userId in ordersByUser) { %>
-    <% ordersByUser[userId].forEach(order => { %>
-        <% order.items.forEach(item => { %>
-            <tr class="order-row">
-                <td><%= String(order._id).slice(-4) %></td>
-                <td><%= order.userId._id %></td> <!-- Changed from order.userId to order.userId._id -->
-                <td><%= order.selectedAddress %></td>
-                <td><%= order.date.toLocaleString() %></td>
-                <td><%= item.productId ? item.productId.name : 'N/A' %></td>
-                <td><%= order.totalPrice %></td>
-                <td>
-                    <% if (item.productId && item.productId.name !== 'N/A') { %>
-                        <div class="status-controls">
-                            <% if (order.status === 'cancelled' || order.status === 'returned' || order.status === 'refunded') { %>
-                                <a href="#" onclick="showCancellationReason('<%= order.cancellationReason %>')"><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></a>
-                            <% } else if (order.status === 'return-requested' || order.status === 'refund-requested' || order.status === 'cancellation-requested') { %>
-                                <span><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span>
-                                <button onclick="approveRequest('<%= order._id %>', 'return')" class="btn btn-sm btn-success <%= order.status !== 'return-requested' ? 'd-none' : '' %>">Approve Return</button>
-                                <button onclick="approveRequest('<%= order._id %>', 'refund')" class="btn btn-sm btn-success <%= order.status !== 'refund-requested' ? 'd-none' : '' %>">Approve Refund</button>
-                                <button onclick="approveRequest('<%= order._id %>', 'cancellation')" class="btn btn-sm btn-success <%= order.status !== 'cancellation-requested' ? 'd-none' : '' %>">Approve Cancellation</button>
-                            <% } else { %>
-                                <select id="orderStatusDropdown_<%= order._id %>" onchange="updateOrderStatus('<%= order._id %>')">
-                                    <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-                                    <option value="dispatched" <%= order.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option>
-                                    <option value="out for delivery" <%= order.status === 'out for delivery' ? 'selected' : '' %>>Out for Delivery</option>
-                                    <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                                    <option value="paymentfailed" <%= order.status === 'paymentfailed' ? 'selected' : '' %>>Payment Failed</option>
-                                </select>
-                            <% } %>
-                        </div>
-                    <% } %>
-                </td>
-                <td><%= order.paymentMethod %></td>
-                <td>
-                    <% if (order.cancellationReason) { %>
-                        <a href="#" onclick="showCancellationReason('<%= order.cancellationReason %>')">View Reason</a>
-                    <% } %>
-                </td>
-            </tr>
-        <% }); %>
-    <% }); %>
-<% } %>
+                <% for (const userId in ordersByUser) { %>
+                    <% ordersByUser[userId].forEach(order => { %>
+                        <% order.items.forEach((item, index) => { %>
+                            <tr class="order-row">
+                                <td><%= String(order._id).slice(-4) %></td>
+                                <td><%= order.userId ? order.userId._id : 'N/A' %></td>
+                                <td><%= order.selectedAddress || 'N/A' %></td>
+                                <td><%= order.date ? order.date.toLocaleString() : 'N/A' %></td>
+                                <td><%= item.productId ? item.productId.name : 'N/A' %></td>
+                                <td><%= item.quantity %></td>
+                                <td>₹<%= item.productId ? (item.productId.offerprice || item.productId.price) * item.quantity : 'N/A' %></td>
+                                <td>₹<%= order.totalPrice.toFixed(2) %></td>
+                                <td>
+                                    <div class="status-controls">
+                                        <% if (item.status === 'cancelled' || item.status === 'returned' || item.status === 'refunded') { %>
+                                        
+                                             <a href="#" onclick="showCancellationReason('<%= item.cancellationReason %>')"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></a>
+                                        <% } else if (item.status === 'return-requested' || item.status === 'refund-requested' || item.status === 'cancellation-requested') { %>
+                                            <span><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span>
+                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'return')" 
+                                                    class="btn btn-sm btn-success <%= item.status !== 'return-requested' ? 'd-none' : '' %>">
+                                                Approve Return
+                                            </button>
+                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'refund')" 
+                                                    class="btn btn-sm btn-success <%= item.status !== 'refund-requested' ? 'd-none' : '' %>">
+                                                Approve Refund
+                                            </button>
+                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'cancellation')" 
+                                                    class="btn btn-sm btn-success <%= item.status !== 'cancellation-requested' ? 'd-none' : '' %>">
+                                                Approve Cancellation
+                                            </button>
+                                        <% } else { %>
+                                            <select id="orderStatusDropdown_<%= order._id %>_<%= index %>" 
+                                                    onchange="updateOrderStatus('<%= order._id %>', '<%= index %>')"
+                                                    class="form-select form-select-sm">
+                                                <option value="confirmed" <%= item.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                                <option value="dispatched" <%= item.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option>
+                                                <option value="out for delivery" <%= item.status === 'out for delivery' ? 'selected' : '' %>>Out for Delivery</option>
+                                                <option value="delivered" <%= item.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                                <option value="paymentfailed" <%= item.status === 'paymentfailed' ? 'selected' : '' %>>Payment Failed</option>
+                                            </select>
+                                        <% } %>
+                                    </div>
+                                </td>
+                                <td><%= order.paymentMethod || 'N/A' %></td>
+                                <td>
+                                    <% if (item.cancellationReason) { %>
+                                        <a href="#" onclick="showCancellationReason('<%= item.cancellationReason %>')">View Reason</a>
+                                    <% } else { %>
+                                        <span>N/A</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% }); %>
+                <% } %>
             </tbody>
         </table>
     </div>
@@ -598,15 +614,19 @@ body {
     <script>
         $(document).ready(function () {
             $('#orderTable').DataTable({
-                "paging": true,
-                "ordering": true,
-                "info": true,
-                "searching": true
+                paging: true,
+                ordering: true,
+                info: true,
+                searching: false, // Disable DataTables' built-in search to use custom search
+                pageLength: 10,
+                language: {
+                    emptyTable: "No orders available"
+                }
             });
         });
 
-        function updateOrderStatus(orderId) {
-            const newStatus = document.getElementById("orderStatusDropdown_" + orderId).value;
+        function updateOrderStatus(orderId, itemId) {
+            const newStatus = document.getElementById(`orderStatusDropdown_${orderId}_${itemId}`).value;
             fetch('/admin/updateorder', {
                 method: 'POST',
                 headers: {
@@ -614,6 +634,7 @@ body {
                 },
                 body: JSON.stringify({
                     orderId: orderId,
+                    itemId: itemId,
                     newStatus: newStatus,
                 }),
             })
@@ -623,19 +644,21 @@ body {
                     Swal.fire({
                         icon: 'success',
                         title: 'Status Updated',
-                        text: 'Order status updated successfully!',
+                        text: 'Item status updated successfully!',
                         timer: 2000,
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Update Failed',
-                        text: 'Failed to update order status.',
+                        text: data.message || 'Failed to update item status.',
                     });
                 }
             })
             .catch(error => {
-                console.error(error);
+                console.error('Error updating status:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Update Failed',
@@ -644,10 +667,10 @@ body {
             });
         }
 
-        function approveRequest(orderId, requestType) {
+        function approveRequest(orderId, itemId, requestType) {
             Swal.fire({
                 title: `Approve ${requestType.charAt(0).toUpperCase() + requestType.slice(1)}?`,
-                text: `Are you sure you want to approve the ${requestType} for order ${orderId.slice(-4)}?`,
+                text: `Are you sure you want to approve the ${requestType} for item in order ${orderId.slice(-4)}?`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -662,6 +685,7 @@ body {
                         },
                         body: JSON.stringify({
                             orderId: orderId,
+                            itemId: itemId,
                             requestType: requestType,
                         }),
                     })
@@ -680,12 +704,12 @@ body {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Approval Failed',
-                                text: data.message,
+                                text: data.message || 'Failed to approve the request.',
                             });
                         }
                     })
                     .catch(error => {
-                        console.error(error);
+                        console.error('Error approving request:', error);
                         Swal.fire({
                             icon: 'error',
                             title: 'Approval Failed',
@@ -698,27 +722,29 @@ body {
 
         function showCancellationReason(reason) {
             Swal.fire({
-                title: 'Reason',
-                text: reason,
+                title: 'Cancellation Reason',
+                text: reason || 'No reason provided',
                 icon: 'info',
             });
         }
 
         function searchOrders() {
-            var searchInput = document.getElementById("searchInput").value.toLowerCase();
-            var orderRows = document.querySelectorAll('.order-row');
-            var found = false;
-            
-            orderRows.forEach(function(row) {
-                var orderId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
-                var userId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                var address = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                
-                if (orderId.includes(searchInput) || userId.includes(searchInput) || address.includes(searchInput)) {
-                    row.style.display = "table-row";
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const orderRows = document.querySelectorAll('.order-row');
+            let found = false;
+
+            orderRows.forEach(row => {
+                const orderId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                const userId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const address = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                const productName = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+
+                if (orderId.includes(searchInput) || userId.includes(searchInput) || 
+                    address.includes(searchInput) || productName.includes(searchInput)) {
+                    row.style.display = 'table-row';
                     found = true;
                 } else {
-                    row.style.display = "none";
+                    row.style.display = 'none';
                 }
             });
 
@@ -739,18 +765,28 @@ body {
         });
 
         function filterOrdersByPrice() {
-            const minPrice = parseFloat(document.getElementById('minPrice').value);
-            const maxPrice = parseFloat(document.getElementById('maxPrice').value);
-
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
             const orderRows = document.querySelectorAll('.order-row');
-            orderRows.forEach(function (row) {
-                const totalPrice = parseFloat(row.querySelector('td:nth-child(6)').textContent);
-                if (totalPrice >= minPrice && totalPrice <= maxPrice) {
+            let found = false;
+
+            orderRows.forEach(row => {
+                const orderTotal = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('₹', '')) || 0;
+                if (orderTotal >= minPrice && orderTotal <= maxPrice) {
                     row.style.display = 'table-row';
+                    found = true;
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            if (!found) {
+                Swal.fire({
+                    title: 'No Results Found',
+                    text: 'No orders match the price range.',
+                    icon: 'info',
+                });
+            }
         }
     </script>
 </body>
