@@ -38,8 +38,8 @@ app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
 
-// Serve Uploads folder (for both local and production)
-app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
+// Serve uploads folder (case-sensitive match)
+app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 // Middleware to check blocked status for all user routes
 app.use(checkblock);
