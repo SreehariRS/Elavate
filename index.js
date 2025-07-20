@@ -19,7 +19,7 @@ const oneDay = 1000 * 60 * 60 * 24;
 app.use(nocache());
 app.use(
     session({
-        secret: "Your-secret-key",
+        secret: process.env.SESSION_SECRET || "Your-secret-key",
         resave: false,
         cookie: { maxAge: oneDay },
         saveUninitialized: true,
@@ -32,7 +32,11 @@ app.use(flash());
 app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet")));
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
-app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
+
+// Serve Uploads folder (for local development)
+if (process.env.NODE_ENV !== "production") {
+    app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
+}
 
 // Middleware to check blocked status for all user routes
 app.use(checkblock);
@@ -51,6 +55,7 @@ app.get("*", (req, res) => {
     res.render("error");
 });
 
-app.listen(process.env.PORT, '0.0.0.0', () => {
-    console.log(`http://0.0.0.0:${process.env.PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`http://0.0.0.0:${PORT}`);
 });
