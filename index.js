@@ -13,13 +13,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 require("dotenv").config();
 
+if (!process.env.SESSION_SECRET) {
+    console.error("SESSION_SECRET is not set in the environment variables. Please set it in .env or your hosting platform.");
+    process.exit(1);
+}
+
 app.set("view engine", "ejs");
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(nocache());
 app.use(
     session({
-        secret: process.env.SESSION_SECRET || "Your-secret-key",
+        secret: process.env.SESSION_SECRET,
         resave: false,
         cookie: { maxAge: oneDay },
         saveUninitialized: true,
@@ -33,10 +38,8 @@ app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
 
-// Serve Uploads folder (for local development)
-if (process.env.NODE_ENV !== "production") {
-    app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
-}
+// Serve Uploads folder (for both local and production)
+app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
 
 // Middleware to check blocked status for all user routes
 app.use(checkblock);
