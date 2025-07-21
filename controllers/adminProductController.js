@@ -3,7 +3,7 @@ const Category = require("../models/category");
 
 const productlist = async (req, res) => {
     try {
-        const productdata = await Product.find();
+        const productdata = await Product.find({ deleted: false });
         res.render("admin/productmanage", { products: productdata });
     } catch (error) {
         console.error("Error fetching product list:", error);
@@ -114,7 +114,7 @@ const deleteproduct = async (req, res) => {
         if (!productdata) {
             return res.status(404).send("Product not found");
         }
-        await Product.findByIdAndUpdate(req.params.id, { deleted: true });
+        await Product.findByIdAndDelete(req.params.id); // Hard delete instead of soft delete
         res.redirect("/admin/productlist");
     } catch (error) {
         console.error("Error deleting product:", error);

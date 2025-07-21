@@ -28,7 +28,7 @@ app.use(
         resave: false,
         cookie: { maxAge: oneDay },
         saveUninitialized: true,
-        store: new session.MemoryStore(), // Use MemoryStore for simplicity; consider Redis in production
+        store: new session.MemoryStore(), 
     })
 );
 app.use(flash());
@@ -38,22 +38,22 @@ app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
 
-// Serve uploads folder (case-sensitive match)
+
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
-// Middleware to check blocked status for all user routes
+
 app.use(checkblock);
 
-// Require routes
+
 const userConnection = require("./routes/user");
 const adminRouter = require("./routes/admin");
 const collection = require("./config/dbconnect");
 
-// Setup router
+
 app.use("/admin", adminRouter);
 app.use("/", userConnection);
 
-// Catch-all route for undefined routes
+
 app.get("*", (req, res) => {
     res.render("error");
 });

@@ -8,10 +8,9 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
 </head>
 <body>
-  <style>
+<style>
     /* Custom pagination style */
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         padding: 6px 10px;
@@ -52,96 +51,88 @@
     }
 </style>
 
-
-
-
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />  
+<link
+  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+  rel="stylesheet"
+/>  
 <nav class="sidebar">
-      <header>
+    <header>
         <div class="image-text">
-          <span class="image">
-            <img src="/img/logo.png" alt="logo" />
-          </span>
-          <div class="text header-text">
-            <span class="main">ELAVATE</span>
-            <br>
-            <span class="sub">make your smell</span>
-          </div>
+            <span class="image">
+                <img src="/img/logo.png" alt="logo" />
+            </span>
+            <div class="text header-text">
+                <span class="main">ELAVATE</span>
+                <br>
+                <span class="sub">make your smell</span>
+            </div>
         </div>
-      </header>
+    </header>
 
-      <div class="menu-bar">
+    <div class="menu-bar">
         <div class="menu">
-          <ul class="menu-links">
-            <li class="nav-link">
-              <a href="/admin/home">
-                <i class="bx bx-home-alt icons"></i>
-                <span class="text nav-text">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/customers">
-                <i class="bx bx-bar-chart-alt-2 icons"></i>
-                <span class="text nav-text">User</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/productlist">
-                <i class="bx bx-bell icons"></i>
-                <span class="text nav-text">product</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/order">
-                <i class="bx bx-pie-chart-alt icons"></i>
-                <span class="text nav-text">order</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/category">
-                <i class="bx bx-heart icons"></i>
-                <span class="text nav-text">Category</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/coupon">
-                <i class="bx bx-wallet-alt icons"></i>
-                <span class="text nav-text">coupon</span>
-              </a>
-            </li>
-            <li class="nav-link">
-              <a href="/admin/sales">
-                <i class="bx bx-wallet-alt icons"></i>
-                <span class="text nav-text">Sales Report</span>
-              </a>
-            </li>
-          </ul>
+            <ul class="menu-links">
+                <li class="nav-link">
+                    <a href="/admin/home">
+                        <i class="bx bx-home-alt icons"></i>
+                        <span class="text nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/customers">
+                        <i class="bx bx-bar-chart-alt-2 icons"></i>
+                        <span class="text nav-text">User</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/productlist">
+                        <i class="bx bx-bell icons"></i>
+                        <span class="text nav-text">product</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/order">
+                        <i class="bx bx-pie-chart-alt icons"></i>
+                        <span class="text nav-text">order</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/category">
+                        <i class="bx bx-heart icons"></i>
+                        <span class="text nav-text">Category</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/coupon">
+                        <i class="bx bx-wallet-alt icons"></i>
+                        <span class="text nav-text">coupon</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/admin/sales">
+                        <i class="bx bx-wallet-alt icons"></i>
+                        <span class="text nav-text">Sales Report</span>
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <div class="bottom-content">
-          <li class="nav-link">
-            <a href="/admin/login">
-              <i class="bx bx-log-out icons"></i>
-              <span class="text nav-text">Log Out</span>
-            </a>
-          </li>
-          
-          </li>
+            <li class="nav-link">
+                <a href="/admin/login">
+                    <i class="bx bx-log-out icons"></i>
+                    <span class="text nav-text">Log Out</span>
+                </a>
+            </li>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 <div class="main-content">
-
     <section>
-
         <h2>Product Management</h2>
         <a href="/admin/addproduct"> 
-           <button id="addProductBtn">Add Product</button>
+            <button id="addProductBtn">Add Product</button>
         </a>
-        
         
         <div id="productDetailsContainer">
             <table id="productTable" class="display">
@@ -159,87 +150,73 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Existing rows as provided in your code -->
                     <% products.forEach((product, index) => { %>
-                      <tr>
-                          <td><%= index + 1 %></td>
-                          <td><%= product.name %></td>
-                          <td>
-                              <% product.productImages.forEach(image => { %>
-                                  <img src="<%= image %>" alt="Product Image" width="60">
-                              <% }) %>
-                          </td>
-                          <td><%= product.description %></td>
-                          <td><%= product.category %></td>
-                          <td><%= product.price %></td>
-                          <td><%= product.offerprice %></td>
-                          <td><%= product.stock %></td>
-                          <td>
-                              <button class="edit-btn" onclick="editProduct('<%= product.id %>')">Edit</button>
-                              <button class="delete-btn" onclick="confirmDelete('<%= product.id %>')">Delete</button>
-                          </td>
-                      </tr>
-                  <% }) %>
-                  
+                        <tr data-product-id="<%= product._id %>">
+                            <td><%= index + 1 %></td>
+                            <td><%= product.name %></td>
+                            <td>
+                                <% product.productImages.forEach(image => { %>
+                                    <img src="<%= image %>" alt="Product Image" width="60">
+                                <% }) %>
+                            </td>
+                            <td><%= product.description %></td>
+                            <td><%= product.category %></td>
+                            <td><%= product.price %></td>
+                            <td><%= product.offerprice %></td>
+                            <td><%= product.stock %></td>
+                            <td>
+                                <button class="edit-btn" onclick="editProduct('<%= product._id %>')">Edit</button>
+                                <button class="delete-btn" onclick="confirmDelete('<%= product._id %>')">Delete</button>
+                            </td>
+                        </tr>
+                    <% }) %>
                 </tbody>
             </table>
-  
-          
         </div>
-        
-
     </section>
-
-    
 </div>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- DataTables JS -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script>
-  $(document).ready( function () {
-      $('#productTable').DataTable({
-          "pagingType": "full_numbers" // You can change the pagination type if needed
-      });
-  });
-</script>
+    $(document).ready(function () {
+        $('#productTable').DataTable({
+            "pagingType": "full_numbers"
+        });
+    });
 
-<script>
-  function validateForm() {
-      // Get form input values
-      const name = document.getElementById('productName').value;
-      const description = document.getElementById('productDescription').value;
-      const price = document.getElementById('productPrice').value;
-      const stock = document.getElementById('productStock').value;
+    function validateForm() {
+        const name = document.getElementById('productName').value;
+        const description = document.getElementById('productDescription').value;
+        const price = document.getElementById('productPrice').value;
+        const stock = document.getElementById('productStock').value;
 
-      // Regular expressions for validation
-      const nameRegex = /^[a-zA-Z\s]+$/; // Only alphabets and spaces allowed
-      const descriptionRegex = /^[^\s]+$/; // No spaces allowed
-      const priceRegex = /^\d+(\.\d{1,2})?$/; // Non-negative decimal numbers with up to 2 decimal places
-      const stockRegex = /^\d+$/; // Non-negative integers only
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        const descriptionRegex = /^[^\s]+$/;
+        const priceRegex = /^\d+(\.\d{1,2})?$/;
+        const stockRegex = /^\d+$/;
 
-      // Perform validation
-      if (!name.match(nameRegex)) {
-          alert('Product name can only contain alphabets and spaces.');
-          return false;
-      }
-      if (!description.match(descriptionRegex)) {
-          alert('Product description cannot contain spaces.');
-          return false;
-      }
-      if (!price.match(priceRegex)) {
-          alert('Invalid price format. Price must be a non-negative decimal number.');
-          return false;
-      }
-      if (!stock.match(stockRegex)) {
-          alert('Invalid stock value. Stock must be a non-negative integer.');
-          return false;
-      }
+        if (!name.match(nameRegex)) {
+            alert('Product name can only contain alphabets and spaces.');
+            return false;
+        }
+        if (!description.match(descriptionRegex)) {
+            alert('Product description cannot contain spaces.');
+            return false;
+        }
+        if (!price.match(priceRegex)) {
+            alert('Invalid price format. Price must be a non-negative decimal number.');
+            return false;
+        }
+        if (!stock.match(stockRegex)) {
+            alert('Invalid stock value. Stock must be a non-negative integer.');
+            return false;
+        }
 
-      return true; // Form is valid
-  }
-</script>
-<script>
+        return true;
+    }
+
     function editProduct(productId) {
         window.location.href = "/admin/editproduct/" + productId;
     }
@@ -254,14 +231,27 @@
         })
         .then((willDelete) => {
             if (willDelete) {
-                window.location.href = "/admin/productlist/" + productId;
+                $.ajax({
+                    url: `/admin/productlist/${productId}`,
+                    type: 'GET',
+                    success: function(response) {
+                        // Remove the row from the table
+                        $(`tr[data-product-id="${productId}"]`).remove();
+                        swal("Product deleted successfully!", {
+                            icon: "success",
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        swal("Error deleting product!", {
+                            icon: "error",
+                        });
+                    }
+                });
             } else {
                 swal("Your product is safe!");
             }
         });
     }
 </script>
-
-    
 </body>
 </html>

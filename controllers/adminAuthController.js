@@ -12,9 +12,8 @@ const login = (req, res) => {
 const loginpost = async (req, res) => {
     try {
         const { adminName, password } = req.body;
-        // Hardcoded credentials check
         if (adminName === "admin@sree" && password === "password") {
-            req.session.admin = "admin@sree"; // Store admin identifier in session
+            req.session.admin = "admin@sree"; 
             return res.redirect("/admin/home");
         } else {
             return res.render("admin/adminlogin", {
