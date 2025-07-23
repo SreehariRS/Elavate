@@ -98,6 +98,7 @@ const doughnutGraph2 = async (req, res) => {
 };
 
 const getTopSellingCategories = async () => {
+    
     try {
         const topSellingCategories = await orders.aggregate([
             { $unwind: "$items" },

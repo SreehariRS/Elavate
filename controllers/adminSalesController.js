@@ -263,12 +263,12 @@ const home = async (req, res) => {
             });
         });
 
-        // Convert to array and sort by total quantity (descending)
+      
         const topSellingCategories = Object.values(categorySales)
             .sort((a, b) => b.count - a.count)
             .slice(0, 5); // Limit to top 5 categories
 
-        // Prepare data object for overview
+   
         const data = {
             totalAmount,
             totalOrders,

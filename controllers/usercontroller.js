@@ -108,7 +108,6 @@ const forhim = async (req, res) => {
         const loggedInUser = req.session.user;
         const userData = req.session.userData;
 
-        // Pass both userId and userData to the template
         res.render("user/forhim", { products, userId: req.session.user, userData, loggedInUser });
     } catch (error) {
         console.error("Error fetching products for 'forhim' category:", error);
@@ -122,7 +121,7 @@ const forher = async (req, res) => {
         const userData = req.session.userData;
         const loggedInUser = req.session.user;
 
-        // Pass the userId to the template for any necessary client-side functionality
+      
         res.render("user/forher", { products, userId: req.session.user, userData, loggedInUser });
     } catch (error) {
         console.error("Error fetching products for 'forher' category:", error);
@@ -133,7 +132,7 @@ const forher = async (req, res) => {
 const display = async (req, res) => {
     const productId = req.params.id;
     try {
-        // Fetch product data
+      
         console.log("Fetching product details...");
         const productDetails = await product.findById(productId);
 

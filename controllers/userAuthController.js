@@ -40,7 +40,7 @@ const postLogin = async (req, res) => {
 
 const getRegister = (req, res) => {
     try {
-        res.render("user/register", { message: req.flash("message") });
+        res.render("user/usersignin", { message: req.flash("message") });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -49,30 +49,42 @@ const getRegister = (req, res) => {
 
 const postRegister = async (req, res) => {
     try {
-        const { firstname, mobileNumber, email, password, confirmPassword } = req.body;
+        const { name, email, password, confirmPassword, referralCode } = req.body;
+        
         const userExist = await User.findOne({ email });
         if (userExist) {
             req.flash("message", "User already exists");
             return res.redirect("/getRegister");
         }
+        
         if (password !== confirmPassword) {
             req.flash("message", "Passwords do not match");
             return res.redirect("/getRegister");
         }
+        
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            req.flash("message", "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+            return res.redirect("/getRegister");
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            firstname,
-            mobileNumber,
+            firstname: name,
+            mobileNumber: req.body.mobileNumber || "0000000000",
             email,
             password: hashedPassword,
             confirmPassword: hashedPassword,
+            referralCode: referralCode || null
         });
+        
         await user.save();
         req.session.user = user._id;
         res.redirect("/otpget");
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        req.flash("message", "Registration failed. Please try again.");
+        res.redirect("/getRegister");
     }
 };
 
@@ -99,6 +111,10 @@ const postLogout = (req, res) => {
 const mailsender = async (req, res) => {
     try {
         const user = await User.findById(req.session.user);
+        if (!user) {
+            req.flash("message", "User not found");
+            return res.redirect("/getRegister");
+        }
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -106,6 +122,7 @@ const mailsender = async (req, res) => {
         });
         const newotp = new OTP({ email: user.email, otp });
         await newotp.save();
+        
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -113,14 +130,22 @@ const mailsender = async (req, res) => {
                 pass: process.env.EMAIL_PASSWORD,
             },
         });
+        
         const mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: user.email,
             subject: "OTP Verification",
             text: `Your OTP is ${otp}`,
         };
-        await transporter.sendMail(mailOptions);
-        res.render("user/otp", { email: user.email });
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            res.render("user/otp", { email: user.email, message: req.flash("message") });
+        } catch (emailError) {
+            console.log("Email sending failed:", emailError);
+            req.flash("message", "Failed to send OTP email. Please use the OTP saved in the database or try resending.");
+            res.render("user/otp", { email: user.email, message: req.flash("message") });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -130,6 +155,10 @@ const mailsender = async (req, res) => {
 const resendotp = async (req, res) => {
     try {
         const user = await User.findById(req.session.user);
+        if (!user) {
+            req.flash("message", "User not found");
+            return res.redirect("/getRegister");
+        }
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -137,6 +166,7 @@ const resendotp = async (req, res) => {
         });
         const newotp = new OTP({ email: user.email, otp });
         await newotp.save();
+        
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -144,14 +174,22 @@ const resendotp = async (req, res) => {
                 pass: process.env.EMAIL_PASSWORD,
             },
         });
+        
         const mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: user.email,
             subject: "OTP Verification",
             text: `Your OTP is ${otp}`,
         };
-        await transporter.sendMail(mailOptions);
-        res.render("user/otp", { email: user.email });
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            res.render("user/otp", { email: user.email, message: req.flash("message") });
+        } catch (emailError) {
+            console.log("Email sending failed:", emailError);
+            req.flash("message", "Failed to send OTP email. Please use the OTP saved in the database or try resending.");
+            res.render("user/otp", { email: user.email, message: req.flash("message") });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -164,22 +202,28 @@ const otpvalidation = async (req, res) => {
         const user = await User.findById(req.session.user);
         const otpdata = await OTP.findOne({ email: user.email, otp });
         if (!otpdata) {
-            return res.render("user/otp", {
-                email: user.email,
-                message: "Invalid OTP",
+            return res.json({
+                success: false,
+                message: "Invalid OTP"
             });
         }
         await User.findByIdAndUpdate(req.session.user, { isVerified: true });
-        res.redirect("/home");
+        return res.json({
+            success: true,
+            message: "OTP verified successfully"
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        return res.json({
+            success: false,
+            message: "Internal Server Error"
+        });
     }
 };
 
 const forgotpassword = (req, res) => {
     try {
-        res.render("user/forgotpassword");
+        res.render("user/forgotpassword", { message: req.flash("message") });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -201,6 +245,7 @@ const forgotpasswordpost = async (req, res) => {
         });
         const newotp = new OTP({ email, otp });
         await newotp.save();
+        
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -208,27 +253,62 @@ const forgotpasswordpost = async (req, res) => {
                 pass: process.env.EMAIL_PASSWORD,
             },
         });
+        
         const mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: email,
             subject: "Password Reset OTP",
             text: `Your OTP for password reset is ${otp}`,
         };
-        await transporter.sendMail(mailOptions);
-        req.session.email = email;
-        res.redirect("/verifyforgototp");
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            req.session.email = email;
+            res.redirect("/verifyforgototp");
+        } catch (emailError) {
+            console.log("Email sending failed:", emailError);
+            req.flash("message", "Failed to send OTP email. Please use the OTP saved in the database or try resending.");
+            req.session.email = email;
+            res.redirect("/verifyforgototp");
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
     }
 };
 
-const verifyforgototp = (req, res) => {
+const getVerifyForgotOtp = (req, res) => {
     try {
-        res.render("user/verifyforgototp", { email: req.session.email });
+        res.render("user/otpforgot", { email: req.session.email, message: req.flash("message") });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
+    }
+};
+
+const postVerifyForgotOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const email = req.session.email;
+        const otpdata = await OTP.findOne({ email, otp }).sort({ createdAt: -1 });
+        if (!otpdata) {
+            req.flash("message", "Invalid OTP");
+            return res.json({
+                success: false,
+                message: "Invalid OTP"
+            });
+        }
+        res.json({
+            success: true,
+            message: "OTP verified successfully",
+            redirect: "/changeCpassword"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            success: false,
+            message: "Internal Server Error"
+        });
     }
 };
 
@@ -247,6 +327,7 @@ const resendforgototp = async (req, res) => {
         });
         const newotp = new OTP({ email, otp });
         await newotp.save();
+        
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -254,14 +335,22 @@ const resendforgototp = async (req, res) => {
                 pass: process.env.EMAIL_PASSWORD,
             },
         });
+        
         const mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: email,
             subject: "Password Reset OTP",
             text: `Your OTP for password reset is ${otp}`,
         };
-        await transporter.sendMail(mailOptions);
-        res.render("user/verifyforgototp", { email });
+        
+        try {
+            await transporter.sendMail(mailOptions);
+            res.render("user/otpforgot", { email, message: req.flash("message") });
+        } catch (emailError) {
+            console.log("Email sending failed:", emailError);
+            req.flash("message", "Failed to send OTP email. Please use the OTP saved in the database or try resending.");
+            res.render("user/otpforgot", { email, message: req.flash("message") });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -270,7 +359,7 @@ const resendforgototp = async (req, res) => {
 
 const changepass = (req, res) => {
     try {
-        res.render("user/changepass");
+        res.render("user/changepass", { message: req.flash("message") });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -304,7 +393,7 @@ const changepasspost = async (req, res) => {
 
 const changeCpassword = (req, res) => {
     try {
-        res.render("user/changecpassword");
+        res.render("user/changecpassword", { message: req.flash("message") });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -314,19 +403,75 @@ const changeCpassword = (req, res) => {
 const changepasswordpost = async (req, res) => {
     try {
         const { password, confirmpassword } = req.body;
-        if (password !== confirmpassword) {
-            req.flash("message", "Passwords do not match");
-            return res.redirect("/changeCpassword");
+        
+        // Check if both fields are provided
+        if (!password || !confirmpassword) {
+            return res.json({
+                success: false,
+                message: "Password and confirm password are required"
+            });
         }
+        
+        // Check if passwords match
+        if (password !== confirmpassword) {
+            return res.json({
+                success: false,
+                message: "Passwords do not match. Please try again."
+            });
+        }
+        
+        // Validate password strength
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.json({
+                success: false,
+                message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+            });
+        }
+        
+        const user = await User.findOne({ email: req.session.email });
+        if (!user) {
+            return res.json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        
+        // Check if new password is same as current password
+        const isSamePassword = await bcrypt.compare(password, user.password);
+        if (isSamePassword) {
+            return res.json({
+                success: false,
+                message: "New password cannot be the same as the current password."
+            });
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
-        await User.findOneAndUpdate(
+        const updateResult = await User.findOneAndUpdate(
             { email: req.session.email },
-            { password: hashedPassword, confirmPassword: hashedPassword }
+            { password: hashedPassword, confirmPassword: hashedPassword },
+            { new: true }
         );
-        res.redirect("/login");
+        
+        if (!updateResult) {
+            return res.json({
+                success: false,
+                message: "Failed to update password. Please try again."
+            });
+        }
+        
+        req.session.email = null; // Clear session email after successful password update
+        return res.json({
+            success: true,
+            message: "Password updated successfully",
+            redirect: "/login"
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        return res.json({
+            success: false,
+            message: "Failed to update password. Please try again."
+        });
     }
 };
 
@@ -342,7 +487,8 @@ module.exports = {
     otpvalidation,
     forgotpassword,
     forgotpasswordpost,
-    verifyforgototp,
+    getVerifyForgotOtp,
+    postVerifyForgotOtp,
     resendforgototp,
     changepass,
     changepasspost,

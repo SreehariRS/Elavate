@@ -7,7 +7,7 @@ const category = require("../models/category");
 const Wallet = require("../models/wallet");
 const PDFDocument = require("pdfkit");
 
-const ITEMS_PER_PAGE = 10; // Number of orders per page
+const ITEMS_PER_PAGE = 10; 
 
 const home = async (req, res) => {
     try {
@@ -29,16 +29,16 @@ const getProductsByCategory = async (req, res) => {
         const userId = req.session.user;
         const categoryId = req.params.id;
         
-        // Find the specific category
+      
         const selectedCategory = await category.findById(categoryId);
         if (!selectedCategory) {
             req.flash("error", "Category not found");
             return res.redirect("/");
         }
         
-        // Find products for this category - Use category name instead of ID for filtering
+        
         const products = await product.find({ 
-            category: selectedCategory.name.toLowerCase(), // Use category name
+            category: selectedCategory.name.toLowerCase(), 
             deleted: false 
         });
         
@@ -47,11 +47,11 @@ const getProductsByCategory = async (req, res) => {
         const loggedInUser = !!userId;
         const errorMessage = req.flash("error")[0] || "";
         
-        // Render the category template instead of home template
+        
         res.render("user/category", { 
             products, 
             categories, 
-            category: selectedCategory, // Pass the specific category
+            category: selectedCategory,
             userData, 
             userId, 
             loggedInUser, 
@@ -202,7 +202,7 @@ const checkoutpost = async (req, res) => {
             }
         }
 
-        // Validate totalPrice match with calculatedTotal
+        // Validate totalPrice match with calculatedTotal 
         const priceDiff = Math.abs(calculatedTotal - parseFloat(totalPrice));
         if (priceDiff > 0.01) {
             console.log(`Price mismatch: calculatedTotal=${calculatedTotal}, totalPrice=${totalPrice}, difference=${priceDiff}`);

@@ -4,10 +4,6 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>home page</title>
-
-        <!-- <link rel="stylesheet" href="/css/bootstrap.css" /> -->
-        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" /> -->
-        <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"></script> -->
         <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/stylesheet/user/homepage.css" />
     </head>
@@ -34,8 +30,8 @@
                 <img src="/img/c4.webp" alt="Image 3" />
             </div>
             <div class="carousel-controls">
-                <button class="carousel-button" onclick="showPreviousItem()">&#10094;</button>
-                <button class="carousel-button" onclick="showNextItem()">&#10095;</button>
+                <button class="carousel-button" onclick="showPreviousItem()">❮</button>
+                <button class="carousel-button" onclick="showNextItem()">❯</button>
             </div>
         </div>
 
@@ -54,9 +50,8 @@
 
         <div class="product-container">
             <% products.forEach(product => { %>
-
             <a href="/display/<%= product.id %>">
-                <div class="product-card">
+                <div class="product-card" data-stock="<%= product.stock %>">
                     <div class="product-tumb">
                         <img src="<%= product.productImages[0] %>" alt="<%= product.name %>" />
                     </div>
@@ -67,29 +62,22 @@
                         <div class="product-bottom-details">
                             <div class="product-price">
                                 <% if (product.offerprice) { %> ₹ <%= product.offerprice %>
-
                                 <small> <% } %> ₹ <%= product.price %></small>
                             </div>
 
                             <div class="product-links">
-                                <!-- Inside the span element -->
-
                                 <span class="heart-icon" data-product-id="<%= product._id %>">
                                     <i class="fa fa-heart"></i>
                                 </span>
-
-                                <!-- Update the anchor tag with the shopping cart icon to include data attributes for productId and quantity -->
-                                <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"
-                                    ><i class="fa fa-shopping-cart"></i
-                                ></a>
+                                <a href="#" class="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </a>
             <% if (product.stock <= 0) { %>
-            <!-- SweetAlert indicating that the product is out of stock -->
-
             <script>
                 Swal.fire({
                     title: "Out of Stock",
@@ -97,7 +85,8 @@
                     icon: "error",
                 });
             </script>
-            <% } %> <% }); %>
+            <% } %>
+            <% }); %>
         </div>
 
         <!-- Example buttons for filtering -->
@@ -129,13 +118,8 @@
 
         <%-include('footer')%>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
-
         <script src="/js/bootstrap.js"></script>
-        <script src="https://unpkg.com/sweetalert/dist/`etalert.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script>
             // Function to hide the flash message after 2 seconds
@@ -146,50 +130,46 @@
                 }
             }
 
-            // Call hideFlashMessage function after 2 seconds if the flash message exists
-            var errorMessage = "<%= errorMessage %>";
+            var errorMessage = "<%= typeof errorMessage !== 'undefined' ? errorMessage : '' %>";
             if (typeof errorMessage !== "undefined" && errorMessage.length > 0) {
                 setTimeout(hideFlashMessage, 2000);
             }
         </script>
 
         <script>
-            document.querySelectorAll("#addToCartIcon").forEach((icon) => {
+            const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+            
+            document.querySelectorAll(".addToCartIcon").forEach((icon) => {
                 icon.addEventListener("click", function (event) {
-                    event.preventDefault(); // Prevent default anchor tag behavior
-
-                    const productId = this.getAttribute("data-product-id"); // Get the product ID from data-product-id attribute
-                    const quantity = this.getAttribute("data-quantity"); // Get the quantity from data-quantity attribute
-                    const userId = "<%= userId %>"; // Get the userId from the EJS template
-
-                    // Find the closest product card element
+                    event.preventDefault();
+                    if (!loggedInUser) {
+                        window.location.href = "/login";
+                        return;
+                    }
+                    const productId = this.getAttribute("data-product-id");
+                    const quantity = this.getAttribute("data-quantity");
+                    const userId = "<%= typeof userId !== 'undefined' ? userId : '' %>";
                     const productCard = this.closest(".product-card");
-
-                    // Get the stock of the product from the product card
                     const stock = productCard.getAttribute("data-stock");
-
                     if (parseInt(stock) <= 0) {
-                        // Show a SweetAlert indicating that the product is out of stock
                         Swal.fire({
                             title: "Out of Stock",
                             text: "This product is currently out of stock.",
                             icon: "error",
                         });
                     } else {
-                        // Construct the URL for the cart page with the product ID, quantity, and user ID
                         const url = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
-                        // Navigate to the constructed URL
                         window.location.href = url;
                     }
                 });
             });
         </script>
+
         <script>
             $(document).ready(function () {
                 $("#searchInput").keyup(function () {
                     var searchTerm = $(this).val().toLowerCase();
                     var productsFound = false;
-
                     $(".product-card").each(function () {
                         var productName = $(this).find(".product-details h4 a").text().toLowerCase();
                         if (productName.indexOf(searchTerm) > -1) {
@@ -199,8 +179,6 @@
                             $(this).hide();
                         }
                     });
-
-                    // If no products were found, show a SweetAlert message
                     if (!productsFound) {
                         swal("Oops!", "No products found for your search term.", "error");
                     }
@@ -224,53 +202,36 @@
                 carouselItems[currentIndex].classList.add("active");
             }
 
-            setInterval(showNextItem, 5000); // Change image every 5 seconds
+            setInterval(showNextItem, 5000);
         </script>
+
         <script>
             let lastScrollTop = 0;
             const navbar = document.querySelector(".navMain");
-
             window.addEventListener("scroll", function () {
                 let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
                 if (scrollTop > lastScrollTop) {
-                    // Scroll down
                     navbar.classList.add("hide");
                 } else {
-                    // Scroll up
                     navbar.classList.remove("hide");
                 }
-
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
             });
         </script>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+                
                 document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
-                    const productId = heartIcon.dataset.productId;
-                    const isInWishlist = localStorage.getItem(`heart-icon-${productId}`) === "true";
-
-                    // Update the heart icon's color based on the wishlist state
-                    if (isInWishlist) {
-                        heartIcon.querySelector("i").classList.add("heart-icon-filled");
-                    }
-
-                    heartIcon.addEventListener("click", function () {
-                        const icon = this.querySelector("i");
-                        const isFilled = icon.classList.contains("heart-icon-filled");
-
-                        // Toggle the heart icon's class
-                        icon.classList.toggle("heart-icon-filled");
-
-                        // Determine the action based on the current state
-                        const action = isFilled ? "remove" : "add";
-
-                        // Update localStorage
-                        localStorage.setItem(`heart-icon-${productId}`, !isFilled);
-
-                        // Send a request to the backend
-                        fetch(`/wishlistPage?action=${action}&productId=${productId}`, {
+                    heartIcon.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        if (!loggedInUser) {
+                            window.location.href = "/login";
+                            return;
+                        }
+                        const productId = this.dataset.productId;
+                        fetch(`/wishlistPage?action=add&productId=${productId}`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -278,160 +239,120 @@
                         })
                             .then((response) => response.json())
                             .then((data) => {
-                                if (!data.success) {
-                                    // Handle error, e.g., revert the icon's state
-                                    icon.classList.toggle("heart-icon-filled");
-                                    localStorage.setItem(`heart-icon-${productId}`, isFilled);
-                                    showAlert("successfully added");
+                                if (data.success) {
+                                    window.location.href = "/wishlistPage";
+                                } else {
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: data.message || "Failed to add product to wishlist",
+                                        icon: "error",
+                                    });
                                 }
                             })
                             .catch((error) => {
                                 console.error("Error:", error);
-                                // Handle error, e.g., revert the icon's state
-                                icon.classList.toggle("heart-icon-filled");
-                                localStorage.setItem(`heart-icon-${productId}`, isFilled);
-                                showAlert("Failed to update wishlist");
+                                Swal.fire({
+                                    title: "Error",
+                                    text: "Failed to add product to wishlist",
+                                    icon: "error",
+                                });
                             });
-
-                        function showAlert(message) {
-                            const alertElement = document.createElement("div");
-                            alertElement.classList.add("alert-message");
-                            alertElement.textContent = message;
-                            document.body.appendChild(alertElement);
-
-                            // Remove the alert after 3 seconds
-                            setTimeout(() => {
-                                document.body.removeChild(alertElement);
-                            }, 3000);
-                        }
                     });
                 });
             });
         </script>
 
         <script>
-            document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
-                heartIcon.addEventListener("click", function () {
-                    const productId = this.dataset.productId;
-
-                    fetch("/wishlistPage", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ productId: productId }),
-                    })
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error("Failed to add product to wishlist");
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-                            // Show a success message or handle response data accordingly
-                            console.log(data);
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            // Show an error message or handle the error accordingly
-                        });
-                });
-            });
-        </script>
-
-        <script>
-            // JavaScript function to handle the click event and navigate to the wishlist page
             function goToWishlistPage() {
-                // Replace '/wishlist-page' with the actual URL or path of your wishlist page
+                const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+                if (!loggedInUser) {
+                    window.location.href = "/login";
+                    return;
+                }
                 window.location.href = "/wishlistPage";
             }
 
-            // Adding a click event listener to the heart icon
-            document.getElementById("heartIcon").addEventListener("click", goToWishlistPage);
+            const heartIcon = document.getElementById("heartIcon");
+            if (heartIcon) {
+                heartIcon.addEventListener("click", goToWishlistPage);
+            }
         </script>
 
-    <script>
-    // Function to extract and parse the price from the product element
-    function extractPrice(productElement) {
-        const priceText = productElement.querySelector(".product-price").innerText.trim();
-        // Handle cases with offerprice and original price
-        const match = priceText.match(/₹\s*([\d,.]+)/); // Extract the first price (offerprice if present)
-        return match ? parseFloat(match[1].replace(/,/g, '')) : 0; // Default to 0 if no price found
-    }
+        <script>
+            function extractPrice(productElement) {
+                const priceText = productElement.querySelector(".product-price").innerText.trim();
+                const match = priceText.match(/₹\s*([\d,.]+)/);
+                return match ? parseFloat(match[1].replace(/,/g, '')) : 0;
+            }
 
-    // Function to extract product name
-    function extractName(productElement) {
-        return productElement.querySelector(".product-details h4 a").textContent.trim().toLowerCase();
-    }
+            function extractName(productElement) {
+                return productElement.querySelector(".product-details h4 a").textContent.trim().toLowerCase();
+            }
 
-    // Function to sort products based on price (low to high)
-    function sortProductsByPriceLowToHigh() {
-        const productContainer = document.querySelector(".product-container");
-        const products = Array.from(productContainer.querySelectorAll(".product-card"));
-        products.sort((a, b) => {
-            const priceA = extractPrice(a);
-            const priceB = extractPrice(b);
-            return priceA - priceB;
-        });
-        productContainer.innerHTML = "";
-        products.forEach((product) => productContainer.appendChild(product));
-    }
+            function sortProductsByPriceLowToHigh() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractPrice(a) - extractPrice(b));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
 
-    // Function to sort products based on price (high to low)
-    function sortProductsByPriceHighToLow() {
-        const productContainer = document.querySelector(".product-container");
-        const products = Array.from(productContainer.querySelectorAll(".product-card"));
-        products.sort((a, b) => {
-            const priceA = extractPrice(a);
-            const priceB = extractPrice(b);
-            return priceB - priceA;
-        });
-        productContainer.innerHTML = "";
-        products.forEach((product) => productContainer.appendChild(product));
-    }
+            function sortProductsByPriceHighToLow() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractPrice(b) - extractPrice(a));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
 
-    // Function to sort products by name (A to Z)
-    function sortProductsByAlphabeticalAZ() {
-        const productContainer = document.querySelector(".product-container");
-        const products = Array.from(productContainer.querySelectorAll(".product-card"));
-        products.sort((a, b) => {
-            const nameA = extractName(a);
-            const nameB = extractName(b);
-            return nameA.localeCompare(nameB);
-        });
-        productContainer.innerHTML = "";
-        products.forEach((product) => productContainer.appendChild(product));
-    }
+            function sortProductsByAlphabeticalAZ() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractName(a).localeCompare(extractName(b)));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
 
-    // Function to sort products by name (Z to A)
-    function sortProductsByAlphabeticalZA() {
-        const productContainer = document.querySelector(".product-container");
-        const products = Array.from(productContainer.querySelectorAll(".product-card"));
-        products.sort((a, b) => {
-            const nameA = extractName(a);
-            const nameB = extractName(b);
-            return nameB.localeCompare(nameA);
-        });
-        productContainer.innerHTML = "";
-        products.forEach((product) => productContainer.appendChild(product));
-    }
+            function sortProductsByAlphabeticalZA() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractName(b).localeCompare(extractName(a)));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
 
-    // Attach event listeners to filter buttons
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelector("#sortByPriceLowToHigh").addEventListener("click", sortProductsByPriceLowToHigh);
-        document.querySelector("#sortByPriceHighToLow").addEventListener("click", sortProductsByPriceHighToLow);
-        document.querySelector("#sortByAlphabeticalAZ").addEventListener("click", sortProductsByAlphabeticalAZ);
-        document.querySelector("#sortByAlphabeticalZA").addEventListener("click", sortProductsByAlphabeticalZA);
-    });
-</script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sortPriceLowToHigh = document.querySelector("#sortByPriceLowToHigh");
+                const sortPriceHighToLow = document.querySelector("#sortByPriceHighToLow");
+                const sortAlphabeticalAZ = document.querySelector("#sortByAlphabeticalAZ");
+                const sortAlphabeticalZA = document.querySelector("#sortByAlphabeticalZA");
+
+                if (sortPriceLowToHigh) {
+                    sortPriceLowToHigh.addEventListener("click", sortProductsByPriceLowToHigh);
+                }
+                if (sortPriceHighToLow) {
+                    sortPriceHighToLow.addEventListener("click", sortProductsByPriceHighToLow);
+                }
+                if (sortAlphabeticalAZ) {
+                    sortAlphabeticalAZ.addEventListener("click", sortProductsByAlphabeticalAZ);
+                }
+                if (sortAlphabeticalZA) {
+                    sortAlphabeticalZA.addEventListener("click", sortProductsByAlphabeticalZA);
+                }
+            });
+        </script>
 
         <script>
-            document.getElementById("filterButton").addEventListener("click", function () {
-                var filterMenu = document.querySelector(".filter-menu");
-                filterMenu.classList.toggle("show");
-            });
+            const filterButton = document.getElementById("filterButton");
+            if (filterButton) {
+                filterButton.addEventListener("click", function () {
+                    var filterMenu = document.querySelector(".filter-menu");
+                    if (filterMenu) {
+                        filterMenu.classList.toggle("show");
+                    }
+                });
+            }
 
-            // Close the dropdown menu if the user clicks outside of it
             window.addEventListener("click", function (event) {
                 if (!event.target.matches("#filterButton")) {
                     var filterMenus = document.querySelectorAll(".filter-menu");
@@ -441,26 +362,6 @@
                         }
                     });
                 }
-            });
-        </script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
-                    heartIcon.addEventListener("click", function () {
-                        const productId = heartIcon.dataset.productId;
-                        const isInWishlist = localStorage.getItem(`heart-icon-${productId}`) === "true";
-
-                        if (isInWishlist) {
-                            heartIcon.querySelector("i").classList.add("heart-icon-filled");
-                        }
-                        // Check if the user is logged in
-                        const loggedInUser = "<%= loggedInUser %>";
-                        if (!loggedInUser) {
-                            window.location.href = "/login";
-                        } else {
-                        }
-                    });
-                });
             });
         </script>
     </body>

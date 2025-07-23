@@ -718,7 +718,7 @@ const fetchTopSellingProducts = async () => {
 const fetchTopSellingCategories = async () => {
     try {
         const topSellingCategories = await orders.aggregate([
-            { $unwind: "$items" }, // Unwind 'items' array
+            { $unwind: "$items" }, 
             { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } }, // Lookup product details
             { $unwind: "$product" },
             { $group: { _id: "$product.category", count: { $sum: "$items.quantity" } } }, // Group by category and sum quantity
