@@ -3,25 +3,21 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-
+        <title>Womens Perfume</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-        <!-- Font Awesome CDN -->
         <script src="https://kit.fontawesome.com/bdf5ca2238.js" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="/stylesheet/user/forhim.css" />
+        <link rel="stylesheet" href="/stylesheet/user/forher.css" />
     </head>
     <body>
         <%-include('nav3')%>
         <div class="product-heading" style="text-align: center;">
-            <h2>Womens perfume</h2>
+            <h2>Womens Perfume</h2>
         </div>
 
-      
-        
         <div class="product-container">
             <% products.forEach(product => { %>
                 <a href="/display/<%= product.id%>">
-                <div class="product-card">
+                <div class="product-card" data-stock="<%= product.stock %>">
                     <div class="product-tumb">
                         <img src="<%= product.productImages[0] %>" alt="<%= product.name %>" />
                     </div>
@@ -37,21 +33,13 @@
                                 <%= product.price %>
                             </div>
                             <div class="product-links">
-                                <!-- Inside the span element -->
-
                                 <span class="heart-icon" data-product-id="<%= product._id %>">
                                     <i class="fa fa-heart"></i>
                                 </span>
-
-                                
-
-
-                                <!-- Update the anchor tag with the shopping cart icon to include data attributes for productId and quantity -->
-                                <a href="#" id="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1"
-                                    ><i class="fa fa-shopping-cart"></i
-                                ></a>
+                                <a href="#" class="addToCartIcon" data-product-id="<%= product._id %>" data-quantity="1">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </a>
                             </div>
-                            
                         </div>
                     </div>
                 </div></a>
@@ -61,10 +49,11 @@
         <br>
         <%-include('footer')%>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script>
+            const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+
             $(document).ready(function () {
                 $("#searchInput").keyup(function () {
                     var searchTerm = $(this).val().toLowerCase();
@@ -80,7 +69,6 @@
                         }
                     });
 
-                    // If no products were found, show a SweetAlert message
                     if (!productsFound) {
                         swal("Oops!", "No products found for your search term.", "error");
                     }
@@ -89,63 +77,56 @@
         </script>
 
         <script>
-            document.querySelectorAll('#addToCartIcon').forEach(icon => {
-     icon.addEventListener('click', function(event) {
-         event.preventDefault(); // Prevent default anchor tag behavior
- 
-         const productId = this.getAttribute('data-product-id'); // Get the product ID from data-product-id attribute
-         const quantity = this.getAttribute('data-quantity'); // Get the quantity from data-quantity attribute
-         const userId = '<%= userId %>'; // Get the userId from the EJS template
- 
-         // Find the closest product card element
-         const productCard = this.closest('.product-card');
-         
-         // Get the stock of the product from the product card
-         const stock = productCard.getAttribute('data-stock');
- 
-         if (parseInt(stock) <= 0) {
-             // Show a SweetAlert indicating that the product is out of stock
-             Swal.fire({
-                 title: 'Out of Stock',
-                 text: 'This product is currently out of stock.',
-                 icon: 'error'
-             });
-         } else {
-             // Construct the URL for the cart page with the product ID, quantity, and user ID
-             const url = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
-             // Navigate to the constructed URL
-             window.location.href = url;
-         }
-     });
- });
- 
-         </script>
-           <script>
+            document.querySelectorAll(".addToCartIcon").forEach(icon => {
+                icon.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    if (!loggedInUser) {
+                        window.location.href = "/login";
+                        return;
+                    }
+                    const productId = this.getAttribute("data-product-id");
+                    const quantity = this.getAttribute("data-quantity");
+                    const userId = "<%= typeof userId !== 'undefined' ? userId : '' %>";
+                    const productCard = this.closest(".product-card");
+                    const stock = productCard.getAttribute("data-stock");
+
+                    if (parseInt(stock) <= 0) {
+                        Swal.fire({
+                            title: "Out of Stock",
+                            text: "This product is currently out of stock.",
+                            icon: "error"
+                        });
+                    } else {
+                        const url = `/cart?productId=${productId}&quantity=${quantity}&userId=${userId}`;
+                        window.location.href = url;
+                    }
+                });
+            });
+        </script>
+
+        <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
-                    const productId = heartIcon.dataset.productId;
-                    const isInWishlist = localStorage.getItem(`heart-icon-${productId}`) === "true";
+                    heartIcon.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        if (!loggedInUser) {
+                            window.location.href = "/login";
+                            return;
+                        }
+                        const productId = this.dataset.productId;
+                        const isInWishlist = localStorage.getItem(`heart-icon-${productId}`) === "true";
 
-                    // Update the heart icon's color based on the wishlist state
-                    if (isInWishlist) {
-                        heartIcon.querySelector("i").classList.add("heart-icon-filled");
-                    }
+                        if (isInWishlist) {
+                            this.querySelector("i").classList.add("heart-icon-filled");
+                        }
 
-                    
-                    heartIcon.addEventListener("click", function () {
                         const icon = this.querySelector("i");
                         const isFilled = icon.classList.contains("heart-icon-filled");
-
-                        // Toggle the heart icon's class
-                        icon.classList.toggle("heart-icon-filled");
-
-                        // Determine the action based on the current state
                         const action = isFilled ? "remove" : "add";
 
-                        // Update localStorage
+                        icon.classList.toggle("heart-icon-filled");
                         localStorage.setItem(`heart-icon-${productId}`, !isFilled);
 
-                        // Send a request to the backend
                         fetch(`/wishlistPage?action=${action}&productId=${productId}`, {
                             method: "POST",
                             headers: {
@@ -155,63 +136,118 @@
                             .then((response) => response.json())
                             .then((data) => {
                                 if (!data.success) {
-                                    // Handle error, e.g., revert the icon's state
                                     icon.classList.toggle("heart-icon-filled");
                                     localStorage.setItem(`heart-icon-${productId}`, isFilled);
-                                    showAlert("successfully added");
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: data.message || "Failed to update wishlist",
+                                        icon: "error"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Success",
+                                        text: `Product ${action}ed to wishlist`,
+                                        icon: "success"
+                                    });
                                 }
                             })
                             .catch((error) => {
                                 console.error("Error:", error);
-                                // Handle error, e.g., revert the icon's state
                                 icon.classList.toggle("heart-icon-filled");
                                 localStorage.setItem(`heart-icon-${productId}`, isFilled);
-                                showAlert("Failed to update wishlist");
+                                Swal.fire({
+                                    title: "Error",
+                                    text: "Failed to update wishlist",
+                                    icon: "error"
+                                });
                             });
-
-                        function showAlert(message) {
-                            const alertElement = document.createElement("div");
-                            alertElement.classList.add("alert-message");
-                            alertElement.textContent = message;
-                            document.body.appendChild(alertElement);
-
-                            // Remove the alert after 3 seconds
-                            setTimeout(() => {
-                                document.body.removeChild(alertElement);
-                            }, 3000);
-                        }
                     });
                 });
             });
         </script>
 
         <script>
-            document.querySelectorAll(".heart-icon").forEach(function (heartIcon) {
-                heartIcon.addEventListener("click", function () {
-                    const productId = this.dataset.productId;
+            function extractPrice(productElement) {
+                const priceText = productElement.querySelector(".product-price").innerText.trim();
+                const match = priceText.match(/₹\s*([\d,.]+)/) || priceText.match(/([\d,.]+)/);
+                return match ? parseFloat(match[1].replace(/,/g, '')) : 0;
+            }
 
-                    fetch("/wishlistPage", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ productId: productId }),
-                    })
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error("Failed to add product to wishlist");
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-                            // Show a success message or handle response data accordingly
-                            console.log(data);
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            // Show an error message or handle the error accordingly
-                        });
+            function extractName(productElement) {
+                return productElement.querySelector(".product-details h4 a").textContent.trim().toLowerCase();
+            }
+
+            function sortProductsByPriceLowToHigh() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractPrice(a) - extractPrice(b));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
+
+            function sortProductsByPriceHighToLow() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractPrice(b) - extractPrice(a));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
+
+            function sortProductsByAlphabeticalAZ() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractName(a).localeCompare(extractName(b)));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
+
+            function sortProductsByAlphabeticalZA() {
+                const productContainer = document.querySelector(".product-container");
+                const products = Array.from(productContainer.querySelectorAll(".product-card"));
+                products.sort((a, b) => extractName(b).localeCompare(extractName(a)));
+                productContainer.innerHTML = "";
+                products.forEach((product) => productContainer.appendChild(product));
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const sortPriceLowToHigh = document.querySelector("#sortByPriceLowToHigh");
+                const sortPriceHighToLow = document.querySelector("#sortByPriceHighToLow");
+                const sortAlphabeticalAZ = document.querySelector("#sortByAlphabeticalAZ");
+                const sortAlphabeticalZA = document.querySelector("#sortByAlphabeticalZA");
+
+                if (sortPriceLowToHigh) {
+                    sortPriceLowToHigh.addEventListener("click", sortProductsByPriceLowToHigh);
+                }
+                if (sortPriceHighToLow) {
+                    sortPriceHighToLow.addEventListener("click", sortProductsByPriceHighToLow);
+                }
+                if (sortAlphabeticalAZ) {
+                    sortAlphabeticalAZ.addEventListener("click", sortProductsByAlphabeticalAZ);
+                }
+                if (sortAlphabeticalZA) {
+                    sortAlphabeticalZA.addEventListener("click", sortProductsByAlphabeticalZA);
+                }
+            });
+
+            const filterButton = document.getElementById("filterButton");
+            if (filterButton) {
+                filterButton.addEventListener("click", function () {
+                    var filterMenu = document.querySelector(".filter-menu");
+                    if (filterMenu) {
+                        filterMenu.classList.toggle("show");
+                    }
                 });
+            }
+
+            window.addEventListener("click", function (event) {
+                if (!event.target.matches("#filterButton")) {
+                    var filterMenus = document.querySelectorAll(".filter-menu");
+                    filterMenus.forEach(function (filterMenu) {
+                        if (filterMenu.classList.contains("show")) {
+                            filterMenu.classList.remove("show");
+                        }
+                    });
+                }
             });
         </script>
     </body>

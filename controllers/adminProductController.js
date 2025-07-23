@@ -27,7 +27,7 @@ const addproductpost = async (req, res) => {
         let productImages = [];
 
         if (req.files && req.files.length > 0) {
-            productImages = req.files.map((file) => `/Uploads/${file.filename}`);
+            productImages = req.files.map((file) => `/uploads/${file.filename}`);
         }
 
         const newProduct = new Product({
@@ -74,7 +74,7 @@ const editproductpost = async (req, res) => {
         let productImages = [];
 
         if (req.files && req.files.length > 0) {
-            productImages = req.files.map((file) => `/Uploads/${file.filename}`);
+            productImages = req.files.map((file) => `/uploads/${file.filename}`);
         }
 
         const productdata = await Product.findById(id);

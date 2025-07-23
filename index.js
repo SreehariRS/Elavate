@@ -6,7 +6,6 @@ const nocache = require("nocache");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const flash = require("connect-flash");
-const checkblock = require("./middleware/checkblock");
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -23,7 +22,6 @@ app.use(
         resave: false,
         cookie: { maxAge: oneDay },
         saveUninitialized: true,
-        store: new session.MemoryStore(), // Use MemoryStore for simplicity; consider Redis in production
     })
 );
 app.use(flash());
@@ -32,10 +30,7 @@ app.use(flash());
 app.use("/stylesheet", express.static(path.resolve(__dirname, "public/stylesheet")));
 app.use("/img", express.static(path.resolve(__dirname, "public/img")));
 app.use("/js", express.static(path.resolve(__dirname, "public/js")));
-app.use("/Uploads", express.static(path.resolve(__dirname, "Uploads")));
-
-// Middleware to check blocked status for all user routes
-app.use(checkblock);
+app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 // Require routes
 const userConnection = require("./routes/user");
