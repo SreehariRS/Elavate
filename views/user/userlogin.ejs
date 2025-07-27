@@ -6,17 +6,27 @@
         <title>Login</title>
         <link rel="stylesheet" href="/stylesheet/user/userlogin.css" />
   
-        <style>
-            .error-message {
-                color: rgb(244, 244, 244);
-                position: absolute;
-                font-size: 14px;
-                right: 500px;
-                width: 210px;
-                border-radius: 20px;
-                background-color: rgba(255, 255, 255, 0.123);
-            }
-        </style>
+     <style>
+    .error-message {
+        color: red; /* Make error visible */
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+        padding-left: 20px;
+    }
+
+    .server-error {
+        background-color: rgba(255, 0, 0, 0.1);
+        color: red;
+        padding: 8px 16px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+</style>
+
         <script>
             function validateForm() {
                 var email = document.forms["LoginForm"]["email"].value;
@@ -54,41 +64,39 @@
   
     </head>
     <body>
-        <div id="algn">
-            <div id="container">
-                <p class="head">Login</p>
-                <% if (message) { %>
-                    <p><%= message %></p>
-                <% } %>
-                <form
-                name="LoginForm"
-                action="/login"
-                method="POST"
-                class="input-container"
-                onsubmit="return validateForm()" 
-            >
-            
-                    <div class="input-field">
-                        <label for="email">E-mail</label>
-                        <br>
-                        <input type="text" name="email" id="email" placeholder="Enter email" class="inpt" />
-                        <span id="emailError1" class="error-message"></span>
-                    </div>
+     <div id="algn">
+    <div id="container">
+        <p class="head">Login</p>
+        
+        <% if (message) { %>
+            <div class="server-error"><%= message %></div>
+        <% } %>
 
-                    <div class="input-field">
-                        <label for="password">Password</label>
-                        <br>
-                        <input type="password" name="password" id="password" placeholder="Enter password" class="inpt" />
-                        <span id="passwordError1" class="error-message"></span>
-                    </div>
-
-                    <div class="rem-forgot">
-                        <span><a href="/forgotpassword">Forgot password</a></span>
-                    </div>
-                    <button type="submit" class="btn">Login</button>
-                </form>
-                <p class="footer">Don't have an account? <a href="getRegister">Signup</a></p>
+        <form name="LoginForm" action="/login" method="POST" class="input-container" onsubmit="return validateForm()">
+            <div class="input-field">
+                <label for="email">E-mail</label>
+                <br>
+                <input type="text" name="email" id="email" placeholder="Enter email" class="inpt" />
+                <span id="emailError1" class="error-message"></span>
             </div>
-        </div>
+
+            <div class="input-field">
+                <label for="password">Password</label>
+                <br>
+                <input type="password" name="password" id="password" placeholder="Enter password" class="inpt" />
+                <span id="passwordError1" class="error-message"></span>
+            </div>
+
+            <div class="rem-forgot">
+                <span><a href="/forgotpassword">Forgot password</a></span>
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p class="footer">Don't have an account? <a href="getRegister">Signup</a></p>
+    </div>
+</div>
+
     </body>
 </html>

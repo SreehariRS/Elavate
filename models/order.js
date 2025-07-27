@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema({
             },
             status: {
                 type: String,
-                enum: ["pending", "confirmed", "dispatched", "out for delivery", "delivered", "return-requested", "returned", "refund-requested", "refunded", "cancellation-requested", "cancelled"],
+                enum: ["pending", "confirmed", "dispatched", "out for delivery", "delivered", "return-requested", "returned", "refund-requested", "refunded", "cancellation-requested", "cancelled", "paymentfailed"],
                 default: "confirmed",
             },
             cancellationReason: {
@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "confirmed", "dispatched", "out for delivery", "delivered", "return-requested", "returned", "refund-requested", "refunded", "cancellation-requested", "cancelled"],
+        enum: ["pending", "confirmed", "dispatched", "out for delivery", "delivered", "return-requested", "returned", "refund-requested", "refunded", "cancellation-requested", "cancelled", "paymentfailed"],
         default: "pending",
     },
     paymentMethod: {

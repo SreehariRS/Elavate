@@ -28,14 +28,16 @@ const sales = async (req, res) => {
         const totalProducts = await Product.countDocuments();
 
         // Prepare sales report data
-        const salesReport = orders.flatMap((order) =>
-            order.items.map((item) => ({
+        const salesReport = orders.flatMap((order, orderIndex) =>
+            order.items.map((item, index) => ({
+                slNo: orderIndex + index + 1,
                 proname: item.productId ? item.productId.name : "N/A",
                 address: order.selectedAddress || "Address Not Available",
                 createdAt: order.date.toLocaleDateString(),
                 quantity: item.quantity,
-                price: item.productId ? item.productId.offerprice || item.productId.price : 0,
-                totalprice: order.totalprice,
+                offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
+                originalPrice: item.productId ? item.productId.price : 0,
+                totalPrice: order.totalprice,
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
@@ -69,15 +71,16 @@ const generatePDF = async (req, res) => {
 
         const orders = await Order.find(query).populate("items.productId");
 
-        const salesReport = orders.flatMap((order) =>
+        const salesReport = orders.flatMap((order, orderIndex) =>
             order.items.map((item, index) => ({
-                slNo: index + 1,
+                slNo: orderIndex + index + 1,
                 proname: item.productId ? item.productId.name : "N/A",
                 address: order.selectedAddress || "Address Not Available",
                 createdAt: order.date.toLocaleDateString(),
                 quantity: item.quantity,
-                price: item.productId ? item.productId.offerprice || item.productId.price : 0,
-                totalprice: order.totalprice,
+                offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
+                originalPrice: item.productId ? item.productId.price : 0,
+                totalPrice: order.totalprice,
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
@@ -115,8 +118,8 @@ const generatePDF = async (req, res) => {
                                 report.address,
                                 report.createdAt,
                                 report.quantity,
-                                report.price,
-                                `₹${report.totalprice}`,
+                                `₹${report.offerPrice}`,
+                                `₹${report.originalPrice}`,
                                 report.paymentMethod,
                             ]),
                         ],
@@ -159,15 +162,16 @@ const downloadExcel = async (req, res) => {
 
         const orders = await Order.find(query).populate("items.productId");
 
-        const salesReport = orders.flatMap((order) =>
+        const salesReport = orders.flatMap((order, orderIndex) =>
             order.items.map((item, index) => ({
-                slNo: index + 1,
+                slNo: orderIndex + index + 1,
                 proname: item.productId ? item.productId.name : "N/A",
                 address: order.selectedAddress || "Address Not Available",
                 createdAt: order.date.toLocaleDateString(),
                 quantity: item.quantity,
-                price: item.productId ? item.productId.offerprice || item.productId.price : 0,
-                totalprice: order.totalprice,
+                offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
+                originalPrice: item.productId ? item.productId.price : 0,
+                totalPrice: order.totalprice,
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
@@ -182,8 +186,8 @@ const downloadExcel = async (req, res) => {
             { header: "User Details", key: "address", width: 30 },
             { header: "Date", key: "createdAt", width: 15 },
             { header: "Quantity", key: "quantity", width: 10 },
-            { header: "Offer Price", key: "price", width: 15 },
-            { header: "Original Price", key: "totalprice", width: 15 },
+            { header: "Offer Price", key: "offerPrice", width: 15 },
+            { header: "Original Price", key: "originalPrice", width: 15 },
             { header: "Payment Method", key: "paymentMethod", width: 15 },
         ];
 
@@ -194,8 +198,8 @@ const downloadExcel = async (req, res) => {
                 address: report.address,
                 createdAt: report.createdAt,
                 quantity: report.quantity,
-                price: report.price,
-                totalprice: `₹${report.totalprice}`,
+                offerPrice: report.offerPrice,
+                originalPrice: report.originalPrice,
                 paymentMethod: report.paymentMethod,
             });
         });
@@ -254,7 +258,7 @@ const home = async (req, res) => {
                     const categoryName = item.productId.category;
                     if (!categorySales[categoryName]) {
                         categorySales[categoryName] = {
-                            _id: categoryName, // Use category name as _id for consistency with home.ejs
+                            _id: categoryName,
                             count: 0,
                         };
                     }
@@ -263,12 +267,10 @@ const home = async (req, res) => {
             });
         });
 
-      
         const topSellingCategories = Object.values(categorySales)
             .sort((a, b) => b.count - a.count)
             .slice(0, 5); // Limit to top 5 categories
 
-   
         const data = {
             totalAmount,
             totalOrders,

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy5x25EJwo0pm6d4Zvu25/TfMIqE2t9nq" crossorigin="anonymous">
 </head>
 <body>
-            <style>
+                <style>
           .card {
     background: rgba(255, 255, 255, 0.1); /* Translucent glass finish background */
     border: 2px solid; /* Gradient border */
@@ -311,6 +311,7 @@
                                   <label class="labels">Name</label>
                                   <input type="text" id="firstname" class="form-control" placeholder="First Name" value="<%= user.firstname || '' %>" />
                                   <div id="firstnameError" class="text-danger"></div>
+                                  <div id="successMessage" class="text-success" style="display: none;"></div>
                               </div>
                             </div>
                             <hr>
@@ -354,14 +355,28 @@
 <script>
 function saveProfile() {
     var firstname = document.getElementById("firstname").value.trim();
-    document.getElementById("firstnameError").innerHTML = "";
+    var firstnameError = document.getElementById("firstnameError");
+    var successMessage = document.getElementById("successMessage");
+    
+    firstnameError.innerHTML = "";
+    successMessage.style.display = "none";
+    
     if (firstname === "") {
-        document.getElementById("firstnameError").innerHTML = "First Name cannot be empty";
+        firstnameError.innerHTML = "First Name cannot be empty";
         return;
     }
+    
+    // Validate that firstname contains only letters and spaces
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(firstname)) {
+        firstnameError.innerHTML = "First name can only contain letters and spaces";
+        return;
+    }
+    
     var data = {
         newFirstName: firstname,
     };
+    
     fetch("/editprofile/<%= user._id %>", {
         method: "POST",
         headers: {
@@ -371,11 +386,20 @@ function saveProfile() {
     })
     .then((response) => response.json())
     .then((response) => {
-        console.log("Profile updated successfully:", response);
-        window.location.reload();
+        if (response.status === "success") {
+            successMessage.innerHTML = response.message;
+            successMessage.style.display = "block";
+            setTimeout(() => {
+                successMessage.style.display = "none";
+                window.location.reload();
+            }, 2000); // Hide message after 2 seconds and reload
+        } else {
+            firstnameError.innerHTML = response.message || "Failed to update profile";
+        }
     })
     .catch((error) => {
         console.error("Error updating profile:", error);
+        firstnameError.innerHTML = "An error occurred while updating the profile";
     });
 }
 

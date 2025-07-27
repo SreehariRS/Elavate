@@ -1,6 +1,11 @@
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 
+// Helper function to get effective maximum quantity for a product
+const getEffectiveMaxQuantity = (stock) => {
+    return stock < 10 ? stock : 10;
+};
+
 const cartView = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -26,7 +31,12 @@ const addToCart = async (req, res) => {
         const productData = await Product.findById(productId);
         if (!productData) return res.status(404).send("Product not found");
         if (productData.deleted) return res.status(404).send("Product not found"); // Check if deleted
-        if (productData.stock < parseInt(quantity, 10)) {
+
+        const requestedQuantity = parseInt(quantity, 10);
+        const effectiveMaxQuantity = getEffectiveMaxQuantity(productData.stock);
+
+        // Check if requested quantity exceeds available stock
+        if (requestedQuantity > productData.stock) {
             return res.status(400).send("Insufficient stock");
         }
 
@@ -36,10 +46,33 @@ const addToCart = async (req, res) => {
         const productIndex = cart.items.findIndex(
             (item) => item.productId.toString() === productId
         );
+
+        let newQuantity;
         if (productIndex > -1) {
-            cart.items[productIndex].quantity += parseInt(quantity, 10);
+            // Product already exists in cart, add to existing quantity
+            newQuantity = cart.items[productIndex].quantity + requestedQuantity;
         } else {
-            cart.items.push({ productId, quantity: parseInt(quantity, 10) });
+            // New product being added to cart
+            newQuantity = requestedQuantity;
+        }
+
+        // Check if new total quantity would exceed the effective maximum
+        if (newQuantity > effectiveMaxQuantity) {
+            const message = productData.stock < 10 
+                ? "Maximum stock limit reached." 
+                : "Maximum quantity limit of 10 units per product reached.";
+            return res.status(400).send(message);
+        }
+
+        // Check if new total quantity would exceed available stock
+        if (newQuantity > productData.stock) {
+            return res.status(400).send("Insufficient stock");
+        }
+
+        if (productIndex > -1) {
+            cart.items[productIndex].quantity = newQuantity;
+        } else {
+            cart.items.push({ productId, quantity: requestedQuantity });
         }
 
         await cart.save();
@@ -95,7 +128,19 @@ const updateQuantity = async (req, res) => {
         if (productData.deleted) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
+
         const requestedQuantity = parseInt(quantity, 10);
+        const effectiveMaxQuantity = getEffectiveMaxQuantity(productData.stock);
+
+        // Check if requested quantity exceeds effective maximum
+        if (requestedQuantity > effectiveMaxQuantity) {
+            const message = productData.stock < 10 
+                ? "Maximum stock limit reached." 
+                : "Maximum quantity limit of 10 units per product reached.";
+            return res.status(400).json({ success: false, message });
+        }
+
+        // Check if requested quantity exceeds available stock
         if (requestedQuantity > productData.stock) {
             return res.status(400).json({ success: false, message: `Quantity exceeds available stock (${productData.stock})` });
         }

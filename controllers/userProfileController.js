@@ -15,12 +15,20 @@ const getprofile = async (req, res) => {
 const editprofile = async (req, res) => {
     try {
         const { userID } = req.params;
-        const { firstname, mobileNumber, email } = req.body;
-        await User.findByIdAndUpdate(userID, { firstname, mobileNumber, email });
-        res.redirect("/profile");
+        const { newFirstName } = req.body;
+        if (!newFirstName) {
+            return res.status(400).json({ status: "error", message: "First name is required" });
+        }
+        // Validate that newFirstName contains only letters and spaces
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(newFirstName)) {
+            return res.status(400).json({ status: "error", message: "First name can only contain letters and spaces" });
+        }
+        await User.findByIdAndUpdate(userID, { firstname: newFirstName });
+        res.json({ status: "success", message: "Changes saved successfully" });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ status: "error", message: "Internal Server Error" });
     }
 };
 

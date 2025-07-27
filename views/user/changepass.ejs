@@ -4,8 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Password</title>
-
     <style>
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success-message {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        #passwordMatchError {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+        <style>
           body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -139,6 +168,11 @@
         
         <h1>Change Password</h1>
 
+        <!-- Display flash messages -->
+        <% if (locals.message && locals.message.length > 0) { %>
+            <div class="error-message"><%= locals.message %></div>
+        <% } %>
+
         <% if (locals.error) { %>
             <div class="error-message"><%= locals.error %></div>
         <% } %>
@@ -159,7 +193,7 @@
         <% } %>
         
         <% if (locals.wrong) { %>
-            <div class="in-exs" style="text-align: center; font-size: large;"><%= locals.wrong %></div>
+            <div class="error-message" style="text-align: center; font-size: large;"><%= locals.wrong %></div>
         <% } %>
         <br>
         <button type="submit">Change Password</button>
@@ -170,17 +204,19 @@
 <script>
 function validateForm() {
     var currentPassword = document.getElementById("currentPassword").value;
-
     var newPassword = document.getElementById("newPassword").value;
     var confirmPassword = document.getElementById("confirmPassword").value;
 
+    // Hide any previous error messages
+    document.getElementById("passwordMatchError").style.display = "none";
 
-       // Check if current password and new password are the same
-       if (currentPassword === newPassword) {
+    // Check if current password and new password are the same
+    if (currentPassword === newPassword) {
         document.getElementById("passwordMatchError").innerText = "New password cannot be the same as the current password!";
         document.getElementById("passwordMatchError").style.display = "block";
         return false;
     }
+    
     // Strong password validation
     var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(newPassword)) {
@@ -198,21 +234,20 @@ function validateForm() {
     return true;
 }
 
+window.onload = function() {
+    document.getElementById("container").classList.add("active");
+};
 
-    window.onload = function() {
-        document.getElementById("container").classList.add("active");
-    };
+function closeContainer() {
+    var container = document.getElementById('container');
+    container.classList.remove('active');
+    setTimeout(function() {
+        container.style.display = 'none';
+    }, 500); // Delay hiding the container to match the animation duration
 
-    function closeContainer() {
-        var container = document.getElementById('container');
-        container.classList.remove('active');
-        setTimeout(function() {
-            container.style.display = 'none';
-        }, 500); // Delay hiding the container to match the animation duration
-
-        // Redirect to root URL
-        window.location.href = "/";
-    }
+    // Redirect to root URL
+    window.location.href = "/";
+}
 </script>
 
 </body>

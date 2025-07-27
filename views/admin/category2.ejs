@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Category Edit Page</title>
+  
+</head>
+<body>
   <style>
     /* Add this CSS to your existing styles */
     /* General reset */
@@ -82,8 +85,6 @@
       text-align: center;
     }
   </style>
-</head>
-<body>
   <div class="container">
     <div class="close-btn" onclick="closeContainer()">X</div>
     <form id="editCategoryForm">
@@ -92,7 +93,7 @@
       <div class="edit-form">
           <input type="text" id="categoryName" name="categoryName" placeholder="Enter new category name" value="<%= data.name %>">
           <p style="color: red;" id="message"></p>
-          <button type="button" id="updateBtn" onclick="editcat('<%= data.id %>')">Update</button>
+          <button type="button" id="updateBtn" onclick="editcat('<%= data._id %>')">Update</button>
           <% } else { %>
             <p>This category is currently unavailable.</p>
         <% } %>

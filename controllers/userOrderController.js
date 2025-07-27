@@ -347,37 +347,22 @@ const retryCheckout = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order not found or unauthorized" });
         }
 
-        if (order.paymentMethod === "wallet" && status === "confirmed") {
-            let wallet = await Wallet.findOne({ userId });
-            if (!wallet) {
-                wallet = new Wallet({ userId, balance: 0, transactions: [] });
-            }
+        // Update only if the status is a valid change
+        if (order.status !== status) {
+            order.razorpayOrderId = razorpayOrderId || order.razorpayOrderId;
+            order.paymentId = paymentId || order.paymentId;
+            order.status = status;
 
-            if (wallet.balance < order.totalPrice) {
-                return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
-            }
-
-            wallet.balance -= parseFloat(order.totalPrice);
-            wallet.transactions.push({
-                type: "withdrawal",
-                amount: parseFloat(order.totalPrice),
-                date: new Date(),
-                paymentId: `order_${orderId}`,
+            order.items.forEach(item => {
+                if (item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded") {
+                    item.status = status;
+                }
             });
-            await wallet.save();
+
+            await order.save();
         }
 
-        order.razorpayOrderId = razorpayOrderId || order.razorpayOrderId;
-        order.paymentId = paymentId || order.paymentId;
-        order.status = status;
-        order.items.forEach(item => {
-            if (item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded") {
-                item.status = status;
-            }
-        });
-
-        await order.save();
-        res.json({ success: true, redirect: "/orderhistory?success=true" });
+        res.json({ success: true, redirect: status === 'confirmed' ? '/orderhistory?success=true' : '/orderhistory' });
     } catch (error) {
         console.log("Error in retryCheckout:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -567,25 +552,49 @@ const generateInvoice = async (req, res) => {
         const userData = userId ? await User.findById(userId) : null;
         const loggedInUser = !!userId;
         const errorMessage = req.flash("error")[0] || "";
+        
+        // Check if order is cancelled or has any cancelled items
+        if (order.status === 'cancelled' || order.items.some(item => item.status === 'cancelled')) {
+            return res.status(400).send("Invoice generation not allowed for cancelled orders or items");
+        }
+
         const doc = new PDFDocument();
         let filename = `invoice_${orderId}.pdf`;
         filename = encodeURIComponent(filename);
         res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
         res.setHeader("Content-type", "application/pdf");
         doc.pipe(res);
-        doc.fontSize(20).text("Invoice", { align: "center" });
+
+        // Invoice header
+        doc.fontSize(25).text("Invoice", { align: "center" });
         doc.moveDown();
-        doc.fontSize(14).text(`Order ID: ${order._id}`);
-        doc.text(`User: ${order.userId.firstname}`);
-        doc.text(`Total Price: ${order.totalPrice}`);
-        doc.text(`Status: ${order.status}`);
+
+        // Invoice details
+        doc.fontSize(12).text(`Invoice Number: ${order._id}`, { align: "left" });
+        doc.text(`Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} IST`, { align: "left" });
+        doc.text(`Customer Name: ${order.userId.firstname} ${order.userId.lastname || ''}`, { align: "left" });
+        doc.text(`Order Date: ${order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Not Available'}`, { align: "left" });
         doc.moveDown();
-        doc.text("Items:");
+
+        // Order summary
+        doc.text("Order Summary:", { underline: true });
+        doc.text(`Total Amount: ₹${order.totalPrice.toFixed(2)}`, { align: "left" });
+        doc.text(`Payment Method: ${order.paymentMethod}`, { align: "left" });
+        doc.text(`Order Status: ${order.status}`, { align: "left" });
+        if (order.discountApplied > 0) {
+            doc.text(`Discount Applied: ₹${order.discountApplied.toFixed(2)}`, { align: "left" });
+        }
+        doc.moveDown();
+
+        // Items table
+        doc.text("Items:", { underline: true });
+        doc.moveDown();
         order.items.forEach((item) => {
             if (item.status !== "cancelled") {
-                doc.text(`Product: ${item.productId.name}, Quantity: ${item.quantity}, Status: ${item.status}`);
+                doc.text(`Product: ${item.productId.name}, Quantity: ${item.quantity}, Unit Price: ₹${(item.productId.offerprice || item.productId.price).toFixed(2)}, Total: ₹${((item.productId.offerprice || item.productId.price) * item.quantity).toFixed(2)}, Status: ${item.status}`, { align: "left" });
             }
         });
+
         doc.end();
     } catch (error) {
         console.log("Error in generateInvoice:", error);

@@ -368,26 +368,56 @@ const changepass = (req, res) => {
 
 const changepasspost = async (req, res) => {
     try {
-        const { oldpassword, newpassword, confirmpassword } = req.body;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        
+        // Check if all required fields are provided
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            req.flash("message", "All fields are required");
+            return res.redirect("/changepass");
+        }
+        
+        // Check if user session exists
+        if (!req.session.user) {
+            req.flash("message", "Please login first");
+            return res.redirect("/login");
+        }
+        
         const user = await User.findById(req.session.user);
-        const isMatch = await bcrypt.compare(oldpassword, user.password);
+        if (!user || !user.password) {
+            req.flash("message", "User not found or invalid user data");
+            return res.redirect("/changepass");
+        }
+        
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             req.flash("message", "Old password is incorrect");
             return res.redirect("/changepass");
         }
-        if (newpassword !== confirmpassword) {
+        
+        if (newPassword !== confirmPassword) {
             req.flash("message", "New passwords do not match");
             return res.redirect("/changepass");
         }
-        const hashedPassword = await bcrypt.hash(newpassword, 10);
+        
+        // Validate password strength
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            req.flash("message", "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+            return res.redirect("/changepass");
+        }
+        
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
         await User.findByIdAndUpdate(req.session.user, {
             password: hashedPassword,
             confirmPassword: hashedPassword,
         });
+        
+        req.flash("message", "Password changed successfully");
         res.redirect("/home");
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        req.flash("message", "Failed to change password. Please try again.");
+        res.redirect("/changepass");
     }
 };
 

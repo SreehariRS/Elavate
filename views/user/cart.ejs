@@ -284,18 +284,22 @@ body {
             <tbody class="cart-items">
                 <% cart.items.forEach(item => { %>
                     <% if (item.productId) { %>
+                    <% 
+                        const price = item.productId.offerprice || item.productId.price || 0;
+                        const stock = item.productId.stock || 0;
+                        const effectiveMaxQuantity = stock < 10 ? stock : 10;
+                    %>
                     <tr id="row_<%= item.productId._id %>">
                         <td><img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.name || 'Product Image' %>" class="product-image" /></td>
                         <td><%= item.productId.name || 'Unknown Product' %></td>
                         <td>
-                            <% const price = item.productId.offerprice || item.productId.price || 0; %>
                             ₹<%= price.toFixed(2) %>
                         </td>
                         <td class="quantity-cell">
                             <button class="quantity-btn quantity-minus" data-product-id="<%= item.productId._id %>" data-price="<%= price %>">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <input type="number" class="quantity-input" id="quantity_<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="<%= item.productId.stock %>" data-prev-value="<%= item.quantity %>">
+                            <input type="number" class="quantity-input" id="quantity_<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="<%= effectiveMaxQuantity %>" data-prev-value="<%= item.quantity %>" data-stock="<%= stock %>">
                             <button class="quantity-btn quantity-plus" data-product-id="<%= item.productId._id %>" data-price="<%= price %>">
                                 <i class="fas fa-plus"></i>
                             </button>
@@ -319,6 +323,11 @@ body {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+    // Helper function to get effective maximum quantity
+    function getEffectiveMaxQuantity(stock) {
+        return stock < 10 ? stock : 10;
+    }
+
     function handleCheckout() {
         const cartTotal = parseFloat(document.getElementById("cart-total")?.innerText || 0);
         if (cartTotal === 0) {
@@ -345,7 +354,8 @@ body {
             return;
         }
 
-        const maxStock = parseInt(inputField.getAttribute('max'));
+        const stock = parseInt(inputField.dataset.stock) || 0;
+        const effectiveMaxQuantity = getEffectiveMaxQuantity(stock);
         const prevValue = parseInt(inputField.dataset.prevValue) || 1;
 
         if (isNaN(quantity) || quantity < 1) {
@@ -360,15 +370,18 @@ body {
             return;
         }
 
-        if (quantity > maxStock) {
+        if (quantity > effectiveMaxQuantity) {
+            const message = stock < 10 
+                ? 'Maximum stock limit reached.' 
+                : 'Maximum quantity limit of 10 units per product reached.';
             Swal.fire({
                 title: 'Error',
-                text: 'Maximum stock limit reached',
+                text: message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
-            inputField.value = maxStock;
-            updateSubtotalAndTotal(productId, maxStock, price);
+            inputField.value = effectiveMaxQuantity;
+            updateSubtotalAndTotal(productId, effectiveMaxQuantity, price);
             return;
         }
 
@@ -451,13 +464,17 @@ body {
             
             if (!inputField || !productId) return;
 
-            const maxStock = parseInt(inputField.getAttribute('max'));
+            const stock = parseInt(inputField.dataset.stock) || 0;
+            const effectiveMaxQuantity = getEffectiveMaxQuantity(stock);
             let newValue = parseInt(inputField.value) + 1;
 
-            if (newValue > maxStock) {
+            if (newValue > effectiveMaxQuantity) {
+                const message = stock < 10 
+                    ? 'Maximum stock limit reached.' 
+                    : 'Maximum quantity limit of 10 units per product reached.';
                 Swal.fire({
                     title: 'Error',
-                    text: 'Maximum stock limit reached',
+                    text: message,
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -558,7 +575,7 @@ body {
                             text: 'Failed to remove product from cart',
                             icon: 'error',
                             confirmButtonText: 'OK'
-                        });
+        });
                     }
                 })
                 .catch(error => {

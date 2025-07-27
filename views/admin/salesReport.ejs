@@ -5,22 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SALES</title>
-        <link rel="stylesheet" href="stylesheet/admin/salesReport.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="stylesheet/admin/salesReport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- DataTable HEADER-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-
     <!-- Include pdfmake library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
-    
- 
 </head>
 
 <body>
-  <style>
+    <style>
     
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -516,232 +512,210 @@ label {
 
   
   </style>
-  <link
-  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-  rel="stylesheet"
-/>  
-<div class="toggle-sidebar">
-  <i class="bx bx-menu toggle-icon"></i>
-</div>
-<nav class="sidebar">
-  <header>
-    <div class="image-text">
-      <span class="image">
-        <img src="/img/logo.png" alt="logo" />
-      </span>
-      <div class="text header-text">
-        <span class="main">ELAVATE</span>
-        <br>
-        <span class="sub">make your smell</span>
-      </div>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <div class="toggle-sidebar">
+        <i class="bx bx-menu toggle-icon"></i>
     </div>
-  </header>
-
-  <div class="menu-bar">
-    <div class="menu">
-      <ul class="menu-links">
-        <li class="nav-link">
-          <a href="/admin/home">
-            <i class="bx bx-home-alt icons"></i>
-            <span class="text nav-text">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/customers">
-            <i class="bx bx-bell icons"></i>
-            <span class="text nav-text">User</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/productlist">
-            <i class="bx bx-bar-chart-alt-2 icons"></i>
-            <span class="text nav-text">Product</span>
-          </a>
-        </li>
-       
-        <li class="nav-link">
-          <a href="/admin/order">
-            <i class="bx bx-pie-chart-alt icons"></i>
-            <span class="text nav-text">order</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/category">
-            <i class="bx bx-heart icons"></i>
-            <span class="text nav-text">Category</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/coupon">
-            <i class="bx bx-wallet-alt icons"></i>
-            <span class="text nav-text">coupon</span>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a href="/admin/sales">
-            <i class="bx bx-wallet-alt icons"></i>
-            <span class="text nav-text">Sales Report</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-  
-      <li class="nav-link">
-        <a href="/admin/login">
-          <i class="bx bx-log-out icons"></i>
-          <span class="text nav-text">Log Out</span>
-        </a>
-      </li>
-      
-      </li>
-   
-  </div>
-</nav>
-
+    <nav class="sidebar">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="/img/logo.png" alt="logo" />
+                </span>
+                <div class="text header-text">
+                    <span class="main">ELAVATE</span>
+                    <br>
+                    <span class="sub">make your smell</span>
+                </div>
+            </div>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/admin/home">
+                            <i class="bx bx-home-alt icons"></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/customers">
+                            <i class="bx bx-bell icons"></i>
+                            <span class="text nav-text">User</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/productlist">
+                            <i class="bx bx-bar-chart-alt-2 icons"></i>
+                            <span class="text nav-text">Product</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/order">
+                            <i class="bx bx-pie-chart-alt icons"></i>
+                            <span class="text nav-text">Order</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/category">
+                            <i class="bx bx-heart icons"></i>
+                            <span class="text nav-text">Category</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/coupon">
+                            <i class="bx bx-wallet-alt icons"></i>
+                            <span class="text nav-text">Coupon</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/admin/sales">
+                            <i class="bx bx-wallet-alt icons"></i>
+                            <span class="text nav-text">Sales Report</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li class="nav-link">
+                <a href="/admin/logout">
+                    <i class="bx bx-log-out icons"></i>
+                    <span class="text nav-text">Log Out</span>
+                </a>
+            </li>
+        </div>
+    </nav>
     <div class="containerfirst">
-      <h1 class="welcome-heading move-right">Welcome to Report Page</h1>
-
-      <div class="space" style="margin-left: 250px;">
-        <div class="overview-item overall-sales">
-          <h3>Overall Sales Amount</h3>
-          <p>₹<%= data.totalAmount %></p>
+        <h1 class="welcome-heading move-right">Welcome to Report Page</h1>
+        <div class="space" style="margin-left: 250px;">
+            <div class="overview-item overall-sales">
+                <h3>Overall Sales Amount</h3>
+                <p>₹<%= data.totalAmount %></p>
+            </div>
+            <div class="overview-item overall-order-amount">
+                <h3>Total Orders</h3>
+                <p><%= data.totalOrders %></p>
+            </div>
+            <div class="overview-item overall-discount">
+                <h3>Total Users</h3>
+                <p><%= data.user %></p>
+            </div>
+            <div class="overview-item total-product-numbers">
+                <h3>Total Products</h3>
+                <p><%= data.product %></p>
+            </div>
         </div>
-      
-        <div class="overview-item overall-order-amount">
-          <h3>Total Orders</h3>
-          <p><%= data.totalOrders %></p>
-        </div>
-      
-        <!-- Overall Discount -->
-        <div class="overview-item overall-discount">
-          <h3>Total Users</h3>
-          <p><%= data.user %></p>
-        </div>
-      
-        <!-- Total Product Numbers -->
-        <div class="overview-item total-product-numbers">
-          <h3>Total Products</h3>
-          <p><%= data.product %></p>
-        </div>
-      </div>
-      
-
-       
         <div class="content">
             <div class="btn-container">
-              <span id="filterInfo"></span>
-             
-            
-              <button onclick="printPDF()" id="pdfButton" class="btn-pdf">Download PDF</button>
-              <button onclick="downloadExcel()" class="btn-excel">Download Excel</button>
-              
-                
-                
-            <form id="dateFilterForm" action="/admin/sales" method="GET"> <!-- Make sure the form sends a GET request to the correct endpoint -->
-              <div class="form-container">
-                <label for="startDate">Start Date:</label>
-                <input type="date" id="startDate" name="startDate">
-                <label for="endDate">End Date:</label>
-                <input type="date" id="endDate" name="endDate">
-                <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Filter</button>
-               </div>
-               
-               
-               
-          </form>
-          
+                <span id="filterInfo"></span>
+                <button onclick="printPDF()" id="pdfButton" class="btn-pdf">Download PDF</button>
+                <button onclick="downloadExcel()" class="btn-excel">Download Excel</button>
+                <form id="dateFilterForm" action="/admin/sales" method="GET">
+                    <div class="form-container">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate">
+                        <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </form>
             </div>
             <table id="example" class="table table-striped table-sm" style="width:100%">
-              <thead>
+                <thead>
                     <tr>
                         <th>Sl No</th>
                         <th>Product Name</th>
-                        <th>user Details</th>
+                        <th>User Details</th>
                         <th>Date</th>
                         <th>Quantity</th>
                         <th>Offer Price</th>
                         <th>Original Price</th>
                         <th>Payment Method</th>
-                       
                     </tr>
                 </thead>
                 <tbody>
-                  <% salesReport.forEach(function(report, index) { %>
-                  <tr>
-                      <td><%= index + 1 %></td>
-                      <td><%= report.proname %></td>
-                      <td>
-                          <%= report.address ? report.address : "Address Not Available" %>
-                      </td>
-                      <td><%= report.createdAt %></td>
-                      <td><%= report.quantity %></td>
-                      <td><%= report.price %></td>
-                      <td>₹<%= report.totalprice %></td>
-                      <td>
-                          <% if (report.paymentMethod === "razorpay") { %>
-                              <strong>Online Payment</strong>
-                          <% } else if(report.paymentMethod === "Cash On Delivery") { %>
-                              <strong>COD</strong>
-                          <% } else { %>
-                              <strong>Wallet</strong>
-                          <% } %>
-                      </td>
-                  </tr>
-                  <% }); %>
-              </tbody>
-              
+                    <% salesReport.forEach(function(report, index) { %>
+                    <tr>
+                        <td><%= report.slNo %></td>
+                        <td><%= report.proname %></td>
+                        <td><%= report.address ? report.address : "Address Not Available" %></td>
+                        <td><%= report.createdAt %></td>
+                        <td><%= report.quantity %></td>
+                        <td>₹<%= report.offerPrice %></td>
+                        <td>₹<%= report.originalPrice %></td> <!-- Use originalPrice -->
+                        <td>
+                            <% if (report.paymentMethod === "razorpay") { %>
+                                <strong>Online Payment</strong>
+                            <% } else if(report.paymentMethod === "Cash On Delivery") { %>
+                                <strong>COD</strong>
+                            <% } else { %>
+                                <strong>Wallet</strong>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
             </table>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-
- <!-- DATATABLE  SCRIPT-->
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>  
-<script>
-   new DataTable('#example');
-   
-  </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js" integrity="sha512-UnrKxsCMN9hFk7M56t4I4ckB4N/2HHi0w/7+B/1JsXIX3DmyBcsGpT3/BsuZMZf+6mAr0vP81syWtfynHJ69JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
- 
-      
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.js"></script>
     <script>
-      function printPDF() {
-    // Target the 'example' table instead of 'salesTable'
-    const pdfTable = document.getElementById("example");
-    const filterInfo = document.getElementById("filterInfo").innerText;
-    // Add filter type to table caption
-    const caption = pdfTable.querySelector("caption");
-    if (caption) {
-        caption.innerHTML += `<br>${filterInfo}`;
-    } else {
-        // Add a new caption if one doesn't exist
-        const caption = document.createElement("caption");
-        caption.innerHTML = filterInfo;
-        pdfTable.prepend(caption);
-    }
-    const pdfOptions = {
-        margin: 1,
-        filename: 'sales_report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    };
+        new DataTable('#example');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js" integrity="sha512-UnrKxsCMN9hFk7M56t4I4ckB4N/2HHi0w/7+B/1JsXIX3DmyBcsGpT3/BsuZMZf+6mAr0vP81syWtfynHJ69JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function printPDF() {
+            const pdfTable = document.getElementById("example");
+            const filterInfo = document.getElementById("filterInfo").innerText;
+            const caption = pdfTable.querySelector("caption");
+            if (caption) {
+                caption.innerHTML += `<br>${filterInfo}`;
+            } else {
+                const caption = document.createElement("caption");
+                caption.innerHTML = filterInfo;
+                pdfTable.prepend(caption);
+            }
+            const pdfOptions = {
+                margin: 1,
+                filename: 'sales_report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            };
+            html2pdf().set(pdfOptions).from(pdfTable).save();
+        }
 
-    html2pdf().set(pdfOptions).from(pdfTable).save();
-}
-
+        function downloadExcel() {
+            const form = document.getElementById("dateFilterForm");
+            const startDate = form.querySelector("#startDate").value;
+            const endDate = form.querySelector("#endDate").value;
+            fetch('/admin/excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ startDate, endDate }),
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sales_report.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Error downloading Excel:', error));
+        }
     </script>
 </body>
 </html>

@@ -58,9 +58,14 @@ const updateOrderStatus = async (req, res) => {
         }
 
         order.paymentId = paymentId || order.paymentId;
-        order.status = status === 'confirmed' ? 'confirmed' : 'paymentfailed';
+        // Only update status if it's a valid transition
+        if (['confirmed', 'paymentfailed'].includes(status)) {
+            order.status = status;
+        } else {
+            return res.status(400).json({ success: false, message: "Invalid status" });
+        }
 
-        // Handle wallet payment deduction
+        // Handle wallet payment deduction (only for confirmed status)
         if (paymentMethod === 'wallet' && status === 'confirmed') {
             let wallet = await Wallet.findOne({ userId });
             if (!wallet) {
@@ -87,14 +92,12 @@ const updateOrderStatus = async (req, res) => {
             await wallet.save();
         }
 
-        // Set item statuses to match order status for confirmed orders
-        if (order.status === 'confirmed') {
-            order.items.forEach(item => {
-                if (item.status !== 'cancelled' && item.status !== 'returned' && item.status !== 'refunded') {
-                    item.status = 'confirmed';
-                }
-            });
-        }
+        // Set item statuses to match order status for confirmed or failed orders
+        order.items.forEach(item => {
+            if (item.status !== 'cancelled' && item.status !== 'returned' && item.status !== 'refunded') {
+                item.status = status;
+            }
+        });
 
         await order.save();
         res.json({ success: true });

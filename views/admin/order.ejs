@@ -4,339 +4,198 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Order History</title>
-    <link rel="stylesheet" href="/styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-</head>
-<body>
-        <style>
-    
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
-
-* {
-  font-family: "Poppins", "sans-sarif";
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --body-color: #ffffff;
-  --sidebar-color: #000000;
-  --primary-color: #f4f2f2;
-  --primary-color-light: #f4f2f2;
-  --text-color: #ffffff;
- 
-
-  --trans-02: all 0.2s ease;
-  --trans-03: all 0.3s ease;
-  --trans-04: all 0.4s ease;
-  --trans-04: all 0.5s ease;
-}
-
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@300;400;500;600;700&display=swap");
-
-* {
-  font-family: "Poppins", "sans-sarif";
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --body-color: #ffffff;
-  --sidebar-color: #000000;
-  --primary-color: #f4f2f2;
-  --primary-color-light: #f4f2f2;
-  --text-color: #ffffff;
- 
-
-  --trans-02: all 0.2s ease;
-  --trans-03: all 0.3s ease;
-  --trans-04: all 0.4s ease;
-  --trans-04: all 0.5s ease;
-}
-
-body {
-  height: 100vh;
-  background-color: var(--body-color);
-  transition: var(--trans-02);
-}
-
-.sidebar .text {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-color);
-  /* transition: var(--trans-04); */
-  white-space: unset;
-  opacity: 1;
-}
-
-.sidebar .image {
-  min-width: 60px;
-  display: flex;
-  align-items: center;
-}
-
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0px;
-  height: 100%;
-  width: 250px;
-  background-color: var(--sidebar-color);
-  padding: 10px 14px;
-  transition: var(--trans-02);
-}
-
-.sidebar header {
-  position: relative;
-}
-.sidebar .image-text img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-}
-
-.sidebar header .image-text {
-  display: flex;
-  align-items: center;
-}
-
-.header .image-text .header-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.header-text .main {
-  font-weight: 600;
-}
-
-.header-text .sub {
-  margin-top: -2px;
-}
-
-
-.sidebar li {
-  height: 50px;
-  /* background-color: red; */
-  margin-top: 10px;
-  list-style: none;
-  display: flex;
-  align-items: center;
-}
-
-.sidebar li .icons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
-  font-size: 20px;
-}
-.sidebar li .icons,
-.sidebar li .text {
-  color: var(--text-color);
-  transition: var(--trans-03);
-}
-
-.sidebar li a {
-  height: 100%;
-  width: 100%;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  padding-right: 50px;
-  border-radius: 6px;
-  transition: var(--trans-04);
-  text-align: left;
-}
-
-.sidebar li a:hover {
-  background: var(--primary-color);
-}
-.sidebar li a:hover .icons,
-.sidebar li a:hover .text {
-  color: var(--dark-color);
-}
-
-.sidebar .menu-bar {
-  height: 100%;
-  height: calc(100% - 50px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-
-.main-content {
-    margin-left: 250px; /* Adjust based on the width of the sidebar */
-    padding: 0.25px;
-    background-color: #ffffff; 
-    justify-content: space-evenly;
-   
-}
-
-.sidebar .text {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-color);
-  /* transition: var(--trans-04); */
-  white-space: unset;
-  opacity: 1;
-}
-
-.sidebar .image {
-  min-width: 60px;
-  display: flex;
-  align-items: center;
-}
-
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0px;
-  height: 100%;
-  width: 250px;
-  background-color: var(--sidebar-color);
-  padding: 10px 14px;
-  transition: var(--trans-02);
-}
-
-.sidebar header {
-  position: relative;
-}
-.sidebar .image-text img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-}
-
-.sidebar header .image-text {
-  display: flex;
-  align-items: center;
-}
-
-.header .image-text .header-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.header-text .main {
-  font-weight: 600;
-}
-
-.header-text .sub {
-  margin-top: -2px;
-}
-
-
-.sidebar li {
-  height: 50px;
-  /* background-color: red; */
-  margin-top: 10px;
-  list-style: none;
-  display: flex;
-  align-items: center;
-}
-
-.sidebar li .icons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
-  font-size: 20px;
-}
-.sidebar li .icons,
-.sidebar li .text {
-  color: var(--text-color);
-  transition: var(--trans-03);
-}
-
-.sidebar li a {
-  height: 100%;
-  width: 100%;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  padding-right: 50px;
-  border-radius: 6px;
-  transition: var(--trans-04);
-  text-align: left;
-}
-
-.sidebar li a:hover {
-  background: var(--primary-color);
-}
-.sidebar li a:hover .icons,
-.sidebar li a:hover .text {
-  color: var(--dark-color);
-}
-
-.sidebar .menu-bar {
-  height: 100%;
-  height: calc(100% - 50px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-
-.main-content {
-    margin-left: 250px; /* Adjust based on the width of the sidebar */
-    padding: 0.25px;
-    background-color: #ffffff; 
-    justify-content: space-evenly;
-   
-}
-
+        :root {
+            --body-color: #ffffff;
+            --sidebar-color: #000000;
+            --primary-color: #f4f2f2;
+            --text-color: #ffffff;
+            --trans-02: all 0.2s ease;
+            --trans-03: all 0.3s ease;
+        }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
         }
 
         body {
-            font-family: 'Popins', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            background-color: var(--body-color);
             display: flex;
-            justify-content: center;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: var(--sidebar-color);
+            padding: 15px;
+            transition: var(--trans-02);
+        }
+
+        .sidebar header {
+            display: flex;
             align-items: center;
-            height: 100vh;
+            padding: 10px 0;
+        }
+
+        .sidebar .image-text img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+
+        .sidebar .header-text {
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .header-text .main {
+            font-weight: 600;
+        }
+
+        .header-text .sub {
+            font-size: 12px;
+        }
+
+        .sidebar .menu-links {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .sidebar li {
+            height: 45px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sidebar li a {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 6px;
+            padding: 8px;
+            transition: var(--trans-03);
+        }
+
+        .sidebar li a:hover {
+            background: var(--primary-color);
+            color: #000000;
+        }
+
+        .sidebar li .icons {
+            min-width: 50px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .sidebar li .text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar .bottom-content {
+            position: absolute;
+            bottom: 20px;
+            width: calc(100% - 30px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #f0f0f0;
         }
 
         .container {
-            width: 90%;
             max-width: 1200px;
-            margin: auto;
+            margin: 0 auto;
             padding: 20px;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(246, 255, 0, 0.247);
-            overflow-x: auto;
-            position: relative;
-            left: 8%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            text-align: center;
+            font-size: 24px;
             font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
         }
- */
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .search-button {
+            padding: 8px 16px;
+            border-radius: 5px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .price-filter {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .price-filter input[type="number"] {
+            width: 120px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .price-filter button {
+            padding: 8px 16px;
+            border-radius: 5px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .price-filter button:hover {
+            background-color: #333;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            font-size: 14px;
         }
 
         th, td {
@@ -347,25 +206,41 @@ body {
 
         th {
             background-color: #fff9b7;
+            font-weight: 600;
         }
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        .status-confirmed {
-            color: green;
+        tr:hover {
+            background-color: #fff3e1;
         }
 
-        .status-dispatched {
-            color: blue;
-        }
+        .status-confirmed { color: green; }
+        .status-dispatched { color: blue; }
+        .status-out-for-delivery { color: orange; }
+        .status-cancelled, .status-returned, .status-refunded { color: red; }
+        .status-return-requested, .status-refund-requested, .status-cancellation-requested { color: purple; }
 
-        .status-out-for-delivery {
-            color: orange;
-        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
 
-        @media only screen and (max-width: 768px) {
+            .sidebar .text {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .container {
+                padding: 10px;
+            }
+
             table {
                 display: block;
                 overflow-x: auto;
@@ -373,79 +248,12 @@ body {
             }
 
             th, td {
-                display: block;
-                width: 100%;
+                min-width: 100px;
             }
         }
-
-        tr:hover {
-            background-color: #fff3e1;
-        }
-
-        .search-bar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
-        .search-button {
-            padding: 8px;
-            border-radius: 5px;
-            background-color: #000000;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .search-button i {
-            font-size: 16px;
-        }
-
-        .search-input {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #080808;
-            width: 200px;
-            margin-right: 5px;
-        }
-
-        .price-filter input[type="number"],
-    .price-filter button {
-        padding: 8px;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        margin-right: 5px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .price-filter input[type="number"] {
-        width: 100px;
-    }
-
-    .price-filter button {
-        background-color: #000;
-        color: #fff;
-        cursor: pointer;
-    }
-
-    .price-filter button:hover {
-        background-color: #333;
-    }
-        .price-filter {
-           
-            position: absolute;
-            top: 30px; /* Adjust the top position as needed */
-            left: 70%;
-        }
-
-
-
-      
-
-
-  </style>
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />  
+    </style>
+</head>
+<body>
     <nav class="sidebar">
         <header>
             <div class="image-text">
@@ -454,7 +262,6 @@ body {
                 </span>
                 <div class="text header-text">
                     <span class="main">ELAVATE</span>
-                    <br>
                     <span class="sub">make your smell</span>
                 </div>
             </div>
@@ -506,118 +313,110 @@ body {
                     </li>
                 </ul>
             </div>
-        </div>
-        <div class="bottom-content">
-            <li class="nav-link">
-                <a href="/admin/login">
-                    <i class="bx bx-log-out icons"></i>
-                    <span class="text nav-text">Log Out</span>
-                </a>
-            </li>
+            <div class="bottom-content">
+                <li class="nav-link">
+                    <a href="/admin/logout">
+                        <i class="bx bx-log-out icons"></i>
+                        <span class="text nav-text">Log Out</span>
+                    </a>
+                </li>
+            </div>
         </div>
     </nav>
-
-    <div class="container mt-4">
-        <div class="search-bar mb-3">
-            <input type="text" class="search-input form-control d-inline-block w-50" placeholder="Search..." id="searchInput">
-            <button class="search-button btn btn-primary" onclick="searchOrders()"><i class="fas fa-search"></i> Search</button>
-        </div>
-        
-        <div class="price-filter mb-3">
-            <input type="number" id="minPrice" class="form-control d-inline-block w-25" placeholder="Min Price">
-            <input type="number" id="maxPrice" class="form-control d-inline-block w-25" placeholder="Max Price">
-            <button id="filterPrice" class="btn btn-primary">Filter by Price</button>
-        </div>
-        
-        <h1>Order History</h1>
-        <table id="orderTable" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>User ID</th>
-                    <th>Address</th>
-                    <th>Date & Time</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Item Total</th>
-                    <th>Order Total</th>
-                    <th>Item Status</th>
-                    <th>Payment Method</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for (const userId in ordersByUser) { %>
-                    <% ordersByUser[userId].forEach(order => { %>
-                        <% order.items.forEach((item, index) => { %>
-                            <tr class="order-row">
-                                <td><%= String(order._id).slice(-4) %></td>
-                                <td><%= order.userId ? order.userId._id : 'N/A' %></td>
-                                <td><%= order.selectedAddress || 'N/A' %></td>
-                                <td><%= order.date ? order.date.toLocaleString() : 'N/A' %></td>
-                                <td><%= item.productId ? item.productId.name : 'N/A' %></td>
-                                <td><%= item.quantity %></td>
-                                <td>₹<%= item.productId ? (item.productId.offerprice || item.productId.price) * item.quantity : 'N/A' %></td>
-                                <td>₹<%= order.totalPrice.toFixed(2) %></td>
-                                <td>
-                                    <div class="status-controls">
-                                        <% if (item.status === 'cancelled' || item.status === 'returned' || item.status === 'refunded') { %>
-                                        
-                                             <a href="#" onclick="showCancellationReason('<%= item.cancellationReason %>')"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></a>
-                                        <% } else if (item.status === 'return-requested' || item.status === 'refund-requested' || item.status === 'cancellation-requested') { %>
-                                            <span><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span>
-                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'return')" 
+    <div class="main-content">
+        <div class="container">
+            <h1>Order History</h1>
+            <div class="search-bar">
+                <input type="text" class="search-input form-control" placeholder="Search..." id="searchInput">
+                <button class="search-button btn btn-primary" onclick="searchOrders()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <div class="price-filter">
+                <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                <button id="filterPrice" class="btn btn-primary">Filter by Price</button>
+            </div>
+            <table id="orderTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User ID</th>
+                        <th>Address</th>
+                        <th>Date & Time</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Item Total</th>
+                        <th>Order Total</th>
+                        <th>Item Status</th>
+                        <th>Payment Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (const userId in ordersByUser) { %>
+                        <% ordersByUser[userId].forEach(order => { %>
+                            <% order.items.forEach((item, index) => { %>
+                                <tr class="order-row">
+                                    <td><%= String(order._id).slice(-4) %></td>
+                                    <td><%= order.userId ? order.userId._id : 'N/A' %></td>
+                                    <td><%= order.selectedAddress || 'N/A' %></td>
+                                    <td><%= order.date ? order.date.toLocaleString() : 'N/A' %></td>
+                                    <td><%= item.productId ? item.productId.name : 'N/A' %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>₹<%= item.productId ? (item.productId.offerprice || item.productId.price) * item.quantity : 'N/A' %></td>
+                                    <td>₹<%= order.totalPrice.toFixed(2) %></td>
+                                    <td>
+                                        <div class="status-controls">
+                                            <% if (item.status === 'cancelled' || item.status === 'returned' || item.status === 'refunded') { %>
+                                                <a href="#" onclick="showCancellationReason('<%= item.cancellationReason %>')">
+                                                    <%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %>
+                                                </a>
+                                            <% } else if (item.status === 'return-requested' || item.status === 'refund-requested' || item.status === 'cancellation-requested') { %>
+                                                <span><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span>
+                                                <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'return')"
                                                     class="btn btn-sm btn-success <%= item.status !== 'return-requested' ? 'd-none' : '' %>">
-                                                Approve Return
-                                            </button>
-                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'refund')" 
+                                                    Approve Return
+                                                </button>
+                                                <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'refund')"
                                                     class="btn btn-sm btn-success <%= item.status !== 'refund-requested' ? 'd-none' : '' %>">
-                                                Approve Refund
-                                            </button>
-                                            <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'cancellation')" 
+                                                    Approve Refund
+                                                </button>
+                                                <button onclick="approveRequest('<%= order._id %>', '<%= index %>', 'cancellation')"
                                                     class="btn btn-sm btn-success <%= item.status !== 'cancellation-requested' ? 'd-none' : '' %>">
-                                                Approve Cancellation
-                                            </button>
-                                        <% } else { %>
-                                            <select id="orderStatusDropdown_<%= order._id %>_<%= index %>" 
+                                                    Approve Cancellation
+                                                </button>
+                                            <% } else { %>
+                                                <select id="orderStatusDropdown_<%= order._id %>_<%= index %>"
                                                     onchange="updateOrderStatus('<%= order._id %>', '<%= index %>')"
                                                     class="form-select form-select-sm">
-                                                <option value="confirmed" <%= item.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-                                                <option value="dispatched" <%= item.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option>
-                                                <option value="out for delivery" <%= item.status === 'out for delivery' ? 'selected' : '' %>>Out for Delivery</option>
-                                                <option value="delivered" <%= item.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                                                <option value="paymentfailed" <%= item.status === 'paymentfailed' ? 'selected' : '' %>>Payment Failed</option>
-                                            </select>
-                                        <% } %>
-                                    </div>
-                                </td>
-                                <td><%= order.paymentMethod || 'N/A' %></td>
-                                <td>
-                                    <% if (item.cancellationReason) { %>
-                                        <a href="#" onclick="showCancellationReason('<%= item.cancellationReason %>')">View Reason</a>
-                                    <% } else { %>
-                                        <span>N/A</span>
-                                    <% } %>
-                                </td>
-                            </tr>
+                                                    <option value="confirmed" <%= item.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                                    <!-- <option value="dispatched" <%= item.status === 'dispatched' ? 'selected' : '' %>>Dispatched</option> -->
+                                                    <option value="out for delivery" <%= item.status === 'out for delivery' ? 'selected' : '' %>>Out for Delivery</option>
+                                                    <option value="delivered" <%= item.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                                    <!-- <option value="paymentfailed" <%= item.status === 'paymentfailed' ? 'selected' : '' %>>Payment Failed</option> -->
+                                                </select>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                    <td><%= order.paymentMethod || 'N/A' %></td>
+                                </tr>
+                            <% }); %>
                         <% }); %>
-                    <% }); %>
-                <% } %>
-            </tbody>
-        </table>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
     <script>
         $(document).ready(function () {
             $('#orderTable').DataTable({
                 paging: true,
                 ordering: true,
                 info: true,
-                searching: false, // Disable DataTables' built-in search to use custom search
+                searching: false,
                 pageLength: 10,
                 language: {
                     emptyTable: "No orders available"
@@ -629,14 +428,8 @@ body {
             const newStatus = document.getElementById(`orderStatusDropdown_${orderId}_${itemId}`).value;
             fetch('/admin/updateorder', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    orderId: orderId,
-                    itemId: itemId,
-                    newStatus: newStatus,
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, itemId, newStatus })
             })
             .then(response => response.json())
             .then(data => {
@@ -645,15 +438,13 @@ body {
                         icon: 'success',
                         title: 'Status Updated',
                         text: 'Item status updated successfully!',
-                        timer: 2000,
-                    }).then(() => {
-                        window.location.reload();
-                    });
+                        timer: 2000
+                    }).then(() => window.location.reload());
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Update Failed',
-                        text: data.message || 'Failed to update item status.',
+                        text: data.message || 'Failed to update item status.'
                     });
                 }
             })
@@ -662,7 +453,7 @@ body {
                 Swal.fire({
                     icon: 'error',
                     title: 'Update Failed',
-                    text: 'An error occurred while updating the status.',
+                    text: 'An error occurred while updating the status.'
                 });
             });
         }
@@ -680,14 +471,8 @@ body {
                 if (result.isConfirmed) {
                     fetch('/admin/approve-request', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            orderId: orderId,
-                            itemId: itemId,
-                            requestType: requestType,
-                        }),
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId, itemId, requestType })
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -696,15 +481,13 @@ body {
                                 icon: 'success',
                                 title: `${requestType.charAt(0).toUpperCase() + requestType.slice(1)} Approved`,
                                 text: data.message,
-                                timer: 2000,
-                            }).then(() => {
-                                window.location.reload();
-                            });
+                                timer: 2000
+                            }).then(() => window.location.reload());
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Approval Failed',
-                                text: data.message || 'Failed to approve the request.',
+                                text: data.message || 'Failed to approve the request.'
                             });
                         }
                     })
@@ -713,7 +496,7 @@ body {
                         Swal.fire({
                             icon: 'error',
                             title: 'Approval Failed',
-                            text: 'An error occurred while approving the request.',
+                            text: 'An error occurred while approving the request.'
                         });
                     });
                 }
@@ -724,7 +507,7 @@ body {
             Swal.fire({
                 title: 'Cancellation Reason',
                 text: reason || 'No reason provided',
-                icon: 'info',
+                icon: 'info'
             });
         }
 
@@ -732,36 +515,29 @@ body {
             const searchInput = document.getElementById("searchInput").value.toLowerCase();
             const orderRows = document.querySelectorAll('.order-row');
             let found = false;
-
             orderRows.forEach(row => {
                 const orderId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
                 const userId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
                 const address = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
                 const productName = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-
-                if (orderId.includes(searchInput) || userId.includes(searchInput) || 
-                    address.includes(searchInput) || productName.includes(searchInput)) {
+                if (orderId.includes(searchInput) || userId.includes(searchInput) || address.includes(searchInput) || productName.includes(searchInput)) {
                     row.style.display = 'table-row';
                     found = true;
                 } else {
                     row.style.display = 'none';
                 }
             });
-
             if (!found) {
                 Swal.fire({
                     title: 'No Results Found',
                     text: 'No orders match the search criteria.',
-                    icon: 'info',
+                    icon: 'info'
                 });
             }
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const filterButton = document.getElementById('filterPrice');
-            filterButton.addEventListener('click', function () {
-                filterOrdersByPrice();
-            });
+            document.getElementById('filterPrice').addEventListener('click', filterOrdersByPrice);
         });
 
         function filterOrdersByPrice() {
@@ -769,7 +545,6 @@ body {
             const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
             const orderRows = document.querySelectorAll('.order-row');
             let found = false;
-
             orderRows.forEach(row => {
                 const orderTotal = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('₹', '')) || 0;
                 if (orderTotal >= minPrice && orderTotal <= maxPrice) {
@@ -779,12 +554,11 @@ body {
                     row.style.display = 'none';
                 }
             });
-
             if (!found) {
                 Swal.fire({
                     title: 'No Results Found',
                     text: 'No orders match the price range.',
-                    icon: 'info',
+                    icon: 'info'
                 });
             }
         }

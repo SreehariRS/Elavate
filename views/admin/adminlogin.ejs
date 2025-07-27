@@ -3,33 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="/stylesheet/admin/adminlogin.css">
+    <title>Admin Login - Perfume Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #algn {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #container {
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(51, 51, 51, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            position: relative;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .head {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            background: #1a0000;
+            border: 1px solid #330000;
+            color: #ff3333;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        label {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .inpt {
+            width: 100%;
+            padding: 16px 20px;
+            background: #111111;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .inpt::placeholder {
+            color: #666666;
+        }
+
+        .inpt:focus {
+            background: #1a1a1a;
+            border-color: #555555;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .inpt:hover {
+            border-color: #444444;
+        }
+
+        .btn {
+            background: #222222;
+            color: white;
+            border: 1px solid #444444;
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: #333333;
+            border-color: #666666;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.1;
+        }
+
+        .decorative-elements::before {
+            content: '✦';
+            position: absolute;
+            font-size: 24px;
+            color: #ff69b4;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .decorative-elements::after {
+            content: '◆';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+            color: #8a2be2;
+            animation: twinkle 3s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+        }
+
+        @media (max-width: 480px) {
+            #container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .head {
+                font-size: 28px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="algn">
         <div id="container">
-            <p class="head">Admin Login</p>
+            <div class="decorative-elements"></div>
+            <p class="head">Admin Portal</p>
+            <p class="subtitle">Perfume Management System</p>
+            
             <% if (message) { %>
-                <p style="color: red;"><%= message %></p>
+                <div class="error-message"><%= message %></div>
             <% } %>
+            
             <form action="/admin/login" method="post" class="input-container" onsubmit="return validateForm()">
-                <label for="name">User Name</label>
-                <br>
-                <input type="text" id="name" name="adminName" placeholder="Enter username" class="inpt" required>
-                <br>
-                <label for="password">Password</label>
-                <br>
-                <input type="password" id="password" name="password" placeholder="Enter password" class="inpt" required>
-                <br>
-                <button type="submit" class="btn">Continue</button>
+                <div class="input-group">
+                    <label for="name">Administrator</label>
+                    <input type="text" id="name" name="adminName" placeholder="Enter your username" class="inpt" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Access Key</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" class="inpt" required>
+                </div>
+                
+                <button type="submit" class="btn">Access Dashboard</button>
             </form>
         </div>
     </div>
 
     <script>
         function validateForm() {
-            var usernameInput = document.getElementById('name'); // Fixed ID from 'username' to 'name'
+            var usernameInput = document.getElementById('name');
             var passwordInput = document.getElementById('password');
 
             var usernameValue = usernameInput.value.trim();
@@ -42,6 +262,21 @@
 
             return true;
         }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.inpt');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        });
     </script>
 </body>
 </html>

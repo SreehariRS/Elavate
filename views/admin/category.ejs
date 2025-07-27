@@ -8,6 +8,7 @@
 
 </head>
 <body>
+
   <style>
     
 
@@ -447,7 +448,6 @@ button:last-of-type {
         }
   </style>
 
-
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
     <main>
         <nav class="sidebar">
@@ -510,11 +510,10 @@ button:last-of-type {
                                         <td><%= (currentPage - 1) * perPage + index + 1 %></td>
                                         <td><%= catname.name %></td>
                                         <td>
-                                            <form action="/admin/Editcategory/<%= catname._id %>" method="get" style="display: inline;">
+                                            <form action="/admin/editcategory/<%= catname._id %>" method="get" style="display: inline;">
                                                 <button type="submit" class="text-gradient">Edit</button>
                                             </form>
                                             <form action="/admin/deletecategory/<%= catname._id %>" method="POST" onsubmit="return showDeleteConfirmation(event, this);" style="display: inline;">
-                                                <input type="hidden" name="_method" value="DELETE">
                                                 <button type="submit" class="text-gradient delete-button">Delete</button>
                                             </form>
                                         </td>

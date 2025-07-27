@@ -43,11 +43,11 @@ const addcateg = async (req, res) => {
 
 const geteditCategory = async (req, res) => {
     try {
-        const category = await Category.findById(req.params.i);
+        const category = await Category.findById(req.params.id); // Changed req.params.i to req.params.id
         if (!category) {
             return res.status(404).send("Category not found");
         }
-        res.render("admin/editcategory", { category });
+        res.render("admin/category2", { data: category }); // Changed to render admin/category2 and updated variable name to data
     } catch (error) {
         console.error("Error fetching category for edit:", error);
         res.status(500).send("Internal Server Error");
@@ -56,17 +56,17 @@ const geteditCategory = async (req, res) => {
 
 const editcateg = async (req, res) => {
     try {
-        const { name } = req.body;
-        const existingCategory = await Category.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
+        const { categoryName } = req.body; // Changed to categoryName to match EJS form
+        const existingCategory = await Category.findOne({ name: { $regex: new RegExp(`^${categoryName}$`, "i") } });
         if (existingCategory && existingCategory._id.toString() !== req.params.id) {
             return res.status(400).json({ error: "Category name already exists" });
         }
 
-        await Category.findByIdAndUpdate(req.params.id, { name });
-        res.redirect("/admin/category");
+        await Category.findByIdAndUpdate(req.params.id, { name: categoryName }); // Updated to use categoryName
+        res.status(200).json({ success: true }); // Updated to match EJS expectation
     } catch (error) {
         console.error("Error updating category:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
