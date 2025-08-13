@@ -29,13 +29,11 @@ const getProductsByCategory = async (req, res) => {
         const userId = req.session.user;
         const categoryId = req.params.id;
         
-      
         const selectedCategory = await category.findById(categoryId);
         if (!selectedCategory) {
             req.flash("error", "Category not found");
             return res.redirect("/");
         }
-        
         
         const products = await product.find({ 
             category: selectedCategory.name.toLowerCase(), 
@@ -46,7 +44,6 @@ const getProductsByCategory = async (req, res) => {
         const userData = userId ? await User.findById(userId) : null;
         const loggedInUser = !!userId;
         const errorMessage = req.flash("error")[0] || "";
-        
         
         res.render("user/category", { 
             products, 
@@ -192,8 +189,12 @@ const checkoutpost = async (req, res) => {
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isActive: true, expirationDate: { $gte: new Date() } });
             if (coupon && !coupon.usedBy.includes(userId)) {
-                const applicableAmount = Math.min(calculatedTotal, coupon.maxApplicableAmount || Infinity);
-                discountApplied = applicableAmount * (coupon.discountValue / 100);
+                // Calculate discount as percentage of cart total, capped at maxApplicableAmount
+                let discount = calculatedTotal * (coupon.discountValue / 100);
+                if (discount > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
+                    discount = coupon.maxApplicableAmount;
+                }
+                discountApplied = discount;
                 calculatedTotal -= discountApplied;
                 couponId = coupon._id;
                 await Coupon.findByIdAndUpdate(coupon._id, { $addToSet: { usedBy: userId } });
@@ -296,8 +297,12 @@ const checkouterrorpost = async (req, res) => {
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isActive: true, expirationDate: { $gte: new Date() } });
             if (coupon && !coupon.usedBy.includes(userId)) {
-                const applicableAmount = Math.min(calculatedTotal, coupon.maxApplicableAmount || Infinity);
-                discountApplied = applicableAmount * (coupon.discountValue / 100);
+                // Calculate discount as percentage of cart total, capped at maxApplicableAmount
+                let discount = calculatedTotal * (coupon.discountValue / 100);
+                if (discount > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
+                    discount = coupon.maxApplicableAmount;
+                }
+                discountApplied = discount;
                 calculatedTotal -= discountApplied;
                 couponId = coupon._id;
                 await Coupon.findByIdAndUpdate(coupon._id, { $addToSet: { usedBy: userId } });
@@ -469,17 +474,32 @@ const cancelOrder = async (req, res) => {
         }
 
         if (itemId !== undefined && itemId >= 0 && itemId < order.items.length) {
+            // Individual item cancellation
+            if (order.items[itemId].status === "cancelled" || order.items[itemId].status === "returned" || order.items[itemId].status === "refunded") {
+                return res.status(400).json({ success: false, message: "Item is already cancelled, returned, or refunded" });
+            }
             order.items[itemId].status = "cancellation-requested";
             order.items[itemId].cancellationReason = cancellationReason;
 
-            const activeItems = order.items.filter(item => item.status !== "cancelled" && item.status !== "cancellation-requested");
+            const activeItems = order.items.filter(item => item.status !== "cancelled" && item.status !== "cancellation-requested" && item.status !== "returned" && item.status !== "refunded");
             order.status = activeItems.length > 0 ? "confirmed" : "cancellation-requested";
-
-            await order.save();
-            res.json({ success: true, message: "Item cancellation requested" });
         } else {
-            return res.status(400).json({ success: false, message: "Invalid item index" });
+            // Full order cancellation
+            if (order.status === "cancelled" || order.status === "returned" || order.status === "refunded") {
+                return res.status(400).json({ success: false, message: "Order is already cancelled, returned, or refunded" });
+            }
+            order.items.forEach(item => {
+                if (item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded") {
+                    item.status = "cancellation-requested";
+                    item.cancellationReason = cancellationReason;
+                }
+            });
+            order.status = "cancellation-requested";
+            order.cancellationReason = cancellationReason;
         }
+
+        await order.save();
+        res.json({ success: true, message: itemId !== undefined ? "Item cancellation requested" : "Order cancellation requested" });
     } catch (error) {
         console.log("Error in cancelOrder:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -497,7 +517,7 @@ const initiateReturn = async (req, res) => {
 
         if (itemId !== undefined && itemId >= 0 && itemId < order.items.length) {
             order.items[itemId].status = "return-requested";
-            order.items[itemId].cancellationReason = cancellationReason;
+            order.items[itemitemId].cancellationReason = cancellationReason;
 
             const activeItems = order.items.filter(item => item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded");
             order.status = activeItems.length > 0 ? "confirmed" : "return-requested";
@@ -552,48 +572,199 @@ const generateInvoice = async (req, res) => {
         const userData = userId ? await User.findById(userId) : null;
         const loggedInUser = !!userId;
         const errorMessage = req.flash("error")[0] || "";
-        
+
         // Check if order is cancelled or has any cancelled items
         if (order.status === 'cancelled' || order.items.some(item => item.status === 'cancelled')) {
             return res.status(400).send("Invoice generation not allowed for cancelled orders or items");
         }
 
-        const doc = new PDFDocument();
-        let filename = `invoice_${orderId}.pdf`;
+        const doc = new PDFDocument({ margin: 40 });
+        let filename = `invoice_${String(order._id).slice(-8)}.pdf`;
         filename = encodeURIComponent(filename);
         res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
         res.setHeader("Content-type", "application/pdf");
         doc.pipe(res);
 
-        // Invoice header
-        doc.fontSize(25).text("Invoice", { align: "center" });
-        doc.moveDown();
+        // Define modern color scheme
+        const colors = {
+            primary: '#1e40af',
+            secondary: '#64748b',
+            accent: '#10b981',
+            text: '#1f2937',
+            muted: '#9ca3af',
+            background: '#f3f4f6'
+        };
 
-        // Invoice details
-        doc.fontSize(12).text(`Invoice Number: ${order._id}`, { align: "left" });
-        doc.text(`Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} IST`, { align: "left" });
-        doc.text(`Customer Name: ${order.userId.firstname} ${order.userId.lastname || ''}`, { align: "left" });
-        doc.text(`Order Date: ${order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Not Available'}`, { align: "left" });
-        doc.moveDown();
+        // Company Header
+        doc.font('Helvetica-Bold')
+           .fontSize(32)
+           .fillColor(colors.primary)
+           .text("ELAVATE", 50, 40, { align: "left" });
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .fillColor(colors.muted)
+           .text("123 Business Street, Kochi, State 12345", 50, 80)
+           .text("Premium Perfume E-commerce", 50, 95);
 
-        // Order summary
-        doc.text("Order Summary:", { underline: true });
-        doc.text(`Total Amount: ₹${order.totalPrice.toFixed(2)}`, { align: "left" });
-        doc.text(`Payment Method: ${order.paymentMethod}`, { align: "left" });
-        doc.text(`Order Status: ${order.status}`, { align: "left" });
-        if (order.discountApplied > 0) {
-            doc.text(`Discount Applied: ₹${order.discountApplied.toFixed(2)}`, { align: "left" });
+        // Invoice header (right-aligned)
+        doc.font('Helvetica-Bold')
+           .fontSize(24)
+           .fillColor(colors.primary)
+           .text("INVOICE", 0, 40, { align: "right" });
+
+        // Separator line
+        doc.moveTo(50, 120)
+           .lineTo(550, 120)
+           .lineWidth(1)
+           .strokeColor(colors.background)
+           .stroke();
+
+        // Invoice details in two columns
+        const leftColumnX = 50;
+        const rightColumnX = 300;
+        const currentY = 140;
+
+        // Left column - Invoice details
+        doc.font('Helvetica-Bold')
+           .fontSize(11)
+           .fillColor(colors.secondary)
+           .text("INVOICE DETAILS", leftColumnX, currentY);
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .fillColor(colors.text)
+           .text(`Invoice Number: INV-${String(order._id).slice(-8)}`, leftColumnX, currentY + 20)
+           .text(`Order Reference: ORD-${String(order._id).slice(-6)}`, leftColumnX, doc.y + 15)
+           .text(`Invoice Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} IST`, leftColumnX, doc.y + 15)
+           .text(`Order Date: ${order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Not Available'}`, leftColumnX, doc.y + 15);
+
+        // Right column - Customer details
+        doc.font('Helvetica-Bold')
+           .fontSize(11)
+           .fillColor(colors.secondary)
+           .text("BILL TO", rightColumnX, currentY);
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .fillColor(colors.text)
+           .text(`${order.userId.firstname} ${order.userId.lastname || ''}`, rightColumnX, currentY + 20)
+           .text(`Email: ${order.userId.email || 'Not provided'}`, rightColumnX, doc.y + 15);
+
+        // Add shipping address
+        if (order.selectedAddress) {
+            doc.font('Helvetica-Bold')
+               .fontSize(11)
+               .fillColor(colors.secondary)
+               .text("SHIPPING ADDRESS", rightColumnX, doc.y + 25);
+            doc.font('Helvetica')
+               .fontSize(10)
+               .fillColor(colors.text)
+               .text(order.selectedAddress, rightColumnX, doc.y + 15, { width: 200 });
         }
-        doc.moveDown();
+
+        // Order summary section
+        doc.moveDown(2);
+        doc.font('Helvetica-Bold')
+           .fontSize(14)
+           .fillColor(colors.primary)
+           .text("ORDER SUMMARY");
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .fillColor(colors.text);
+        
+        const summaryY = doc.y + 15;
+        doc.text(`Payment Method: ${order.paymentMethod}`, leftColumnX, summaryY)
+           .text(`Order Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}`, leftColumnX, doc.y + 15);
+
+        // Calculate subtotal and discount
+        const subtotal = order.items.reduce((acc, item) => {
+            if (item.status !== 'cancelled') {
+                return acc + (item.productId.offerprice || item.productId.price) * item.quantity;
+            }
+            return acc;
+        }, 0);
+
+        const discountAmount = subtotal - order.totalPrice;
+
+        // Pricing breakdown
+        doc.text(`Subtotal: ₹${subtotal.toFixed(2)}`, rightColumnX, summaryY);
+        if (discountAmount > 0) {
+            doc.fillColor(colors.accent)
+               .text(`Discount: -₹${discountAmount.toFixed(2)}`, rightColumnX, doc.y + 15);
+            doc.fillColor(colors.text);
+        }
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .fillColor(colors.primary)
+           .text(`Total Amount: ₹${order.totalPrice.toFixed(2)}`, rightColumnX, doc.y + 15);
 
         // Items table
-        doc.text("Items:", { underline: true });
-        doc.moveDown();
-        order.items.forEach((item) => {
+        doc.moveDown(2);
+        doc.font('Helvetica-Bold')
+           .fontSize(14)
+           .fillColor(colors.primary)
+           .text("ITEMS ORDERED");
+
+        const tableTop = doc.y + 15;
+        const tableLeft = 50;
+
+        // Table header
+        doc.rect(tableLeft, tableTop - 5, 500, 25)
+           .fillAndStroke(colors.background, colors.background);
+        
+        doc.font('Helvetica-Bold')
+           .fontSize(10)
+           .fillColor(colors.text)
+           .text("PRODUCT NAME", tableLeft + 10, tableTop + 5, { width: 180 })
+           .text("QTY", tableLeft + 200, tableTop + 5, { width: 40 })
+           .text("UNIT PRICE", tableLeft + 250, tableTop + 5, { width: 80 })
+           .text("TOTAL", tableLeft + 340, tableTop + 5, { width: 80 })
+           .text("STATUS", tableLeft + 430, tableTop + 5, { width: 60 });
+
+        let yPosition = tableTop + 30;
+        const totalDiscountAmount = subtotal - order.totalPrice;
+        const discountPercentage = subtotal > 0 ? (totalDiscountAmount / subtotal) : 0;
+
+        // Items table rows
+        order.items.forEach((item, index) => {
             if (item.status !== "cancelled") {
-                doc.text(`Product: ${item.productId.name}, Quantity: ${item.quantity}, Unit Price: ₹${(item.productId.offerprice || item.productId.price).toFixed(2)}, Total: ₹${((item.productId.offerprice || item.productId.price) * item.quantity).toFixed(2)}, Status: ${item.status}`, { align: "left" });
+                const unitPrice = item.productId.offerprice || item.productId.price;
+                const itemTotalBeforeDiscount = unitPrice * item.quantity;
+                const itemDiscount = itemTotalBeforeDiscount * discountPercentage;
+                const itemTotalAfterDiscount = itemTotalBeforeDiscount - itemDiscount;
+
+                // Row background
+                doc.rect(tableLeft, yPosition - 5, 500, 25)
+                   .fillAndStroke(index % 2 === 0 ? '#ffffff' : '#fafafa', colors.background);
+
+                doc.font('Helvetica')
+                   .fontSize(9)
+                   .fillColor(colors.text)
+                   .text(item.productId.name, tableLeft + 10, yPosition + 5, { width: 175 })
+                   .text(item.quantity.toString(), tableLeft + 200, yPosition + 5, { width: 40 })
+                   .text(`₹${unitPrice.toFixed(2)}`, tableLeft + 250, yPosition + 5, { width: 80 })
+                   .text(`₹${itemTotalAfterDiscount.toFixed(2)}`, tableLeft + 340, yPosition + 5, { width: 80 })
+                   .text(item.status.charAt(0).toUpperCase() + item.status.slice(1), tableLeft + 430, yPosition + 5, { width: 60 });
+
+                yPosition += 25;
             }
         });
+
+        // Footer
+        doc.y = yPosition + 30;
+        doc.moveTo(50, doc.y)
+           .lineTo(550, doc.y)
+           .strokeColor(colors.background)
+           .stroke();
+
+        doc.font('Helvetica')
+           .fontSize(10)
+           .fillColor(colors.muted)
+           .text("Thank you for shopping with Elavate!", 0, doc.y + 20, { align: "center" })
+           .text("Contact support@elavate.com for any queries.", 0, doc.y + 15, { align: "center" })
+           .text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 0, doc.y + 15, { align: "center" });
 
         doc.end();
     } catch (error) {
@@ -601,7 +772,6 @@ const generateInvoice = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
 module.exports = {
     home,
     getProductsByCategory,

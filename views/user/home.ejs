@@ -363,6 +363,46 @@
                     });
                 }
             });
+
+            $(document).ready(function() {
+    // Global AJAX error handler for blocked users
+    $(document).ajaxComplete(function(event, jqXHR, ajaxOptions) {
+        if (jqXHR.status === 403) {
+            try {
+                const response = JSON.parse(jqXHR.responseText);
+                if (response.blocked) {
+                    alert(response.message);
+                    window.location.href = response.redirect || '/login';
+                }
+            } catch (e) {
+                // If not JSON response, check if it's a blocked user redirect
+                if (jqXHR.responseText.includes('blocked')) {
+                    window.location.href = '/login?blocked=true';
+                }
+            }
+        }
+    });
+
+    // For fetch API requests (if you're using fetch instead of jQuery)
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+        return originalFetch.apply(this, args)
+            .then(response => {
+                if (response.status === 403) {
+                    response.clone().json().then(data => {
+                        if (data.blocked) {
+                            alert(data.message);
+                            window.location.href = data.redirect || '/login';
+                        }
+                    }).catch(() => {
+                        // If not JSON, redirect anyway
+                        window.location.href = '/login?blocked=true';
+                    });
+                }
+                return response;
+            });
+    };
+});
         </script>
     </body>
 </html>

@@ -17,17 +17,14 @@ const userblock = async (req, res) => {
         if (!user) {
             return res.status(404).send("User not found");
         }
-        // Toggle the isBlocked status
         user.isBlocked = !user.isBlocked;
         await user.save();
 
-        // Invalidate the user's session if blocking
         if (user.isBlocked) {
-            // Find and destroy the session for this user
             const sessions = req.sessionStore.sessions;
             for (let sessionId in sessions) {
                 const sessionData = JSON.parse(sessions[sessionId]);
-                if (sessionData.user === userId) {
+                if (sessionData.user === userId && !sessionData.admin) {
                     req.sessionStore.destroy(sessionId, (err) => {
                         if (err) console.error("Error destroying session:", err);
                     });

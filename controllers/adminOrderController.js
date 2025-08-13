@@ -1,7 +1,7 @@
 const orders = require("../models/order");
 const product = require("../models/product");
 const Wallet = require("../models/wallet");
-const Razorpay = require('razorpay'); // Ensure this is required
+const Razorpay = require('razorpay');
 require('dotenv').config();
 
 const razorpay = new Razorpay({
@@ -85,6 +85,7 @@ const approveRequest = async (req, res) => {
         }
 
         if (itemId !== undefined && itemId >= 0 && itemId < order.items.length) {
+            // Individual item request
             const item = order.items[itemId];
             if (requestType === 'return' && item.status === 'return-requested') {
                 item.status = 'returned';
@@ -110,13 +111,11 @@ const approveRequest = async (req, res) => {
 
             if (amountToCredit > 0) {
                 if (order.paymentMethod === 'Razor Pay' && order.paymentId) {
-                    // Initiate Razorpay refund
                     const refund = await razorpay.payments.refund(order.paymentId, {
                         amount: amountToCredit * 100, // Amount in paisa
-                        speed: 'normal', // Can be 'normal', 'optimum', or 'priority'
+                        speed: 'normal',
                     });
                     console.log("Razorpay refund initiated:", refund);
-                    // Optionally credit wallet as a fallback or partial refund
                     wallet.balance += parseFloat(amountToCredit);
                     wallet.transactions.push({
                         type: "deposit",
@@ -126,7 +125,6 @@ const approveRequest = async (req, res) => {
                         description: `Razorpay refund for ${requestType} of item ${item.productId.name}`,
                     });
                 } else {
-                    // For wallet or other methods, credit wallet directly
                     wallet.balance += parseFloat(amountToCredit);
                     wallet.transactions.push({
                         type: "deposit",
@@ -142,6 +140,7 @@ const approveRequest = async (req, res) => {
             await order.save();
             res.json({ success: true, message: `${requestType.charAt(0).toUpperCase() + requestType.slice(1)} approved successfully` });
         } else {
+            // Full order request
             if (requestType === 'return' && order.status === 'return-requested') {
                 order.status = 'returned';
                 order.items.forEach(item => {
@@ -169,20 +168,18 @@ const approveRequest = async (req, res) => {
                         amountToCredit += (productData.offerprice || productData.price) * item.quantity;
                     }
                 });
-                order.totalPrice = 0;
+                order.totalPrice = 0; // Set total price to 0 for full order cancellation
             } else {
-                return res.status(400).json({ success: false, message: "Invalid request status" });
+                return res.status(400).json({ success: false, message: `Invalid request status for ${requestType}` });
             }
 
             if (amountToCredit > 0) {
                 if (order.paymentMethod === 'Razor Pay' && order.paymentId) {
-                    // Initiate Razorpay refund for the total amount
                     const refund = await razorpay.payments.refund(order.paymentId, {
                         amount: amountToCredit * 100, // Amount in paisa
                         speed: 'normal',
                     });
-                    console.log("Razorpay refund initiated:", refund);
-                    // Credit wallet as a fallback or partial refund
+                    console.log("Razorpay refund initiated for order:", refund);
                     wallet.balance += parseFloat(amountToCredit);
                     wallet.transactions.push({
                         type: "deposit",
@@ -205,10 +202,10 @@ const approveRequest = async (req, res) => {
             }
 
             await order.save();
-            res.json({ success: true, message: `${requestType.charAt(0).toUpperCase() + requestType.slice(1)} approved successfully` });
+            res.json({ success: true, message: `${requestType.charAt(0).toUpperCase() + requestType.slice(1)} approved successfully for entire order` });
         }
     } catch (error) {
-        console.log("Error in approveRequest:", error);
+        console.log(`Error in approveRequest for ${requestType}:`, error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };

@@ -106,6 +106,23 @@ const getcartnumber = async (req, res) => {
     }
 };
 
+// Alternative function to get cart count from session
+const getCartCountBySession = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        if (!userId) {
+            return res.json({ cartnumber: 0 });
+        }
+        
+        const cart = await Cart.findOne({ userId });
+        const cartnumber = cart ? cart.items.length : 0;
+        res.json({ cartnumber });
+    } catch (error) {
+        console.error("Get cart count by session error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 const updateQuantity = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
@@ -211,6 +228,7 @@ module.exports = {
     addToCart,
     getCartPage,
     getcartnumber,
+    getCartCountBySession,
     updateQuantity,
     removeFromCart,
 };

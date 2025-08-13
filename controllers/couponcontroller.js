@@ -91,17 +91,19 @@ const validateCoupon = async (req, res) => {
             return res.json({ success: false, message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} required` });
         }
 
-        let applicableAmount = cartTotalNum;
-        if (cartTotalNum > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
-            applicableAmount = coupon.maxApplicableAmount;
+        // Calculate discount as percentage of cart total, capped at maxApplicableAmount
+        const discountValue = coupon.discountValue;
+        let discount = cartTotalNum * (discountValue / 100);
+        if (discount > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
+            discount = coupon.maxApplicableAmount;
         }
 
         res.json({
             success: true,
             coupon: {
                 code: coupon.code,
-                discountValue: coupon.discountValue,
-                applicableAmount: applicableAmount,
+                discountValue: discountValue,
+                discount: discount,
             },
         });
     } catch (error) {

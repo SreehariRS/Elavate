@@ -9,7 +9,14 @@ const getLogin = (req, res) => {
         if (req.session.user) {
             res.redirect("/home");
         } else {
-            res.render("user/userlogin", { message: req.flash("message") });
+            let message = req.flash("message");
+            
+            // Check if user was redirected due to blocking
+            if (req.query.blocked === "true") {
+                message = "Your account has been blocked by the admin. Please contact support.";
+            }
+            
+            res.render("user/userlogin", { message });
         }
     } catch (error) {
         console.log(error);
@@ -90,7 +97,8 @@ const postRegister = async (req, res) => {
 
 const logout = (req, res) => {
     try {
-        req.session.destroy();
+        req.session.user = null; 
+        res.clearCookie('connect.sid');
         res.redirect("/login");
     } catch (error) {
         console.log(error);
@@ -100,7 +108,8 @@ const logout = (req, res) => {
 
 const postLogout = (req, res) => {
     try {
-        req.session.destroy();
+        req.session.user = null; 
+        res.clearCookie('connect.sid'); 
         res.redirect("/login");
     } catch (error) {
         console.log(error);

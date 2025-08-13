@@ -251,9 +251,14 @@
   </div>
     </div>
   </aside>
-  <script>
+<script>
     document.getElementById("wishlist-link").addEventListener("click", function(event) {
         event.preventDefault(); // Prevents the default action of the link
+        const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+        if (!loggedInUser) {
+            window.location.href = "/login";
+            return;
+        }
         window.location.href = "/wishlistpage"; // Redirects to /wishlistpage
     });
 </script>
@@ -261,8 +266,15 @@
   document.getElementById("viewProfile").href = "/profile" ;
 </script>
 <script>
-  var cartURL = "/CartView";
-  document.getElementById("cartLink").href = cartURL;
+    document.getElementById("cartLink").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevents the default action of the link
+        const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+        if (!loggedInUser) {
+            window.location.href = "/login";
+            return;
+        }
+        window.location.href = "/CartView"; // Redirects to /CartView
+    });
 </script>
 <script>
 document.getElementById('clearInput').addEventListener('click', function() {

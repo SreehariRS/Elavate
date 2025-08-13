@@ -37,15 +37,9 @@ const loginpost = async (req, res) => {
 
 const logoutadmin = (req, res) => {
     try {
-        req.session.destroy((err) => {
-            if (err) {
-                console.log("Error destroying session:", err);
-                return res.status(500).send("Internal Server Error");
-            }
-            // Clear the session cookie
-            res.clearCookie('connect.sid'); // Default session cookie name
-            res.redirect("/admin/login");
-        });
+        req.session.admin = null;
+        res.clearCookie('connect.sid');
+        res.redirect("/admin/login");
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");

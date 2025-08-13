@@ -47,6 +47,30 @@
 .form-control:focus {
  border-color: #555; /* Change border color on focus */
 }
+
+/* Cart badge styles */
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.cart-container {
+    position: relative;
+    display: inline-block;
+}
     </style>
     <!-- Header -->
 <header id="header-demo">
@@ -129,7 +153,10 @@
               <li class="nav-item dropdown">
                 <a id="cartLink" class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" aria-expanded="false">
                     <span class="position-relative pt-1">
-                      <i class="fas fa-shopping-cart"></i>
+                      <div class="cart-container">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartBadge" class="cart-badge" style="display: none;">0</span>
+                      </div>
                     </span>
                 </a>
             </li>
@@ -285,6 +312,43 @@ document.getElementById('clearInput').addEventListener('click', function() {
   document.getElementById('bsbSidebarLabel1').onclick = function() {
       window.location.href = '/';
   };
+</script>
+
+<script>
+// Function to update cart count
+function updateCartCount() {
+    const loggedInUser = "<%= typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : '' %>";
+    if (!loggedInUser) {
+        return; // Don't fetch cart count if user is not logged in
+    }
+
+    // Get user ID from session or wherever it's available
+    const userId = "<%= typeof userData !== 'undefined' && userData && userData._id ? userData._id : '' %>";
+    if (!userId) {
+        return;
+    }
+
+    fetch(`/getcartnumber/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const cartBadge = document.getElementById('cartBadge');
+            if (data.cartnumber && data.cartnumber > 0) {
+                cartBadge.textContent = data.cartnumber;
+                cartBadge.style.display = 'flex';
+            } else {
+                cartBadge.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cart count:', error);
+        });
+}
+
+// Update cart count when page loads
+document.addEventListener('DOMContentLoaded', updateCartCount);
+
+// Optional: Update cart count periodically or when cart is modified
+// You can call updateCartCount() after adding/removing items from cart
 </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

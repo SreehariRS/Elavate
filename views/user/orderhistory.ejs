@@ -337,6 +337,9 @@
                     <div class="action-buttons">
                         <% if (!isOrderCancelled) { %>
                             <button class="action-btn primary" onclick="generateInvoice('<%= order._id %>')">Generate Invoice</button>
+                            <% if (order.status !== 'returned' && order.status !== 'refunded' && order.status !== 'cancellation-requested' && order.items.length > 1) { %>
+                                <button class="action-btn secondary" onclick="cancelOrder('<%= order._id %>')">Cancel Entire Order</button>
+                            <% } %>
                         <% } %>
                         <% if (order.status === 'paymentfailed') { %>
                             <button class="action-btn primary" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
@@ -447,238 +450,235 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
- 
-   const userData = JSON.parse(document.getElementById('userData')?.getAttribute('data-user') || '{}');
-    let orders = JSON.parse(document.getElementById('ordersData')?.getAttribute('data-orders') || '[]');
+        const userData = JSON.parse(document.getElementById('userData')?.getAttribute('data-user') || '{}');
+        let orders = JSON.parse(document.getElementById('ordersData')?.getAttribute('data-orders') || '[]');
 
-    document.querySelector('.profile-icon').addEventListener('click', () => {
-        window.location.href = '/profile';
-    });
+        document.querySelector('.profile-icon').addEventListener('click', () => {
+            window.location.href = '/profile';
+        });
 
-    document.getElementById("elavate").addEventListener('click', () => {
-        window.location.href = '/';
-    });
+        document.getElementById("elavate").addEventListener('click', () => {
+            window.location.href = '/';
+        });
 
-    async function refreshOrderData() {
-        try {
-            const response = await fetch('/orderhistory-data', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            const data = await response.json();
-            if (data.success) {
-                orders = data.orders;
-                window.location.reload();
-            } else {
-                console.error('Failed to refresh order data');
+        async function refreshOrderData() {
+            try {
+                const response = await fetch('/orderhistory-data', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const data = await response.json();
+                if (data.success) {
+                    orders = data.orders;
+                    window.location.reload();
+                } else {
+                    console.error('Failed to refresh order data');
+                }
+            } catch (error) {
+                console.error('Error refreshing order data:', error);
             }
-        } catch (error) {
-            console.error('Error refreshing order data:', error);
         }
-    }
 
-    if (window.location.search.includes('success=true')) {
-        refreshOrderData();
-    }
+        if (window.location.search.includes('success=true')) {
+            refreshOrderData();
+        }
 
-    async function retryPayment(orderId) {
-        try {
-            const order = orders.find(o => o._id === orderId);
-            if (!order) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Order Not Found',
-                    text: 'The order could not be found.',
-                });
-                return;
-            }
-
-            const createOrderResponse = await fetch('/create-razorpay-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: order.totalPrice }),
-            });
-            const createOrderResult = await createOrderResponse.json();
-
-            if (createOrderResult.error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to Create Razorpay Order',
-                    text: 'Please try again later.',
-                    timer: 3000,
-                    timerProgressBar: true,
-                });
-                return;
-            }
-
-            const orderData = {
-                orderId: order._id,
-                userId: userData._id || '<%= userId %>',
-                cartItems: order.items.map(item => ({
-                    productId: item.productId._id,
-                    quantity: item.quantity,
-                })),
-                selectedAddress: order.selectedAddress,
-                totalPrice: order.totalPrice,
-                paymentMethod: 'Razor Pay',
-                couponId: order.couponId || null,
-                razorpayOrderId: createOrderResult.id,
-            };
-
-            const options = {
-                key: 'rzp_test_rJ0yPg6ZIlUOvq',
-                amount: order.totalPrice * 100,
-                currency: 'INR',
-                name: 'Elavate',
-                description: 'Retry Payment for Order ' + orderId,
-                order_id: createOrderResult.id,
-                handler: async function (response) {
-                    const verifyResponse = await fetch('/verify-razorpay-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            paymentId: response.razorpay_payment_id,
-                            orderId: response.razorpay_order_id,
-                            signature: response.razorpay_signature,
-                        }),
+        async function retryPayment(orderId) {
+            try {
+                const order = orders.find(o => o._id === orderId);
+                if (!order) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Not Found',
+                        text: 'The order could not be found.',
                     });
-                    const verifyResult = await verifyResponse.json();
+                    return;
+                }
 
-                    if (verifyResult.success) {
-                        orderData.paymentId = response.razorpay_payment_id;
-                        await fetch('/update-order-status', {
+                const createOrderResponse = await fetch('/create-razorpay-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: order.totalPrice }),
+                });
+                const createOrderResult = await createOrderResponse.json();
+
+                if (createOrderResult.error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to Create Razorpay Order',
+                        text: 'Please try again later.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                    return;
+                }
+
+                const orderData = {
+                    orderId: order._id,
+                    userId: userData._id || '<%= userId %>',
+                    cartItems: order.items.map(item => ({
+                        productId: item.productId._id,
+                        quantity: item.quantity,
+                    })),
+                    selectedAddress: order.selectedAddress,
+                    totalPrice: order.totalPrice,
+                    paymentMethod: 'Razor Pay',
+                    couponId: order.couponId || null,
+                    razorpayOrderId: createOrderResult.id,
+                };
+
+                const options = {
+                    key: 'rzp_test_rJ0yPg6ZIlUOvq',
+                    amount: order.totalPrice * 100,
+                    currency: 'INR',
+                    name: 'Elavate',
+                    description: 'Retry Payment for Order ' + orderId,
+                    order_id: createOrderResult.id,
+                    handler: async function (response) {
+                        const verifyResponse = await fetch('/verify-razorpay-payment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                orderId: orderData.razorpayOrderId,
-                                paymentId: orderData.paymentId,
-                                status: 'confirmed',
-                                userId: orderData.userId,
-                                paymentMethod: 'Razor Pay',
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id,
+                                signature: response.razorpay_signature,
                             }),
                         });
-                        await updateOrderStatus(orderData);
-                    } else {
-                        orderData.paymentId = response.razorpay_payment_id; // Capture paymentId even on failure
-                        orderData.status = 'paymentfailed';
-                        await submitOrderWithFailedPayment(orderData);
-                    }
-                },
-                prefill: {
-                    name: userData.firstname || 'Customer',
-                    email: userData.email || 'customer@example.com',
-                    contact: userData.mobileNumber || '9999999999',
-                },
-                theme: {
-                    color: '#2563eb',
-                },
-            };
+                        const verifyResult = await verifyResponse.json();
 
-            const razorpayInstance = new Razorpay(options);
-            razorpayInstance.on('payment.failed', async function (response) {
-                orderData.paymentId = response.razorpay_payment_id; // Capture paymentId on failure
-                orderData.status = 'paymentfailed';
-                await submitOrderWithFailedPayment(orderData);
+                        if (verifyResult.success) {
+                            orderData.paymentId = response.razorpay_payment_id;
+                            await fetch('/update-order-status', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    orderId: orderData.razorpayOrderId,
+                                    paymentId: orderData.paymentId,
+                                    status: 'confirmed',
+                                    userId: orderData.userId,
+                                    paymentMethod: 'Razor Pay',
+                                }),
+                            });
+                            await updateOrderStatus(orderData);
+                        } else {
+                            orderData.paymentId = response.razorpay_payment_id; // Capture paymentId even on failure
+                            orderData.status = 'paymentfailed';
+                            await submitOrderWithFailedPayment(orderData);
+                        }
+                    },
+                    prefill: {
+                        name: userData.firstname || 'Customer',
+                        email: userData.email || 'customer@example.com',
+                        contact: userData.mobileNumber || '9999999999',
+                    },
+                    theme: {
+                        color: '#2563eb',
+                    },
+                };
+
+                const razorpayInstance = new Razorpay(options);
+                razorpayInstance.on('payment.failed', async function (response) {
+                    orderData.paymentId = response.razorpay_payment_id; // Capture paymentId on failure
+                    orderData.status = 'paymentfailed';
+                    await submitOrderWithFailedPayment(orderData);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: response.error.description || 'Your payment failed. The order has been recorded as pending.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                    }).then(() => {
+                        window.location.href = '/orderhistory';
+                    });
+                });
+                razorpayInstance.open();
+            } catch (error) {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Payment Failed',
-                    text: response.error.description || 'Your payment failed. The order has been recorded as pending.',
-                    timer: 2000,
-                    timerProgressBar: true,
-                }).then(() => {
-                    window.location.href = '/orderhistory';
+                    title: 'Retry Payment Failed',
+                    text: 'An error occurred while retrying the payment. Please try again.',
                 });
-            });
-            razorpayInstance.open();
-        } catch (error) {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Retry Payment Failed',
-                text: 'An error occurred while retrying the payment. Please try again.',
-            });
+            }
         }
-    }
 
-    async function updateOrderStatus(orderData) {
-        try {
-            const response = await fetch('/retry-checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    orderId: orderData.orderId,
-                    razorpayOrderId: orderData.razorpayOrderId,
-                    paymentId: orderData.paymentId,
-                    status: 'confirmed',
-                }),
-            });
-            const result = await response.json();
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Confirmed',
-                    text: 'Your payment was successful and the order is confirmed!',
-                    timer: 2000,
-                }).then(() => {
-                    window.location.href = '/orderhistory?success=true';
+        async function updateOrderStatus(orderData) {
+            try {
+                const response = await fetch('/retry-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderData.orderId,
+                        razorpayOrderId: orderData.razorpayOrderId,
+                        paymentId: orderData.paymentId,
+                        status: 'confirmed',
+                    }),
                 });
-            } else {
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Confirmed',
+                        text: 'Your payment was successful and the order is confirmed!',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = '/orderhistory?success=true';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Update Failed',
+                        text: 'Failed to confirm the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error(error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Order Update Failed',
-                    text: 'Failed to confirm the order. Please try again.',
+                    text: 'An error occurred while confirming the order.',
                 });
             }
-        } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Update Failed',
-                text: 'An error occurred while confirming the order.',
-            });
         }
-    }
 
-    async function submitOrderWithFailedPayment(orderData) {
-        try {
-            const response = await fetch('/retry-checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    orderId: orderData.orderId,
-                    razorpayOrderId: orderData.razorpayOrderId,
-                    paymentId: orderData.paymentId || null,
-                    status: 'paymentfailed',
-                }),
-            });
-            const result = await response.json();
-            if (result.success) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed',
-                    text: 'Your payment failed. The order has been recorded as pending.',
-                    timer: 2000,
-                }).then(() => {
-                    window.location.href = '/orderhistory';
+        async function submitOrderWithFailedPayment(orderData) {
+            try {
+                const response = await fetch('/retry-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderData.orderId,
+                        razorpayOrderId: orderData.razorpayOrderId,
+                        paymentId: orderData.paymentId || null,
+                        status: 'paymentfailed',
+                    }),
                 });
-            } else {
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: 'Your payment failed. The order has been recorded as pending.',
+                        timer: 2000,
+                    }).then(() => {
+                        window.location.href = '/orderhistory';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Update Failed',
+                        text: 'Failed to record the order. Please try again.',
+                    });
+                }
+            } catch (error) {
+                console.error(error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Order Update Failed',
-                    text: 'Failed to record the order. Please try again.',
+                    text: 'An error occurred while recording the order.',
                 });
             }
-        } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Update Failed',
-                text: 'An error occurred while recording the order.',
-            });
         }
-    }
-
-
 
         async function generateInvoice(orderId) {
             try {
@@ -856,18 +856,18 @@
             }
         }
 
-        async function cancelOrder(orderId, itemId) {
+        async function cancelOrder(orderId, itemId = undefined) {
             try {
                 const { value: reason, isDenied, isDismissed } = await Swal.fire({
-                    title: 'Request Cancellation',
+                    title: itemId === undefined ? 'Cancel Entire Order' : 'Request Cancellation',
                     input: 'text',
-                    inputLabel: 'Reason for Cancellation',
+                    inputLabel: itemId === undefined ? 'Reason for Order Cancellation' : 'Reason for Cancellation',
                     inputPlaceholder: 'Enter your reason here (minimum 10 characters)',
                     showCancelButton: true,
-                    confirmButtonText: 'Request Cancellation',
+                    confirmButtonText: itemId === undefined ? 'Cancel Entire Order' : 'Request Cancellation',
                     inputValidator: (value) => {
                         if (!value || value.trim() === '') {
-                            return 'Please provide a reason for cancellation';
+                            return itemId === undefined ? 'Please provide a reason for cancelling the order' : 'Please provide a reason for cancellation';
                         }
                         if (value.trim().length < 10) {
                             return 'Reason must be at least 10 characters long';
@@ -906,8 +906,8 @@
                     if (response.ok) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Cancellation Requested',
-                            text: 'Your cancellation request has been submitted for admin approval.',
+                            title: itemId === undefined ? 'Order Cancellation Requested' : 'Cancellation Requested',
+                            text: itemId === undefined ? 'Your order cancellation request has been submitted for admin approval.' : 'Your cancellation request has been submitted for admin approval.',
                             timer: 2000,
                         }).then(() => {
                             window.location.reload();
@@ -916,8 +916,8 @@
                         const errorData = await response.json();
                         Swal.fire({
                             icon: 'error',
-                            title: 'Cancellation Request Failed',
-                            text: errorData.message || 'Failed to request cancellation. Please try again.',
+                            title: itemId === undefined ? 'Order Cancellation Request Failed' : 'Cancellation Request Failed',
+                            text: errorData.message || (itemId === undefined ? 'Failed to request order cancellation. Please try again.' : 'Failed to request cancellation. Please try again.'),
                         });
                     }
                 }
@@ -925,7 +925,7 @@
                 console.error('Error requesting cancellation:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Cancellation Request Failed',
+                    title: itemId === undefined ? 'Order Cancellation Request Failed' : 'Cancellation Request Failed',
                     text: 'An error occurred while requesting the cancellation.',
                 });
             }
