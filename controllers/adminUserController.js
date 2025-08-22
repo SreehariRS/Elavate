@@ -14,12 +14,17 @@ const userblock = async (req, res) => {
     try {
         const userId = req.params.userId;
         const user = await User.findById(userId);
+        
         if (!user) {
-            return res.status(404).send("User not found");
+            return res.status(404).json({ 
+                success: false, 
+                message: "User not found" 
+            });
         }
+        
         user.isBlocked = !user.isBlocked;
         await user.save();
-
+        
         if (user.isBlocked) {
             const sessions = req.sessionStore.sessions;
             for (let sessionId in sessions) {
@@ -31,11 +36,20 @@ const userblock = async (req, res) => {
                 }
             }
         }
-
-        res.redirect("/admin/customers");
+        
+        // Return JSON response for AJAX requests
+        res.json({
+            success: true,
+            isBlocked: user.isBlocked,
+            message: `User ${user.isBlocked ? 'blocked' : 'unblocked'} successfully`
+        });
+        
     } catch (error) {
         console.error("Error updating user block status:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal Server Error" 
+        });
     }
 };
 

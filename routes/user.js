@@ -9,6 +9,7 @@ const userWalletController = require("../controllers/userWalletController");
 const userPaymentController = require("../controllers/userPaymentController");
 const checkblock = require("../middleware/checkblock");
 const couponController = require("../controllers/couponcontroller"); 
+const { checkPaymentLock ,releasePaymentLock} = require("../controllers/userPaymentController"); // Import checkPaymentLock
 
 // Public routes (no authentication needed)
 router.get("/", userOrderController.home);
@@ -75,5 +76,32 @@ router.get("/wallet", checkblock, userWalletController.wallet);
 router.post("/generate-razorpay-order", checkblock, userPaymentController.generatewalletRazorpay);
 router.post("/createReferral", checkblock, userProfileController.createReferral);
 router.post("/validate-coupon", checkblock, couponController.validateCoupon); 
+router.get("/check-payment-lock", checkblock, async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const isLocked = await checkPaymentLock(userId);
+        res.json({ isLocked });
+    } catch (error) {
+        console.error('Error checking payment lock:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+router.post("/release-payment-lock", checkblock, async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId || userId !== req.session.user) {
+            return res.status(400).json({ success: false, message: "Invalid or unauthorized user ID" });
+        }
+        const released = await releasePaymentLock(userId);
+        if (released) {
+            res.json({ success: true, message: "Payment lock released successfully" });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to release payment lock" });
+        }
+    } catch (error) {
+        console.error('Error releasing payment lock:', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
 
 module.exports = router;

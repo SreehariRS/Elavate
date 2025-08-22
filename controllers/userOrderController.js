@@ -6,8 +6,9 @@ const product = require("../models/product");
 const category = require("../models/category");
 const Wallet = require("../models/wallet");
 const PDFDocument = require("pdfkit");
+const { checkPaymentLock, releasePaymentLock } = require("../controllers/userPaymentController");
 
-const ITEMS_PER_PAGE = 10; 
+const ITEMS_PER_PAGE = 10;
 
 const home = async (req, res) => {
     try {
@@ -150,21 +151,35 @@ const checkoutpost = async (req, res) => {
         const { selectedAddress, paymentMethod, couponCode, totalPrice, cartItems } = req.body;
         const userId = req.session.user;
 
+        // Check payment lock for non-COD payments
+        if (paymentMethod !== "Cash On Delivery") {
+            const isLocked = await checkPaymentLock(userId);
+            if (isLocked) {
+                return res.status(423).json({ 
+                    success: false, 
+                    message: "Another payment is currently being processed. Please wait for it to complete or try again later."
+                });
+            }
+        }
+
         // Log incoming data for debugging
         console.log("Checkout POST data:", { selectedAddress, paymentMethod, couponCode, totalPrice, cartItems });
 
         // Validate inputs
         if (!selectedAddress || !paymentMethod || !totalPrice || !cartItems) {
+            await releasePaymentLock(userId); // Release lock on validation failure
             return res.status(400).json({ success: false, message: "Missing required fields (address, payment method, total price, or cart items)" });
         }
 
         const cart = await Cart.findOne({ userId }).populate("items.productId");
         if (!cart || cart.items.length === 0) {
+            await releasePaymentLock(userId); // Release lock if cart is empty
             return res.status(400).json({ success: false, message: "Your cart is empty" });
         }
 
         // Validate cartItems
         if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            await releasePaymentLock(userId); // Release lock on invalid cart items
             return res.status(400).json({ success: false, message: "Invalid or empty cart items" });
         }
 
@@ -175,6 +190,7 @@ const checkoutpost = async (req, res) => {
         });
 
         if (validatedItems.length === 0) {
+            await releasePaymentLock(userId); // Release lock if no valid items
             return res.status(400).json({ success: false, message: "No valid items in the cart" });
         }
 
@@ -189,7 +205,6 @@ const checkoutpost = async (req, res) => {
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isActive: true, expirationDate: { $gte: new Date() } });
             if (coupon && !coupon.usedBy.includes(userId)) {
-                // Calculate discount as percentage of cart total, capped at maxApplicableAmount
                 let discount = calculatedTotal * (coupon.discountValue / 100);
                 if (discount > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
                     discount = coupon.maxApplicableAmount;
@@ -199,6 +214,7 @@ const checkoutpost = async (req, res) => {
                 couponId = coupon._id;
                 await Coupon.findByIdAndUpdate(coupon._id, { $addToSet: { usedBy: userId } });
             } else {
+                await releasePaymentLock(userId); // Release lock on invalid coupon
                 return res.status(400).json({ success: false, message: "Invalid or already used coupon" });
             }
         }
@@ -207,23 +223,35 @@ const checkoutpost = async (req, res) => {
         const priceDiff = Math.abs(calculatedTotal - parseFloat(totalPrice));
         if (priceDiff > 0.01) {
             console.log(`Price mismatch: calculatedTotal=${calculatedTotal}, totalPrice=${totalPrice}, difference=${priceDiff}`);
+            await releasePaymentLock(userId); // Release lock on price mismatch
             return res.status(400).json({ success: false, message: "Total price mismatch between client and server" });
         }
 
         // Handle COD limit
         if (paymentMethod === "Cash On Delivery" && calculatedTotal > 1000) {
+            await releasePaymentLock(userId); // Release lock on COD limit exceeded
             return res.status(400).json({ success: false, message: "Cash on Delivery is not available for amounts over ₹1000" });
         }
 
         // Handle wallet payment deduction
         let orderStatus = paymentMethod === "Razor Pay" ? "confirmed" : "confirmed";
         if (paymentMethod === "wallet") {
+            const lockAcquired = await acquirePaymentLock(userId, 'checkout', req.session.id);
+            if (!lockAcquired) {
+                await releasePaymentLock(userId); // Release lock if acquisition fails
+                return res.status(423).json({ 
+                    success: false, 
+                    message: "Another payment is currently being processed. Please try again later."
+                });
+            }
+
             let wallet = await Wallet.findOne({ userId });
             if (!wallet) {
                 wallet = new Wallet({ userId, balance: 0, transactions: [] });
             }
 
             if (wallet.balance < calculatedTotal) {
+                await releasePaymentLock(userId); // Release lock on insufficient balance
                 return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
             }
 
@@ -235,6 +263,9 @@ const checkoutpost = async (req, res) => {
                 paymentId: `order_${Date.now()}`,
             });
             await wallet.save();
+            
+            // Release lock after successful wallet transaction
+            await releasePaymentLock(userId);
         }
 
         const order = new orders({
@@ -249,7 +280,8 @@ const checkoutpost = async (req, res) => {
             paymentMethod,
             couponId,
             discountApplied,
-            status: orderStatus
+            status: orderStatus,
+            razorpayOrderId: paymentMethod === "Razor Pay" ? req.body.razorpayOrderId : null
         });
 
         await order.save();
@@ -259,6 +291,10 @@ const checkoutpost = async (req, res) => {
         res.json({ success: true, redirect: redirectUrl });
     } catch (error) {
         console.log("Error in checkoutpost:", error);
+        // Release lock on any error
+        if (req.session.user) {
+            await releasePaymentLock(req.session.user);
+        }
         res.status(500).json({ success: false, message: "An error occurred during checkout" });
     }
 };
@@ -267,6 +303,9 @@ const checkouterrorpost = async (req, res) => {
     try {
         const { selectedAddress, paymentMethod, couponCode, totalPrice, cartItems, status } = req.body;
         const userId = req.session.user;
+
+        // Release lock immediately to allow new orders
+        await releasePaymentLock(userId);
 
         if (!selectedAddress || !paymentMethod || !totalPrice || !cartItems) {
             return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -297,7 +336,6 @@ const checkouterrorpost = async (req, res) => {
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isActive: true, expirationDate: { $gte: new Date() } });
             if (coupon && !coupon.usedBy.includes(userId)) {
-                // Calculate discount as percentage of cart total, capped at maxApplicableAmount
                 let discount = calculatedTotal * (coupon.discountValue / 100);
                 if (discount > coupon.maxApplicableAmount && coupon.maxApplicableAmount !== Infinity) {
                     discount = coupon.maxApplicableAmount;
@@ -326,7 +364,8 @@ const checkouterrorpost = async (req, res) => {
             paymentMethod,
             couponId,
             discountApplied,
-            status: "paymentfailed"
+            status: "paymentfailed",
+            razorpayOrderId: req.body.razorpayOrderId || null
         });
 
         await order.save();
@@ -334,6 +373,10 @@ const checkouterrorpost = async (req, res) => {
         res.json({ success: true, redirect: "/orderhistory" });
     } catch (error) {
         console.log("Error in checkouterrorpost:", error);
+        // Release lock on any error
+        if (req.session.user) {
+            await releasePaymentLock(req.session.user);
+        }
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -342,6 +385,9 @@ const retryCheckout = async (req, res) => {
     try {
         const { orderId, razorpayOrderId, paymentId, status } = req.body;
         const userId = req.session.user;
+
+        // Always release payment lock when retrying checkout
+        await releasePaymentLock(userId);
 
         if (!orderId || !status || !['confirmed', 'paymentfailed'].includes(status)) {
             return res.status(400).json({ success: false, message: "Invalid input" });
@@ -352,7 +398,6 @@ const retryCheckout = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order not found or unauthorized" });
         }
 
-        // Update only if the status is a valid change
         if (order.status !== status) {
             order.razorpayOrderId = razorpayOrderId || order.razorpayOrderId;
             order.paymentId = paymentId || order.paymentId;
@@ -370,6 +415,10 @@ const retryCheckout = async (req, res) => {
         res.json({ success: true, redirect: status === 'confirmed' ? '/orderhistory?success=true' : '/orderhistory' });
     } catch (error) {
         console.log("Error in retryCheckout:", error);
+        // Release lock on error
+        if (req.session.user) {
+            await releasePaymentLock(req.session.user);
+        }
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -517,7 +566,7 @@ const initiateReturn = async (req, res) => {
 
         if (itemId !== undefined && itemId >= 0 && itemId < order.items.length) {
             order.items[itemId].status = "return-requested";
-            order.items[itemitemId].cancellationReason = cancellationReason;
+            order.items[itemId].cancellationReason = cancellationReason;
 
             const activeItems = order.items.filter(item => item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded");
             order.status = activeItems.length > 0 ? "confirmed" : "return-requested";
@@ -573,7 +622,6 @@ const generateInvoice = async (req, res) => {
         const loggedInUser = !!userId;
         const errorMessage = req.flash("error")[0] || "";
 
-        // Check if order is cancelled or has any cancelled items
         if (order.status === 'cancelled' || order.items.some(item => item.status === 'cancelled')) {
             return res.status(400).send("Invoice generation not allowed for cancelled orders or items");
         }
@@ -585,7 +633,6 @@ const generateInvoice = async (req, res) => {
         res.setHeader("Content-type", "application/pdf");
         doc.pipe(res);
 
-        // Define modern color scheme
         const colors = {
             primary: '#1e40af',
             secondary: '#64748b',
@@ -595,7 +642,6 @@ const generateInvoice = async (req, res) => {
             background: '#f3f4f6'
         };
 
-        // Company Header
         doc.font('Helvetica-Bold')
            .fontSize(32)
            .fillColor(colors.primary)
@@ -607,25 +653,21 @@ const generateInvoice = async (req, res) => {
            .text("123 Business Street, Kochi, State 12345", 50, 80)
            .text("Premium Perfume E-commerce", 50, 95);
 
-        // Invoice header (right-aligned)
         doc.font('Helvetica-Bold')
            .fontSize(24)
            .fillColor(colors.primary)
            .text("INVOICE", 0, 40, { align: "right" });
 
-        // Separator line
         doc.moveTo(50, 120)
            .lineTo(550, 120)
            .lineWidth(1)
            .strokeColor(colors.background)
            .stroke();
 
-        // Invoice details in two columns
         const leftColumnX = 50;
         const rightColumnX = 300;
         const currentY = 140;
 
-        // Left column - Invoice details
         doc.font('Helvetica-Bold')
            .fontSize(11)
            .fillColor(colors.secondary)
@@ -639,7 +681,6 @@ const generateInvoice = async (req, res) => {
            .text(`Invoice Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} IST`, leftColumnX, doc.y + 15)
            .text(`Order Date: ${order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Not Available'}`, leftColumnX, doc.y + 15);
 
-        // Right column - Customer details
         doc.font('Helvetica-Bold')
            .fontSize(11)
            .fillColor(colors.secondary)
@@ -651,7 +692,6 @@ const generateInvoice = async (req, res) => {
            .text(`${order.userId.firstname} ${order.userId.lastname || ''}`, rightColumnX, currentY + 20)
            .text(`Email: ${order.userId.email || 'Not provided'}`, rightColumnX, doc.y + 15);
 
-        // Add shipping address
         if (order.selectedAddress) {
             doc.font('Helvetica-Bold')
                .fontSize(11)
@@ -663,7 +703,6 @@ const generateInvoice = async (req, res) => {
                .text(order.selectedAddress, rightColumnX, doc.y + 15, { width: 200 });
         }
 
-        // Order summary section
         doc.moveDown(2);
         doc.font('Helvetica-Bold')
            .fontSize(14)
@@ -678,7 +717,6 @@ const generateInvoice = async (req, res) => {
         doc.text(`Payment Method: ${order.paymentMethod}`, leftColumnX, summaryY)
            .text(`Order Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}`, leftColumnX, doc.y + 15);
 
-        // Calculate subtotal and discount
         const subtotal = order.items.reduce((acc, item) => {
             if (item.status !== 'cancelled') {
                 return acc + (item.productId.offerprice || item.productId.price) * item.quantity;
@@ -688,7 +726,6 @@ const generateInvoice = async (req, res) => {
 
         const discountAmount = subtotal - order.totalPrice;
 
-        // Pricing breakdown
         doc.text(`Subtotal: ₹${subtotal.toFixed(2)}`, rightColumnX, summaryY);
         if (discountAmount > 0) {
             doc.fillColor(colors.accent)
@@ -700,7 +737,6 @@ const generateInvoice = async (req, res) => {
            .fillColor(colors.primary)
            .text(`Total Amount: ₹${order.totalPrice.toFixed(2)}`, rightColumnX, doc.y + 15);
 
-        // Items table
         doc.moveDown(2);
         doc.font('Helvetica-Bold')
            .fontSize(14)
@@ -710,7 +746,6 @@ const generateInvoice = async (req, res) => {
         const tableTop = doc.y + 15;
         const tableLeft = 50;
 
-        // Table header
         doc.rect(tableLeft, tableTop - 5, 500, 25)
            .fillAndStroke(colors.background, colors.background);
         
@@ -727,7 +762,6 @@ const generateInvoice = async (req, res) => {
         const totalDiscountAmount = subtotal - order.totalPrice;
         const discountPercentage = subtotal > 0 ? (totalDiscountAmount / subtotal) : 0;
 
-        // Items table rows
         order.items.forEach((item, index) => {
             if (item.status !== "cancelled") {
                 const unitPrice = item.productId.offerprice || item.productId.price;
@@ -735,7 +769,6 @@ const generateInvoice = async (req, res) => {
                 const itemDiscount = itemTotalBeforeDiscount * discountPercentage;
                 const itemTotalAfterDiscount = itemTotalBeforeDiscount - itemDiscount;
 
-                // Row background
                 doc.rect(tableLeft, yPosition - 5, 500, 25)
                    .fillAndStroke(index % 2 === 0 ? '#ffffff' : '#fafafa', colors.background);
 
@@ -752,7 +785,6 @@ const generateInvoice = async (req, res) => {
             }
         });
 
-        // Footer
         doc.y = yPosition + 30;
         doc.moveTo(50, doc.y)
            .lineTo(550, doc.y)
@@ -772,6 +804,7 @@ const generateInvoice = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
 module.exports = {
     home,
     getProductsByCategory,

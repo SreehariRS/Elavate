@@ -483,58 +483,95 @@
             refreshOrderData();
         }
 
-        async function retryPayment(orderId) {
-            try {
-                const order = orders.find(o => o._id === orderId);
-                if (!order) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Order Not Found',
-                        text: 'The order could not be found.',
-                    });
-                    return;
-                }
+      async function retryPayment(orderId) {
+        try {
+            // Check payment lock before proceeding
+            const lockCheckResponse = await fetch('/check-payment-lock', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const lockResult = await lockCheckResponse.json();
+            
+            if (lockResult.isLocked) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Payment in Progress',
+                    text: 'Another payment is currently being processed. Please wait for it to complete or try again later.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-                const createOrderResponse = await fetch('/create-razorpay-order', {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Not Found',
+                    text: 'The order could not be found.',
+                });
+                return;
+            }
+
+            const createOrderResponse = await fetch('/create-razorpay-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: order.totalPrice }),
+            });
+
+            if (createOrderResponse.status === 423) {
+                const errorResult = await createOrderResponse.json();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Payment Already in Progress',
+                    text: errorResult.message,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                return;
+            }
+
+            const createOrderResult = await createOrderResponse.json();
+
+            if (createOrderResult.error) {
+                // Release lock on Razorpay order creation failure
+                await fetch('/release-payment-lock', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: order.totalPrice }),
+                    body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
                 });
-                const createOrderResult = await createOrderResponse.json();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Create Razorpay Order',
+                    text: 'Please try again later.',
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                return;
+            }
 
-                if (createOrderResult.error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Failed to Create Razorpay Order',
-                        text: 'Please try again later.',
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                    return;
-                }
+            const orderData = {
+                orderId: order._id,
+                userId: userData._id || '<%= userId %>',
+                cartItems: order.items.map(item => ({
+                    productId: item.productId._id,
+                    quantity: item.quantity,
+                })),
+                selectedAddress: order.selectedAddress,
+                totalPrice: order.totalPrice,
+                paymentMethod: 'Razor Pay',
+                couponId: order.couponId || null,
+                razorpayOrderId: createOrderResult.id,
+            };
 
-                const orderData = {
-                    orderId: order._id,
-                    userId: userData._id || '<%= userId %>',
-                    cartItems: order.items.map(item => ({
-                        productId: item.productId._id,
-                        quantity: item.quantity,
-                    })),
-                    selectedAddress: order.selectedAddress,
-                    totalPrice: order.totalPrice,
-                    paymentMethod: 'Razor Pay',
-                    couponId: order.couponId || null,
-                    razorpayOrderId: createOrderResult.id,
-                };
-
-                const options = {
-                    key: 'rzp_test_rJ0yPg6ZIlUOvq',
-                    amount: order.totalPrice * 100,
-                    currency: 'INR',
-                    name: 'Elavate',
-                    description: 'Retry Payment for Order ' + orderId,
-                    order_id: createOrderResult.id,
-                    handler: async function (response) {
+            const options = {
+                key: 'rzp_test_rJ0yPg6ZIlUOvq',
+                amount: order.totalPrice * 100,
+                currency: 'INR',
+                name: 'Elavate',
+                description: 'Retry Payment for Order ' + orderId,
+                order_id: createOrderResult.id,
+                handler: async function (response) {
+                    try {
                         const verifyResponse = await fetch('/verify-razorpay-payment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -552,8 +589,8 @@
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    orderId: orderData.razorpayOrderId,
-                                    paymentId: orderData.paymentId,
+                                    orderId: createOrderResult.id,
+                                    paymentId: response.razorpay_payment_id,
                                     status: 'confirmed',
                                     userId: orderData.userId,
                                     paymentMethod: 'Razor Pay',
@@ -561,26 +598,58 @@
                             });
                             await updateOrderStatus(orderData);
                         } else {
-                            orderData.paymentId = response.razorpay_payment_id; // Capture paymentId even on failure
+                            orderData.paymentId = response.razorpay_payment_id;
                             orderData.status = 'paymentfailed';
                             await submitOrderWithFailedPayment(orderData);
                         }
-                    },
-                    prefill: {
-                        name: userData.firstname || 'Customer',
-                        email: userData.email || 'customer@example.com',
-                        contact: userData.mobileNumber || '9999999999',
-                    },
-                    theme: {
-                        color: '#2563eb',
-                    },
-                };
+                    } catch (error) {
+                        console.error('Error in payment handler:', error);
+                        // Release lock on error
+                        await fetch('/release-payment-lock', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+                        });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Processing Error',
+                            text: 'An error occurred while processing your payment. Please try again.',
+                        });
+                    }
+                },
+                prefill: {
+                    name: userData.firstname || 'Customer',
+                    email: userData.email || 'customer@example.com',
+                    contact: userData.mobileNumber || '9999999999',
+                },
+                theme: {
+                    color: '#2563eb',
+                },
+                modal: {
+                    ondismiss: async function() {
+                        // Release lock when payment modal is closed
+                        await fetch('/release-payment-lock', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+                        });
+                        console.log('Razorpay modal dismissed');
+                    }
+                }
+            };
 
-                const razorpayInstance = new Razorpay(options);
-                razorpayInstance.on('payment.failed', async function (response) {
-                    orderData.paymentId = response.razorpay_payment_id; // Capture paymentId on failure
+            const razorpayInstance = new Razorpay(options);
+            razorpayInstance.on('payment.failed', async function (response) {
+                try {
+                    orderData.paymentId = response.razorpay_payment_id;
                     orderData.status = 'paymentfailed';
                     await submitOrderWithFailedPayment(orderData);
+                    // Release lock on payment failure
+                    await fetch('/release-payment-lock', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+                    });
                     Swal.fire({
                         icon: 'error',
                         title: 'Payment Failed',
@@ -590,95 +659,145 @@
                     }).then(() => {
                         window.location.href = '/orderhistory';
                     });
-                });
-                razorpayInstance.open();
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Retry Payment Failed',
-                    text: 'An error occurred while retrying the payment. Please try again.',
-                });
-            }
-        }
-
-        async function updateOrderStatus(orderData) {
-            try {
-                const response = await fetch('/retry-checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orderId: orderData.orderId,
-                        razorpayOrderId: orderData.razorpayOrderId,
-                        paymentId: orderData.paymentId,
-                        status: 'confirmed',
-                    }),
-                });
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Order Confirmed',
-                        text: 'Your payment was successful and the order is confirmed!',
-                        timer: 2000,
-                    }).then(() => {
-                        window.location.href = '/orderhistory?success=true';
+                } catch (error) {
+                    console.error('Error handling payment failure:', error);
+                    // Release lock on error
+                    await fetch('/release-payment-lock', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
                     });
-                } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Order Update Failed',
-                        text: 'Failed to confirm the order. Please try again.',
+                        title: 'Payment Processing Error',
+                        text: 'An error occurred while processing the failed payment. Please check your order history.',
                     });
                 }
-            } catch (error) {
-                console.error(error);
+            });
+            razorpayInstance.open();
+        } catch (error) {
+            console.error('Error:', error);
+            // Release lock on error
+            await fetch('/release-payment-lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+            });
+            Swal.fire({
+                icon: 'error',
+                title: 'Retry Payment Failed',
+                text: 'An error occurred while retrying the payment. Please try again.',
+            });
+        }
+    }
+
+    async function updateOrderStatus(orderData) {
+        try {
+            const response = await fetch('/retry-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: orderData.orderId,
+                    razorpayOrderId: orderData.razorpayOrderId,
+                    paymentId: orderData.paymentId,
+                    status: 'confirmed',
+                }),
+            });
+            const result = await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Confirmed',
+                    text: 'Your payment was successful and the order is confirmed!',
+                    timer: 2000,
+                }).then(() => {
+                    window.location.href = '/orderhistory?success=true';
+                });
+            } else {
+                // Release lock on failure
+                await fetch('/release-payment-lock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+                });
                 Swal.fire({
                     icon: 'error',
                     title: 'Order Update Failed',
-                    text: 'An error occurred while confirming the order.',
+                    text: 'Failed to confirm the order. Please try again.',
                 });
             }
+        } catch (error) {
+            console.error(error);
+            // Release lock on error
+            await fetch('/release-payment-lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+            });
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Update Failed',
+                text: 'An error occurred while confirming the order.',
+            });
         }
+    }
 
-        async function submitOrderWithFailedPayment(orderData) {
-            try {
-                const response = await fetch('/retry-checkout', {
+    async function submitOrderWithFailedPayment(orderData) {
+        try {
+            const response = await fetch('/retry-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: orderData.orderId,
+                    razorpayOrderId: orderData.razorpayOrderId,
+                    paymentId: orderData.paymentId || null,
+                    status: 'paymentfailed',
+                }),
+            });
+            const result = await response.json();
+            if (result.success) {
+                // Release lock on successful submission of failed payment
+                await fetch('/release-payment-lock', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orderId: orderData.orderId,
-                        razorpayOrderId: orderData.razorpayOrderId,
-                        paymentId: orderData.paymentId || null,
-                        status: 'paymentfailed',
-                    }),
+                    body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
                 });
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Payment Failed',
-                        text: 'Your payment failed. The order has been recorded as pending.',
-                        timer: 2000,
-                    }).then(() => {
-                        window.location.href = '/orderhistory';
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Order Update Failed',
-                        text: 'Failed to record the order. Please try again.',
-                    });
-                }
-            } catch (error) {
-                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: 'Your payment failed. The order has been recorded as pending.',
+                    timer: 2000,
+                }).then(() => {
+                    window.location.href = '/orderhistory';
+                });
+            } else {
+                // Release lock on failure
+                await fetch('/release-payment-lock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+                });
                 Swal.fire({
                     icon: 'error',
                     title: 'Order Update Failed',
-                    text: 'An error occurred while recording the order.',
+                    text: 'Failed to record the order. Please try again.',
                 });
             }
+        } catch (error) {
+            console.error(error);
+            // Release lock on error
+            await fetch('/release-payment-lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userData._id || '<%= userId %>' })
+            });
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Update Failed',
+                text: 'An error occurred while recording the order.',
+            });
         }
+    }
 
         async function generateInvoice(orderId) {
             try {

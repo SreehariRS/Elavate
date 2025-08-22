@@ -54,14 +54,14 @@ router.post("/editproduct/:productId", isAuthenticated, upload, adminProductCont
 router.post("/addproduct", isAuthenticated, upload, adminProductController.addproductpost);
 
 router.get("/customers", isAuthenticated, adminUserController.userlist);
-router.get("/customers/:userId", isAuthenticated, adminUserController.userblock);
+// Changed from GET to POST for better REST practices and AJAX handling
+router.post("/customers/:userId/toggle-block", isAuthenticated, adminUserController.userblock);
 
 router.get("/category", isAuthenticated, adminCategoryController.categoryList);
 router.post("/category/:id", isAuthenticated, adminCategoryController.editcateg);
 router.post("/category", isAuthenticated, adminCategoryController.addcateg);
 router.get("/editcategory/:id", isAuthenticated, adminCategoryController.geteditCategory); 
 router.post("/deletecategory/:id", isAuthenticated, adminCategoryController.deletecateg);
-
 
 router.get("/order", isAuthenticated, adminOrderController.order);
 router.post("/updateorder", isAuthenticated, adminOrderController.updateOrderStatus);

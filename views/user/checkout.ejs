@@ -327,176 +327,268 @@
             }
         }
 
-        async function submitOrder() {
-            try {
-                const selectedAddressElement = document.getElementById("address");
-                const selectedAddress = selectedAddressElement?.options[selectedAddressElement.selectedIndex]?.text;
-                if (!selectedAddress) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'No Address Selected',
-                        text: 'Please select a shipping address.',
-                    });
-                    return;
-                }
+        async function checkPaymentLockStatus() {
+    try {
+        const response = await fetch('/check-payment-lock', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to check payment lock status');
+            return false;
+        }
+        
+        const result = await response.json();
+        
+        if (result.isLocked) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Payment in Progress',
+                text: 'Another payment is currently being processed. Please wait for it to complete or try again later.',
+                confirmButtonText: 'OK',
+                timer: 5000,
+                timerProgressBar: true
+            });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking payment lock:', error);
+        return false;
+    }
+}
 
-                const paymentMethodElements = document.querySelectorAll('input[name="paymentMethod"]:checked');
-                if (paymentMethodElements.length !== 1) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Payment Method',
-                        text: 'Please select exactly one payment method.',
-                    });
-                    return;
-                }
+// Replace the entire submitOrder function in checkout.ejs with this updated version
+async function submitOrder() {
+    try {
+        // First check if payment is already locked
+        const isLocked = await checkPaymentLockStatus();
+        if (isLocked) {
+            return; // Exit if payment is locked
+        }
 
-                const paymentMethod = paymentMethodElements[0].value;
-                const selectedCouponElement = document.getElementById('coupon');
-                const couponCode = selectedCouponElement?.value;
-                const totalPrice = parseFloat(document.getElementById('totalPrice')?.innerText || 0);
+        const selectedAddressElement = document.getElementById("address");
+        const selectedAddress = selectedAddressElement?.options[selectedAddressElement.selectedIndex]?.text;
+        if (!selectedAddress) {
+            Swal.fire({
+                icon: 'error',
+                title: 'No Address Selected',
+                text: 'Please select a shipping address.',
+            });
+            return;
+        }
 
-                if (isNaN(totalPrice)) {
-                    throw new Error('Total price is not a valid number');
-                }
+        const paymentMethodElements = document.querySelectorAll('input[name="paymentMethod"]:checked');
+        if (paymentMethodElements.length !== 1) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Payment Method',
+                text: 'Please select exactly one payment method.',
+            });
+            return;
+        }
 
-                console.log('Submitting order:', { paymentMethod, totalPrice, couponCode, selectedAddress });
+        const paymentMethod = paymentMethodElements[0].value;
+        const selectedCouponElement = document.getElementById('coupon');
+        const couponCode = selectedCouponElement?.value;
+        const totalPrice = parseFloat(document.getElementById('totalPrice')?.innerText || 0);
 
-                const orderData = {
-                    selectedAddress,
-                    paymentMethod,
-                    couponCode: couponCode || null,
-                    totalPrice,
-                    cartItems: cartItems.map(item => ({
-                        productId: item.productId._id,
-                        quantity: item.quantity,
-                    })),
-                };
+        if (isNaN(totalPrice)) {
+            throw new Error('Total price is not a valid number');
+        }
 
-                if (totalPrice > 1000 && paymentMethod === 'Cash On Delivery') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Cannot Proceed',
-                        text: 'Total amount exceeds ₹1000. Cash on Delivery is not available for amounts over ₹1000. Try Online payment.',
-                    });
-                    return;
-                }
+        console.log('Submitting order:', { paymentMethod, totalPrice, couponCode, selectedAddress });
 
-                if (paymentMethod === 'wallet') {
-                    const walletCheckResponse = await fetch('/check-wallet', {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                    });
-                    if (!walletCheckResponse.ok) throw new Error('Wallet check failed');
-                    const walletCheckResult = await walletCheckResponse.json();
+        const orderData = {
+            selectedAddress,
+            paymentMethod,
+            couponCode: couponCode || null,
+            totalPrice,
+            cartItems: cartItems.map(item => ({
+                productId: item.productId._id,
+                quantity: item.quantity,
+            })),
+        };
 
-                    if (!walletCheckResult.success || walletCheckResult.balance < totalPrice) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Insufficient Wallet Balance',
-                            text: 'Top up your wallet or choose another payment method.',
+        if (totalPrice > 1000 && paymentMethod === 'Cash On Delivery') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Cannot Proceed',
+                text: 'Total amount exceeds ₹1000. Cash on Delivery is not available for amounts over ₹1000. Try Online payment.',
+            });
+            return;
+        }
+
+        if (paymentMethod === 'wallet') {
+            // Check payment lock again before wallet processing
+            const walletLockCheck = await checkPaymentLockStatus();
+            if (walletLockCheck) {
+                return;
+            }
+
+            const walletCheckResponse = await fetch('/check-wallet', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!walletCheckResponse.ok) throw new Error('Wallet check failed');
+            const walletCheckResult = await walletCheckResponse.json();
+
+            if (!walletCheckResult.success || walletCheckResult.balance < totalPrice) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Wallet Balance',
+                    text: 'Top up your wallet or choose another payment method.',
+                });
+                return;
+            }
+
+            await submitOrderToServer(orderData);
+        } else if (paymentMethod === 'Razor Pay') {
+            // Check payment lock again before Razorpay processing
+            const razorpayLockCheck = await checkPaymentLockStatus();
+            if (razorpayLockCheck) {
+                return;
+            }
+
+            const createOrderResponse = await fetch('/create-razorpay-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: totalPrice }),
+            });
+            
+            // Handle payment lock response (423 status)
+            if (createOrderResponse.status === 423) {
+                const errorResult = await createOrderResponse.json();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Payment Already in Progress',
+                    text: errorResult.message || 'Another payment is currently being processed. Please wait for it to complete or try again later.',
+                    timer: 5000,
+                    timerProgressBar: true,
+                });
+                return;
+            }
+            
+            if (!createOrderResponse.ok) throw new Error('Failed to create Razorpay order');
+            const createOrderResult = await createOrderResponse.json();
+
+            if (createOrderResult.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Create Razorpay Order',
+                    text: 'Please try again later or choose a different payment method.',
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                return;
+            }
+
+            const options = {
+                key: "rzp_test_rJ0yPg6ZIlUOvq",
+                amount: totalPrice * 100,
+                currency: "INR",
+                name: "Elavate",
+                description: "Payment for your order",
+                order_id: createOrderResult.id,
+                handler: async function (response) {
+                    try {
+                        const verifyResponse = await fetch('/verify-razorpay-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id,
+                                signature: response.razorpay_signature,
+                            }),
                         });
-                        return;
-                    }
+                        if (!verifyResponse.ok) throw new Error('Payment verification failed');
+                        const verifyResult = await verifyResponse.json();
 
-                    await submitOrderToServer(orderData);
-                } else if (paymentMethod === 'Razor Pay') {
-                    const createOrderResponse = await fetch('/create-razorpay-order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: totalPrice }),
-                    });
-                    if (!createOrderResponse.ok) throw new Error('Failed to create Razorpay order');
-                    const createOrderResult = await createOrderResponse.json();
-
-                    if (createOrderResult.error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Failed to Create Razorpay Order',
-                            text: 'Please try again later or choose a different payment method.',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                        return;
-                    }
-
-                    const options = {
-                        key: "rzp_test_rJ0yPg6ZIlUOvq",
-                        amount: totalPrice * 100,
-                        currency: "INR",
-                        name: "Elavate",
-                        description: "Payment for your order",
-                        order_id: createOrderResult.id,
-                        handler: async function (response) {
-                            const verifyResponse = await fetch('/verify-razorpay-payment', {
+                        if (verifyResult.success) {
+                            await fetch('/update-order-status', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
+                                    orderId: createOrderResult.id,
                                     paymentId: response.razorpay_payment_id,
-                                    orderId: response.razorpay_order_id,
-                                    signature: response.razorpay_signature,
+                                    status: 'confirmed',
+                                    userId: '<%= userId %>',
+                                    paymentMethod: 'Razor Pay',
                                 }),
                             });
-                            if (!verifyResponse.ok) throw new Error('Payment verification failed');
-                            const verifyResult = await verifyResponse.json();
-
-                            if (verifyResult.success) {
-                                await fetch('/update-order-status', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        orderId: createOrderResult.id,
-                                        paymentId: response.razorpay_payment_id,
-                                        status: 'confirmed',
-                                        userId: '<%= userId %>',
-                                        paymentMethod: 'Razor Pay',
-                                    }),
-                                });
-                                await submitOrderToServer(orderData);
-                            } else {
-                                orderData.paymentId = response.razorpay_payment_id;
-                                orderData.status = 'paymentfailed';
-                                await submitOrderWithFailedPaymentToServer(orderData);
-                            }
-                        },
-                        prefill: {
-                            name: userData.firstname || "Customer",
-                            email: userData.email || "customer@example.com",
-                            contact: userData.mobileNumber || "9999999999",
-                        },
-                        theme: {
-                            color: "#A48F7A",
-                        },
-                    };
-
-                    const razorpayInstance = new Razorpay(options);
-                    razorpayInstance.on('payment.failed', async function (response) {
-                        orderData.paymentId = response.razorpay_payment_id;
-                        orderData.status = 'paymentfailed';
-                        await submitOrderWithFailedPaymentToServer(orderData);
+                            await submitOrderToServer(orderData);
+                        } else {
+                            orderData.paymentId = response.razorpay_payment_id;
+                            orderData.status = 'paymentfailed';
+                            await submitOrderWithFailedPaymentToServer(orderData);
+                        }
+                    } catch (error) {
+                        console.error('Error in payment handler:', error);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Payment Failed',
-                            text: response.error.description || 'Your payment failed. The order has been recorded as pending.',
-                            timer: 2000,
-                            timerProgressBar: true,
-                        }).then(() => {
-                            window.location.href = '/orderhistory';
+                            title: 'Payment Processing Error',
+                            text: 'An error occurred while processing your payment. Please try again.',
                         });
-                    });
-                    razorpayInstance.open();
-                } else {
-                    await submitOrderToServer(orderData);
+                    }
+                },
+                prefill: {
+                    name: userData.firstname || "Customer",
+                    email: userData.email || "customer@example.com",
+                    contact: userData.mobileNumber || "9999999999",
+                },
+                theme: {
+                    color: "#A48F7A",
+                },
+                modal: {
+                    ondismiss: function() {
+                        // Payment modal was closed - this might indicate user cancelled
+                        console.log('Razorpay modal dismissed');
+                        // Note: We don't release the lock here as the payment might still be processing
+                        // The lock will auto-expire or be released when payment status is updated
+                    }
                 }
-            } catch (error) {
-                console.error('Error during submitOrder:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Checkout Failed',
-                    text: 'An error occurred during checkout. Please try again or contact support.',
-                });
-            }
-        }
+            };
 
+            const razorpayInstance = new Razorpay(options);
+            razorpayInstance.on('payment.failed', async function (response) {
+                try {
+                    orderData.paymentId = response.razorpay_payment_id;
+                    orderData.status = 'paymentfailed';
+                    await submitOrderWithFailedPaymentToServer(orderData);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: response.error.description || 'Your payment failed. The order has been recorded as pending.',
+                        timer: 3000,
+                        timerProgressBar: true,
+                    }).then(() => {
+                        window.location.href = '/orderhistory';
+                    });
+                } catch (error) {
+                    console.error('Error handling payment failure:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Processing Error',
+                        text: 'An error occurred while processing the failed payment. Please check your order history.',
+                    });
+                }
+            });
+            
+            razorpayInstance.open();
+        } else {
+            // Cash on Delivery - no lock needed
+            await submitOrderToServer(orderData);
+        }
+    } catch (error) {
+        console.error('Error during submitOrder:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Checkout Failed',
+            text: 'An error occurred during checkout. Please try again or contact support.',
+        });
+    }
+}
         async function submitOrderToServer(orderData) {
             try {
                 const response = await fetch('/checkout', {

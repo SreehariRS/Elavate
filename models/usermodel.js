@@ -19,7 +19,14 @@ const userSchema = new mongoose.Schema({
     isBlocked: { type: Boolean },
     addresses: [addressSchema],
     referralCode:{type: String},
-    referredCode:{type: String}
+    referredCode:{type: String},
+      paymentLock: {
+        isLocked: { type: Boolean, default: false },
+        lockedAt: { type: Date },
+        lockExpiry: { type: Date }, // Auto-expire after 15 minutes
+        sessionId: { type: String }, // Track which session locked it
+        lockType: { type: String, enum: ['checkout', 'retry', 'wallet'], default: 'checkout' }
+    }
 
 });
 
