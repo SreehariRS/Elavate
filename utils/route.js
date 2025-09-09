@@ -1,11 +1,11 @@
-// Route configuration constants
+
 const ROUTES = {
     // Admin Routes
     ADMIN: {
         BASE: '/admin',
         LOGIN: '/login',
         LOGOUT: '/logout',
-        SIGNOUT2: '/signout2', // For backward compatibility
+        SIGNOUT2: '/signout2', 
         HOME: '/home',
         PRODUCT_LIST: '/productlist',
         DELETE_PRODUCT: '/productlist/:id',
