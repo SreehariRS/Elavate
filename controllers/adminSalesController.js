@@ -19,8 +19,8 @@ const sales = async (req, res) => {
         // Fetch delivered orders
         const orders = await Order.find(query).populate("items.productId");
 
-        // Calculate total amount and total orders
-        const totalAmount = orders.reduce((sum, order) => sum + order.totalprice, 0);
+        // Calculate total amount and total orders - FIXED: using totalPrice instead of totalprice
+        const totalAmount = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
         const totalOrders = orders.length;
 
         // Fetch total users and products
@@ -37,7 +37,7 @@ const sales = async (req, res) => {
                 quantity: item.quantity,
                 offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
                 originalPrice: item.productId ? item.productId.price : 0,
-                totalPrice: order.totalprice,
+                totalPrice: order.totalPrice, // FIXED: using totalPrice instead of totalprice
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
@@ -80,12 +80,13 @@ const generatePDF = async (req, res) => {
                 quantity: item.quantity,
                 offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
                 originalPrice: item.productId ? item.productId.price : 0,
-                totalPrice: order.totalprice,
+                totalPrice: order.totalPrice, // FIXED: using totalPrice instead of totalprice
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
 
-        const totalAmount = orders.reduce((sum, order) => sum + order.totalprice, 0);
+        // FIXED: using totalPrice instead of totalprice
+        const totalAmount = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
         const totalOrders = orders.length;
         const totalUsers = await User.countDocuments();
         const totalProducts = await Product.countDocuments();
@@ -171,7 +172,7 @@ const downloadExcel = async (req, res) => {
                 quantity: item.quantity,
                 offerPrice: item.productId ? (item.productId.offerprice > 0 ? item.productId.offerprice : 0) : 0, // Use offerprice only if > 0
                 originalPrice: item.productId ? item.productId.price : 0,
-                totalPrice: order.totalprice,
+                totalPrice: order.totalPrice, // FIXED: using totalPrice instead of totalprice
                 paymentMethod: order.paymentMethod || "N/A",
             }))
         );
@@ -220,8 +221,8 @@ const home = async (req, res) => {
         // Fetch delivered orders
         const orders = await Order.find({ status: "delivered" }).populate("items.productId");
 
-        // Calculate total amount and total orders
-        const totalAmount = orders.reduce((sum, order) => sum + order.totalprice, 0);
+        // Calculate total amount and total orders - FIXED: using totalPrice instead of totalprice
+        const totalAmount = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
         const totalOrders = orders.length;
 
         // Fetch total users and products

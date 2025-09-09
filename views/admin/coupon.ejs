@@ -256,76 +256,7 @@ body {
   <div class="toggle-sidebar">
     <i class="bx bx-menu toggle-icon"></i>
   </div>
-  <nav class="sidebar">
-    <header>
-      <div class="image-text">
-        <span class="image">
-          <img src="/img/logo.png" alt="logo" />
-        </span>
-        <div class="text header-text">
-          <span class="main">ELAVATE</span>
-          <br>
-          <span class="sub">make your smell</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="menu-bar">
-      <div class="menu">
-        <ul class="menu-links">
-          <li class="nav-link">
-            <a href="/admin/home">
-              <i class="bx bx-home-alt icons"></i>
-              <span class="text nav-text">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/customers">
-              <i class="bx bx-bell icons"></i>
-              <span class="text nav-text">User</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/productlist">
-              <i class="bx bx-bar-chart-alt-2 icons"></i>
-              <span class="text nav-text">Product</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/order">
-              <i class="bx bx-pie-chart-alt icons"></i>
-              <span class="text nav-text">order</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/category">
-              <i class="bx bx-heart icons"></i>
-              <span class="text nav-text">Category</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/coupon">
-              <i class="bx bx-wallet-alt icons"></i>
-              <span class="text nav-text">coupon</span>
-            </a>
-          </li>
-          <li class="nav-link">
-            <a href="/admin/sales">
-              <i class="bx bx-wallet-alt icons"></i>
-              <span class="text nav-text">Sales Report</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <li class="nav-link">
-        <a href="/admin/logout">
-          <i class="bx bx-log-out icons"></i>
-          <span class="text nav-text">Log Out</span>
-        </a>
-      </li>
-    </div>
-  </nav>
+ <%- include('sidebar') %>
 
   <div class="container">
     <h1>Create Coupon</h1>
@@ -361,8 +292,9 @@ body {
       </button>
     </form>
 
+    <!-- View Coupons Modal -->
     <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
@@ -377,6 +309,49 @@ body {
       </div>
     </div>
 
+    <!-- Edit Coupon Modal -->
+    <div class="modal fade" id="editCouponModal" tabindex="-1" role="dialog" aria-labelledby="editCouponModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="editCouponForm">
+              <div class="form-group">
+                <label for="editCode">Coupon Code:</label>
+                <input type="text" class="form-control" id="editCode" name="code" required>
+              </div>
+              <div class="form-group">
+                <label for="editDiscountValue">Discount Percentage:</label>
+                <input type="number" class="form-control" id="editDiscountValue" name="discountValue" required min="1" max="99">
+              </div>
+              <div class="form-group">
+                <label for="editMinPurchaseAmount">Minimum Purchase Amount (₹):</label>
+                <input type="number" class="form-control" id="editMinPurchaseAmount" name="minPurchaseAmount" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label for="editMaxApplicableAmount">Maximum Applicable Amount (₹):</label>
+                <input type="number" class="form-control" id="editMaxApplicableAmount" name="maxApplicableAmount" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label for="editExpirationDate">Expiration Date:</label>
+                <input type="date" class="form-control" id="editExpirationDate" name="expirationDate" required>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="updateCoupon()">Update Coupon</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -404,6 +379,10 @@ body {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
+    let currentEditCouponId = null;
+    let sidebarElement = null; // Renamed to avoid conflicts
+    let toggleButtonElement = null; // Renamed to avoid conflicts
+
     function validateForm() {
       var codeInput = document.getElementById("code");
       var code = codeInput.value.trim();
@@ -438,16 +417,14 @@ body {
 
       return true;
     }
-  </script>
 
-  <script>
     function hidePopup() {
       var popup = document.getElementById("couponPopup");
-      popup.style.display = "none";
+      if (popup) {
+        popup.style.display = "none";
+      }
     }
-  </script>
 
-  <script>
     function fetchCoupons() {
       fetch('/admin/available')
         .then(response => {
@@ -459,6 +436,11 @@ body {
         .then(coupons => {
           document.getElementById('couponContainer').innerHTML = '';
 
+          if (coupons.length === 0) {
+            document.getElementById('couponContainer').innerHTML = '<p class="text-center">No coupons available</p>';
+            return;
+          }
+
           coupons.forEach(coupon => {
             const couponElement = document.createElement('div');
             couponElement.className = 'card mb-2';
@@ -468,10 +450,11 @@ body {
                 <p class="card-text">
                   Discount: ${coupon.discountValue}%<br>
                   Min Purchase: ₹${coupon.minPurchaseAmount || 0}<br>
-                  Max Applicable: ₹${coupon.maxApplicableAmount === Infinity ? 'No Limit' : coupon.maxApplicableAmount}<br>
+                  Max Applicable: ₹${coupon.maxApplicableAmount === Infinity || coupon.maxApplicableAmount === null ? 'No Limit' : coupon.maxApplicableAmount}<br>
                   Expires on: ${new Date(coupon.expirationDate).toLocaleDateString('en-US')}
                 </p>
-                <button class="btn btn-danger" onclick="deleteCoupon('${coupon._id}')">Delete</button>
+                <button class="btn btn-primary btn-sm mr-2" onclick="editCoupon('${coupon._id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCoupon('${coupon._id}')">Delete</button>
               </div>
             `;
             document.getElementById('couponContainer').appendChild(couponElement);
@@ -479,6 +462,120 @@ body {
         })
         .catch(error => {
           console.error('Error fetching available coupons:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to fetch coupons',
+          });
+        });
+    }
+
+    function editCoupon(couponId) {
+      currentEditCouponId = couponId;
+      
+      // Fetch coupon details
+      fetch(`/admin/coupon/${couponId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(coupon => {
+          // Populate the edit form
+          document.getElementById('editCode').value = coupon.code;
+          document.getElementById('editDiscountValue').value = coupon.discountValue;
+          document.getElementById('editMinPurchaseAmount').value = coupon.minPurchaseAmount || '';
+          document.getElementById('editMaxApplicableAmount').value = 
+            (coupon.maxApplicableAmount === Infinity || coupon.maxApplicableAmount === null) ? '' : coupon.maxApplicableAmount;
+          
+          // Format date for input[type="date"]
+          const date = new Date(coupon.expirationDate);
+          const formattedDate = date.toISOString().split('T')[0];
+          document.getElementById('editExpirationDate').value = formattedDate;
+          
+          // Hide the view coupons modal and show the edit modal
+          $('#couponModal').modal('hide');
+          $('#editCouponModal').modal('show');
+        })
+        .catch(error => {
+          console.error('Error fetching coupon details:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to fetch coupon details',
+          });
+        });
+    }
+
+    function updateCoupon() {
+      const formData = new FormData(document.getElementById('editCouponForm'));
+      const couponData = Object.fromEntries(formData);
+
+      // Validate form data
+      if (!couponData.code.trim() || !couponData.discountValue || !couponData.expirationDate) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Validation Error',
+          text: 'Please fill in all required fields',
+        });
+        return;
+      }
+
+      // Validate coupon code format
+      var specialChars = /^[a-zA-Z0-9]+$/;
+      if (!specialChars.test(couponData.code.trim())) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Format',
+          text: 'Coupon code can only contain alphanumeric characters',
+        });
+        return;
+      }
+
+      // Validate discount value
+      if (couponData.discountValue < 1 || couponData.discountValue > 99) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Discount',
+          text: 'Discount must be between 1 and 99',
+        });
+        return;
+      }
+
+      fetch(`/admin/coupon/${currentEditCouponId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(couponData),
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.error || 'Failed to update coupon');
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Coupon updated successfully',
+          });
+          $('#editCouponModal').modal('hide');
+          // Show the view coupons modal again and refresh the list
+          $('#couponModal').modal('show');
+          fetchCoupons();
+        })
+        .catch(error => {
+          console.error('Error updating coupon:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to update coupon',
+          });
         });
     }
 
@@ -501,66 +598,57 @@ body {
         })
         .then(data => {
           console.log('Coupon deleted successfully:', data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted',
+            text: 'Coupon deleted successfully',
+          });
           $('#confirmationModal').modal('hide');
           fetchCoupons();
         })
         .catch(error => {
           console.error('Error deleting coupon:', error);
-        });
-    }
-  </script>
-
-  <script>
-    const toggleButton = document.querySelector('.toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
-
-    function toggleSidebar() {
-      sidebar.classList.toggle('hidden');
-      toggleButton.classList.toggle('active');
-    }
-
-    function checkViewportWidth() {
-      if (window.innerWidth <= 1300) {
-        sidebar.classList.add('hidden');
-        toggleButton.style.display = 'block';
-      } else {
-        sidebar.classList.remove('hidden');
-        toggleButton.style.display = 'none';
-      }
-    }
-
-    toggleButton.addEventListener('click', toggleSidebar);
-    checkViewportWidth();
-    window.addEventListener('resize', checkViewportWidth);
-  </script>
-
-  <script>
-    document.getElementById('yourFormId').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      fetch('/admin/coupon', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error) {
           Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: data.error,
+            title: 'Error',
+            text: 'Failed to delete coupon',
           });
-        } else {
-          window.location.reload();
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    });
-  </script>
+        });
+    }
 
-  <script>
+    // Sidebar toggle functionality
+    function initializeSidebar() {
+      toggleButtonElement = document.querySelector('.toggle-sidebar');
+      sidebarElement = document.querySelector('.sidebar');
+
+      function toggleSidebar() {
+        if (sidebarElement) {
+          sidebarElement.classList.toggle('hidden');
+        }
+        if (toggleButtonElement) {
+          toggleButtonElement.classList.toggle('active');
+        }
+      }
+
+      function checkViewportWidth() {
+        if (window.innerWidth <= 1300) {
+          if (sidebarElement) sidebarElement.classList.add('hidden');
+          if (toggleButtonElement) toggleButtonElement.style.display = 'block';
+        } else {
+          if (sidebarElement) sidebarElement.classList.remove('hidden');
+          if (toggleButtonElement) toggleButtonElement.style.display = 'none';
+        }
+      }
+
+      if (toggleButtonElement) {
+        toggleButtonElement.addEventListener('click', toggleSidebar);
+      }
+      
+      checkViewportWidth();
+      window.addEventListener('resize', checkViewportWidth);
+    }
+
+    // Discount value validation
     document.getElementById('discountValue').addEventListener('input', function() {
       var discountValue = this.value;
       var discountError = document.getElementById('discountError');
@@ -571,6 +659,33 @@ body {
         discountError.textContent = '';
       }
     });
+
+    // Edit form discount validation
+    document.getElementById('editDiscountValue').addEventListener('input', function() {
+      var discountValue = this.value;
+      
+      if (discountValue < 1 || discountValue > 99) {
+        this.setCustomValidity('Discount must be between 1 and 99');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    // Handle edit modal closing and showing view modal again
+    $('#editCouponModal').on('hidden.bs.modal', function () {
+      // Only show the view modal if it was hidden by the edit modal
+      if (!$('#couponModal').hasClass('show')) {
+        $('#couponModal').modal('show');
+      }
+    });
+
+    // Initialize sidebar functionality when document is ready
+    $(document).ready(function() {
+      initializeSidebar();
+    });
+
+    // Make sure fetchCoupons is globally available
+    window.fetchCoupons = fetchCoupons;
   </script>
 </body>
 </html>

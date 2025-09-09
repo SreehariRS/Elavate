@@ -450,35 +450,7 @@ button:last-of-type {
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
     <main>
-        <nav class="sidebar">
-            <header>
-                <div class="image-text">
-                    <span class="image">
-                        <img src="/img/logo.png" alt="logo"/>
-                    </span>
-                    <div class="text header-text">
-                        <span class="main">ELAVATE</span><br>
-                        <span class="sub">make your smell</span>
-                    </div>
-                </div>
-            </header>
-            <div class="menu-bar">
-                <div class="menu">
-                    <ul class="menu-links">
-                        <li class="nav-link"><a href="/admin/home"><i class="bx bx-home-alt icons"></i><span class="text nav-text">Dashboard</span></a></li>
-                        <li class="nav-link"><a href="/admin/customers"><i class="bx bx-bell icons"></i><span class="text nav-text">User</span></a></li>
-                        <li class="nav-link"><a href="/admin/productlist"><i class="bx bx-bar-chart-alt-2 icons"></i><span class="text nav-text">Product</span></a></li>
-                        <li class="nav-link"><a href="/admin/order"><i class="bx bx-pie-chart-alt icons"></i><span class="text nav-text">Order</span></a></li>
-                        <li class="nav-link"><a href="/admin/category"><i class="bx bx-heart icons"></i><span class="text nav-text">Category</span></a></li>
-                        <li class="nav-link"><a href="/admin/coupon"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Coupon</span></a></li>
-                        <li class="nav-link"><a href="/admin/sales"><i class="bx bx-wallet-alt icons"></i><span class="text nav-text">Sales Report</span></a></li>
-                    </ul>
-                </div>
-                <div class="bottom-content">
-                    <li class="nav-link"><a href="/admin/signout2"><i class="bx bx-log-out icons"></i><span class="text nav-text">Log Out</span></a></li>
-                </div>
-            </div>
-        </nav>
+      <%- include('sidebar') %>
         <section>
             <main id="site-main">
                 <div class="container">
@@ -495,33 +467,29 @@ button:last-of-type {
                             </form>
                         </div>
                     </div>
-                    <form action="" method="">
-                        <table class="table">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% catname.forEach((catname, index) => { %>
-                                    <tr>
-                                        <td><%= (currentPage - 1) * perPage + index + 1 %></td>
-                                        <td><%= catname.name %></td>
-                                        <td>
-                                            <form action="/admin/editcategory/<%= catname._id %>" method="get" style="display: inline;">
-                                                <button type="submit" class="text-gradient">Edit</button>
-                                            </form>
-                                            <form action="/admin/deletecategory/<%= catname._id %>" method="POST" onsubmit="return showDeleteConfirmation(event, this);" style="display: inline;">
-                                                <button type="submit" class="text-gradient delete-button">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </form>
+  <form action="" method="">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% catname.forEach((category, index) => { %>
+                <tr>
+                    <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+                    <td><%= category.name %></td>
+                    <td>
+                        <a href="/admin/editcategory/<%= category._id %>" class="text-gradient" style="display: inline-block; text-decoration: none; margin-right: 10px;">Edit</a>
+<button type="button" onclick="deleteCategory('<%= category._id %>')" class="text-gradient delete-button">Delete</button>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</form>
                     <div class="pagination">
                         <% if (currentPage > 1) { %>
                             <a href="/admin/category?page=<%= currentPage - 1 %>">Previous</a>
@@ -541,75 +509,90 @@ button:last-of-type {
             </main>
         </section>
     </main>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script>
-        function showDeleteConfirmation(event, form) {
-            event.preventDefault();
-            swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this category!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    form.submit();
-                }
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    function deleteCategory(categoryId) {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this category!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                // Create and submit a form programmatically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/deletecategory/${categoryId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function openPopup() {
+        document.getElementById("addCategoryPopup").style.display = "flex";
+    }
+
+    function closePopup() {
+        document.getElementById("addCategoryPopup").style.display = "none";
+        document.getElementById("errorMessage").textContent = "";
+        document.getElementById("categoryName").value = "";
+    }
+
+    async function addCategory() {
+        const name = document.getElementById("categoryName").value.trim();
+        const errorMessageElement = document.getElementById("errorMessage");
+        const disallowedSymbolsAndNumbers = /[ !@#$%^&,.*()_+={}\[\]|\\":;'?/>.<0-9]/;
+
+        if (!name) {
+            errorMessageElement.textContent = "Category name cannot be empty.";
+            return;
+        }
+        if (disallowedSymbolsAndNumbers.test(name)) {
+            errorMessageElement.textContent = "Category name cannot contain symbols or numbers.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/admin/category", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name }),
             });
-        }
+            const data = await response.json();
 
-        function openPopup() {
-            document.getElementById("addCategoryPopup").style.display = "flex";
-        }
-
-        function closePopup() {
-            document.getElementById("addCategoryPopup").style.display = "none";
-            document.getElementById("errorMessage").textContent = "";
-            document.getElementById("categoryName").value = "";
-        }
-
-        async function addCategory() {
-            const name = document.getElementById("categoryName").value.trim();
-            const errorMessageElement = document.getElementById("errorMessage");
-            const disallowedSymbolsAndNumbers = /[ !@#$%^&,.*()_+={}\[\]|\\":;'?/>.<0-9]/;
-
-            if (!name) {
-                errorMessageElement.textContent = "Category name cannot be empty.";
-                return;
-            }
-            if (disallowedSymbolsAndNumbers.test(name)) {
-                errorMessageElement.textContent = "Category name cannot contain symbols or numbers.";
+            if (response.status === 400) {
+                errorMessageElement.textContent = data.error;
                 return;
             }
 
-            try {
-                const response = await fetch("/admin/category", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ name }),
-                });
-                const data = await response.json();
-
-                if (response.status === 400) {
-                    errorMessageElement.textContent = data.error;
-                    return;
-                }
-
-                if (response.ok) {
-                    closePopup();
-                    window.location.reload();
-                } else {
-                    errorMessageElement.textContent = "Failed to add category.";
-                }
-            } catch (error) {
-                console.error("Error adding category:", error);
-                errorMessageElement.textContent = "An error occurred while adding the category.";
+            if (response.ok) {
+                closePopup();
+                window.location.reload();
+            } else {
+                errorMessageElement.textContent = "Failed to add category.";
             }
+        } catch (error) {
+            console.error("Error adding category:", error);
+            errorMessageElement.textContent = "An error occurred while adding the category.";
         }
+    }
 
-        document.getElementById("addCategoryBtn").addEventListener("click", openPopup);
-    </script>
+    document.getElementById("addCategoryBtn").addEventListener("click", openPopup);
+
+    // Debug logging for edit links
+    document.addEventListener('DOMContentLoaded', function() {
+        const editLinks = document.querySelectorAll('a.text-gradient');
+        editLinks.forEach((link, index) => {
+            console.log(`Edit link ${index + 1}:`, link.href);
+            link.addEventListener('click', function(e) {
+                console.log(`Edit link ${index + 1} clicked, URL:`, this.href);
+            });
+        });
+    });
+</script>
 </body>
 </html>

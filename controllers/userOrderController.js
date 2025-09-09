@@ -6,7 +6,7 @@ const product = require("../models/product");
 const category = require("../models/category");
 const Wallet = require("../models/wallet");
 const PDFDocument = require("pdfkit");
-const { checkPaymentLock, releasePaymentLock } = require("../controllers/userPaymentController");
+const { checkPaymentLock, releasePaymentLock, acquirePaymentLock } = require("../controllers/userPaymentController");
 
 const ITEMS_PER_PAGE = 10;
 
@@ -162,7 +162,7 @@ const checkoutpost = async (req, res) => {
             }
         }
 
-        // Log incoming data for debugging
+    
         console.log("Checkout POST data:", { selectedAddress, paymentMethod, couponCode, totalPrice, cartItems });
 
         // Validate inputs
@@ -177,20 +177,20 @@ const checkoutpost = async (req, res) => {
             return res.status(400).json({ success: false, message: "Your cart is empty" });
         }
 
-        // Validate cartItems
+  
         if (!Array.isArray(cartItems) || cartItems.length === 0) {
             await releasePaymentLock(userId); // Release lock on invalid cart items
             return res.status(400).json({ success: false, message: "Invalid or empty cart items" });
         }
 
-        // Verify cart items match server-side cart
+        
         const validatedItems = cartItems.filter(item => {
             const cartItem = cart.items.find(ci => ci.productId._id.toString() === item.productId);
             return cartItem && item.quantity > 0 && item.quantity <= cartItem.productId.stock;
         });
 
         if (validatedItems.length === 0) {
-            await releasePaymentLock(userId); // Release lock if no valid items
+            await releasePaymentLock(userId); 
             return res.status(400).json({ success: false, message: "No valid items in the cart" });
         }
 
@@ -214,7 +214,7 @@ const checkoutpost = async (req, res) => {
                 couponId = coupon._id;
                 await Coupon.findByIdAndUpdate(coupon._id, { $addToSet: { usedBy: userId } });
             } else {
-                await releasePaymentLock(userId); // Release lock on invalid coupon
+                await releasePaymentLock(userId);
                 return res.status(400).json({ success: false, message: "Invalid or already used coupon" });
             }
         }
@@ -223,22 +223,22 @@ const checkoutpost = async (req, res) => {
         const priceDiff = Math.abs(calculatedTotal - parseFloat(totalPrice));
         if (priceDiff > 0.01) {
             console.log(`Price mismatch: calculatedTotal=${calculatedTotal}, totalPrice=${totalPrice}, difference=${priceDiff}`);
-            await releasePaymentLock(userId); // Release lock on price mismatch
+            await releasePaymentLock(userId); 
             return res.status(400).json({ success: false, message: "Total price mismatch between client and server" });
         }
 
-        // Handle COD limit
+      
         if (paymentMethod === "Cash On Delivery" && calculatedTotal > 1000) {
-            await releasePaymentLock(userId); // Release lock on COD limit exceeded
+            await releasePaymentLock(userId);
             return res.status(400).json({ success: false, message: "Cash on Delivery is not available for amounts over ₹1000" });
         }
 
-        // Handle wallet payment deduction
+     
         let orderStatus = paymentMethod === "Razor Pay" ? "confirmed" : "confirmed";
         if (paymentMethod === "wallet") {
             const lockAcquired = await acquirePaymentLock(userId, 'checkout', req.session.id);
             if (!lockAcquired) {
-                await releasePaymentLock(userId); // Release lock if acquisition fails
+                await releasePaymentLock(userId);
                 return res.status(423).json({ 
                     success: false, 
                     message: "Another payment is currently being processed. Please try again later."
@@ -251,7 +251,7 @@ const checkoutpost = async (req, res) => {
             }
 
             if (wallet.balance < calculatedTotal) {
-                await releasePaymentLock(userId); // Release lock on insufficient balance
+                await releasePaymentLock(userId); 
                 return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
             }
 
@@ -264,7 +264,7 @@ const checkoutpost = async (req, res) => {
             });
             await wallet.save();
             
-            // Release lock after successful wallet transaction
+            
             await releasePaymentLock(userId);
         }
 
@@ -291,7 +291,7 @@ const checkoutpost = async (req, res) => {
         res.json({ success: true, redirect: redirectUrl });
     } catch (error) {
         console.log("Error in checkoutpost:", error);
-        // Release lock on any error
+     
         if (req.session.user) {
             await releasePaymentLock(req.session.user);
         }
@@ -373,7 +373,6 @@ const checkouterrorpost = async (req, res) => {
         res.json({ success: true, redirect: "/orderhistory" });
     } catch (error) {
         console.log("Error in checkouterrorpost:", error);
-        // Release lock on any error
         if (req.session.user) {
             await releasePaymentLock(req.session.user);
         }
@@ -415,7 +414,6 @@ const retryCheckout = async (req, res) => {
         res.json({ success: true, redirect: status === 'confirmed' ? '/orderhistory?success=true' : '/orderhistory' });
     } catch (error) {
         console.log("Error in retryCheckout:", error);
-        // Release lock on error
         if (req.session.user) {
             await releasePaymentLock(req.session.user);
         }
@@ -523,7 +521,6 @@ const cancelOrder = async (req, res) => {
         }
 
         if (itemId !== undefined && itemId >= 0 && itemId < order.items.length) {
-            // Individual item cancellation
             if (order.items[itemId].status === "cancelled" || order.items[itemId].status === "returned" || order.items[itemId].status === "refunded") {
                 return res.status(400).json({ success: false, message: "Item is already cancelled, returned, or refunded" });
             }

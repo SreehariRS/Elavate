@@ -70,7 +70,10 @@ router.post("/approve-request", isAuthenticated, adminOrderController.approveReq
 router.get("/coupon", isAuthenticated, couponcontroller.renderCreateCouponPage);
 router.post("/coupon", isAuthenticated, couponcontroller.createCoupon);
 router.get("/available", isAuthenticated, couponcontroller.getAvailableCoupons);
+router.get("/coupon/:id", isAuthenticated, couponcontroller.getCouponById);
+router.put("/coupon/:id", isAuthenticated, couponcontroller.updateCoupon);
 router.delete("/coupon/:id", isAuthenticated, couponcontroller.deleteCoupon);
+
 
 router.get("/sales", isAuthenticated, adminSalesController.sales);
 router.get("/pdf", isAuthenticated, adminSalesController.generatePDF);

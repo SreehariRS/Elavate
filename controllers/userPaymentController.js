@@ -1,41 +1,41 @@
-const Razorpay = require('razorpay');
-const crypto = require('crypto');
-require('dotenv').config();
-const orders = require('../models/order');
-const Wallet = require('../models/wallet');
-const User = require('../models/usermodel');
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+require("dotenv").config();
+const orders = require("../models/order");
+const Wallet = require("../models/wallet");
+const User = require("../models/usermodel");
 
 const razorpay = new Razorpay({
     key_id: process.env.KEY_ID,
     key_secret: process.env.KEY_SECRET,
 });
 
-const acquirePaymentLock = async (userId, lockType = 'checkout', sessionId = null) => {
+const acquirePaymentLock = async (userId, lockType = "checkout", sessionId = null) => {
     try {
         const lockExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
         const result = await User.findOneAndUpdate(
-            { 
+            {
                 _id: userId,
                 $or: [
-                    { 'paymentLock.isLocked': false },
-                    { 'paymentLock.isLocked': { $exists: false } },
-                    { 'paymentLock.lockExpiry': { $lt: new Date() } } // Expired lock
-                ]
+                    { "paymentLock.isLocked": false },
+                    { "paymentLock.isLocked": { $exists: false } },
+                    { "paymentLock.lockExpiry": { $lt: new Date() } }, // Expired lock
+                ],
             },
             {
                 $set: {
-                    'paymentLock.isLocked': true,
-                    'paymentLock.lockedAt': new Date(),
-                    'paymentLock.lockExpiry': lockExpiry,
-                    'paymentLock.sessionId': sessionId,
-                    'paymentLock.lockType': lockType
-                }
+                    "paymentLock.isLocked": true,
+                    "paymentLock.lockedAt": new Date(),
+                    "paymentLock.lockExpiry": lockExpiry,
+                    "paymentLock.sessionId": sessionId,
+                    "paymentLock.lockType": lockType,
+                },
             },
             { new: true }
         );
         return !!result; // Returns true if lock was acquired
     } catch (error) {
-        console.error('Error acquiring payment lock:', error);
+        console.error("Error acquiring payment lock:", error);
         return false;
     }
 };
@@ -44,16 +44,16 @@ const releasePaymentLock = async (userId) => {
     try {
         await User.findByIdAndUpdate(userId, {
             $set: {
-                'paymentLock.isLocked': false,
-                'paymentLock.lockedAt': null,
-                'paymentLock.lockExpiry': null,
-                'paymentLock.sessionId': null,
-                'paymentLock.lockType': null
-            }
+                "paymentLock.isLocked": false,
+                "paymentLock.lockedAt": null,
+                "paymentLock.lockExpiry": null,
+                "paymentLock.sessionId": null,
+                "paymentLock.lockType": null,
+            },
         });
         return true;
     } catch (error) {
-        console.error('Error releasing payment lock:', error);
+        console.error("Error releasing payment lock:", error);
         return false;
     }
 };
@@ -62,18 +62,18 @@ const checkPaymentLock = async (userId) => {
     try {
         const user = await User.findById(userId);
         if (!user || !user.paymentLock) return false;
-        
+
         const { isLocked, lockExpiry } = user.paymentLock;
-        
+
         // Check if lock is expired
         if (isLocked && lockExpiry && new Date() > lockExpiry) {
             await releasePaymentLock(userId);
             return false;
         }
-        
+
         return isLocked;
     } catch (error) {
-        console.error('Error checking payment lock:', error);
+        console.error("Error checking payment lock:", error);
         return false;
     }
 };
@@ -92,18 +92,19 @@ const createrazorpayorder = async (req, res) => {
         // Check if payment is already locked
         const isLocked = await checkPaymentLock(userId);
         if (isLocked) {
-            return res.status(423).json({ 
+            return res.status(423).json({
                 error: "Payment already in progress",
-                message: "Another payment is currently being processed. Please wait for it to complete or try again later."
+                message:
+                    "Another payment is currently being processed. Please wait for it to complete or try again later.",
             });
         }
 
         // Acquire payment lock
-        const lockAcquired = await acquirePaymentLock(userId, 'checkout', sessionId);
+        const lockAcquired = await acquirePaymentLock(userId, "checkout", sessionId);
         if (!lockAcquired) {
-            return res.status(423).json({ 
+            return res.status(423).json({
                 error: "Payment lock failed",
-                message: "Another payment is currently being processed. Please try again later."
+                message: "Another payment is currently being processed. Please try again later.",
             });
         }
 
@@ -114,11 +115,11 @@ const createrazorpayorder = async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-        res.json({ 
-            id: order.id, 
-            amount: order.amount, 
+        res.json({
+            id: order.id,
+            amount: order.amount,
             currency: order.currency,
-            lockAcquired: true 
+            lockAcquired: true,
         });
     } catch (error) {
         console.log("Error in createrazorpayorder:", error);
@@ -135,9 +136,9 @@ const verifyRazorpayPayment = async (req, res) => {
         const { paymentId, orderId, signature } = req.body;
         const userId = req.session.user;
         const generatedSignature = crypto
-            .createHmac('sha256', process.env.KEY_SECRET)
+            .createHmac("sha256", process.env.KEY_SECRET)
             .update(orderId + "|" + paymentId)
-            .digest('hex');
+            .digest("hex");
 
         if (generatedSignature === signature) {
             res.json({ success: true });
@@ -159,7 +160,7 @@ const verifyRazorpayPayment = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
     try {
         const { orderId, paymentId, status, userId, paymentMethod } = req.body;
-        
+
         // Always release the payment lock when updating order status
         if (userId) {
             await releasePaymentLock(userId);
@@ -172,15 +173,15 @@ const updateOrderStatus = async (req, res) => {
         }
 
         order.paymentId = paymentId || order.paymentId;
-        
-        if (['confirmed', 'paymentfailed'].includes(status)) {
+
+        if (["confirmed", "paymentfailed"].includes(status)) {
             order.status = status;
         } else {
             return res.status(400).json({ success: false, message: "Invalid status" });
         }
 
         // Handle wallet payment deduction (only for confirmed status)
-        if (paymentMethod === 'wallet' && status === 'confirmed') {
+        if (paymentMethod === "wallet" && status === "confirmed") {
             let wallet = await Wallet.findOne({ userId });
             if (!wallet) {
                 wallet = new Wallet({
@@ -191,7 +192,7 @@ const updateOrderStatus = async (req, res) => {
             }
 
             if (wallet.balance < order.totalPrice) {
-                order.status = 'paymentfailed';
+                order.status = "paymentfailed";
                 await order.save();
                 await releasePaymentLock(userId); // Release lock on insufficient balance
                 return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
@@ -207,8 +208,8 @@ const updateOrderStatus = async (req, res) => {
             await wallet.save();
         }
 
-        order.items.forEach(item => {
-            if (item.status !== 'cancelled' && item.status !== 'returned' && item.status !== 'refunded') {
+        order.items.forEach((item) => {
+            if (item.status !== "cancelled" && item.status !== "returned" && item.status !== "refunded") {
                 item.status = status;
             }
         });
@@ -239,18 +240,19 @@ const generatewalletRazorpay = async (req, res) => {
         // Check if payment is already locked
         const isLocked = await checkPaymentLock(userId);
         if (isLocked) {
-            return res.status(423).json({ 
+            return res.status(423).json({
                 error: "Payment already in progress",
-                message: "Another payment is currently being processed. Please wait for it to complete or try again later."
+                message:
+                    "Another payment is currently being processed. Please wait for it to complete or try again later.",
             });
         }
 
         // Acquire payment lock for wallet
-        const lockAcquired = await acquirePaymentLock(userId, 'wallet', sessionId);
+        const lockAcquired = await acquirePaymentLock(userId, "wallet", sessionId);
         if (!lockAcquired) {
-            return res.status(423).json({ 
+            return res.status(423).json({
                 error: "Payment lock failed",
-                message: "Another payment is currently being processed. Please try again later."
+                message: "Another payment is currently being processed. Please try again later.",
             });
         }
 
@@ -261,11 +263,11 @@ const generatewalletRazorpay = async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-        res.json({ 
-            id: order.id, 
-            amount: order.amount, 
+        res.json({
+            id: order.id,
+            amount: order.amount,
             currency: order.currency,
-            lockAcquired: true 
+            lockAcquired: true,
         });
     } catch (error) {
         console.log("Error in generatewalletRazorpay:", error);
@@ -276,6 +278,66 @@ const generatewalletRazorpay = async (req, res) => {
         res.status(500).json({ error: "Failed to create Razorpay order for wallet" });
     }
 };
+const releasePaymentLockEndpoint = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const userIdToRelease = userId || req.session.user;
+
+        if (!userIdToRelease) {
+            return res.status(400).json({
+                success: false,
+                message: "User ID is required",
+            });
+        }
+
+        const released = await releasePaymentLock(userIdToRelease);
+
+        if (released) {
+            res.json({
+                success: true,
+                message: "Payment lock released successfully",
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Failed to release payment lock",
+            });
+        }
+    } catch (error) {
+        console.log("Error in releasePaymentLockEndpoint:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+// Add this new endpoint to check payment lock status
+const checkPaymentLockEndpoint = async (req, res) => {
+    try {
+        const userId = req.session.user;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "User not authenticated",
+            });
+        }
+
+        const isLocked = await checkPaymentLock(userId);
+
+        res.json({
+            success: true,
+            isLocked: isLocked,
+        });
+    } catch (error) {
+        console.log("Error in checkPaymentLockEndpoint:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
 
 module.exports = {
     createrazorpayorder,
@@ -284,5 +346,7 @@ module.exports = {
     generatewalletRazorpay,
     checkPaymentLock,
     acquirePaymentLock,
-    releasePaymentLock
+    releasePaymentLock,
+    releasePaymentLockEndpoint,
+    checkPaymentLockEndpoint,
 };

@@ -18,328 +18,99 @@
 <body>
     <style>
     
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden; /* Remove horizontal scrolling */
-        }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-        }
-
-        .side-nav {
-            background-color: black;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            width: 200px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .side-nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .side-nav a {
-            text-decoration: none;
-            color: #fff;
-            display: block;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 3px;
-            border-radius: 20px;
-            transition: 0.33s ease-in-out;
-            font-weight: 500;
-        }
-
-        .side-nav a:hover {
-            color: black;
-            background-color: white;
-            border-radius: 20px;
-        }
-
-         /* Main Content Area */
-         .content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto; /* Added overflow-y to allow scrolling if content overflows */
-            margin-left: 200px;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            margin-left: 200px;
-            /* width: 100%; */
-            height: 80px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            background-color: rgb(246, 246, 246);
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-
-        .btn-container {
-            text-align: right;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-pdf,
-        .btn-excel {
-            margin:40px;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-pdf:hover,
-        .btn-excel:hover {
-            background-color: #f2f2f2;
-        }
-
-        /* Table Styles */
-        table {
-            width: 110%; /* Adjusted width */
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: black;
-            color: white;
-            width: 230px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        @media screen and (max-width: 768px) {
-            .side-nav {
-                display: none; /* Hide sidebar on smaller screens */
-            }
-
-            .content {
-                padding-left: 20px; /* Add padding to content to compensate for hidden sidebar */
-            }
-        }
-        
-        .sidebar.hidden {
-  display: none;
-}
-
-.toggle-sidebar {
-  display: none; /* Initially hide the toggle button */
-}
-
-@media screen and (max-width: 1300px) {
-  .toggle-sidebar {
-    display: block;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    z-index: 9999;
-  }
-
-  .sidebar.hidden {
-    display: none;
-  }
-}
-.toggle-sidebar.active {
-  color: rgb(255, 255, 255); /* Change the color to red */
-}
-@media screen and (max-width: 768px) {
-            .sidebar {
-                width: 200px; /* Adjust sidebar width for smaller screens */
-            }
-            .main-content {
-                margin-left: 200px; /* Adjust main content margin */
-            }
-        }
-
-        @media screen and (max-width: 576px) {
-            .sidebar {
-                display: none; /* Hide sidebar on smaller screens */
-            }
-            .main-content {
-                margin-left: 0; /* Adjust main content margin */
-            }
-        }
-        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&family=Poppins:wght@200;300;400;500;600;700&display=swap");
-
-* {
-  font-family: "Poppins", "sans-sarif";
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --body-color: #ffffff;
-  --sidebar-color: #000000;
-  --primary-color: #f4f2f2;
-  --primary-color-light: #f4f2f2;
-  --text-color: #ffffff;
- 
-
-  --trans-02: all 0.2s ease;
-  --trans-03: all 0.3s ease;
-  --trans-04: all 0.4s ease;
-  --trans-04: all 0.5s ease;
-}
-
 body {
-  height: 100vh;
-  background-color: var(--body-color);
-  transition: var(--trans-02);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.sidebar .text {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-color);
-  /* transition: var(--trans-04); */
-  white-space: unset;
-  opacity: 1;
+.main-content {
+    display: flex;
+    flex: 1;
 }
 
-.sidebar .image {
-  min-width: 60px;
-  display: flex;
-  align-items: center;
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; /* Added overflow-y to allow scrolling if content overflows */
+    margin-left: 200px;
 }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0px;
-  height: 100%;
-  width: 250px;
-  background-color: var(--sidebar-color);
-  padding: 10px 14px;
-  transition: var(--trans-02);
+/* Top Navigation */
+.top-nav {
+    margin-left: 200px;
+    height: 80px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    background-color: rgb(246, 246, 246);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.sidebar header {
-  position: relative;
-}
-.sidebar .image-text img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    text-transform: uppercase;
 }
 
-.sidebar header .image-text {
-  display: flex;
-  align-items: center;
+.btn-container {
+    text-align: right;
 }
 
-.header .image-text .header-text {
-  display: flex;
-  flex-direction: column;
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.header-text .main {
-  font-weight: 600;
+.btn-pdf,
+.btn-excel {
+    margin: 40px;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.header-text .sub {
-  margin-top: -2px;
+.btn-pdf:hover,
+.btn-excel:hover {
+    background-color: #f2f2f2;
 }
 
-
-.sidebar li {
-  height: 50px;
-  /* background-color: red; */
-  margin-top: 10px;
-  list-style: none;
-  display: flex;
-  align-items: center;
+/* Table Styles */
+table {
+    width: 110%; /* Adjusted width */
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-.sidebar li .icons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
-  font-size: 20px;
-}
-.sidebar li .icons,
-.sidebar li .text {
-  color: var(--text-color);
-  transition: var(--trans-03);
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-.sidebar li a {
-  height: 100%;
-  width: 100%;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  padding-right: 50px;
-  border-radius: 6px;
-  transition: var(--trans-04);
-  text-align: left;
+th {
+    background-color: black;
+    color: white;
+    width: 230px;
 }
 
-.sidebar li a:hover {
-  background: var(--primary-color);
-}
-.sidebar li a:hover .icons,
-.sidebar li a:hover .text {
-  color: var(--dark-color);
+tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
-.sidebar .menu-bar {
-  height: 100%;
-  height: calc(100% - 50px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 .containerfirst {
     max-width: 89%; 
     margin: 0 auto; 
@@ -393,7 +164,6 @@ body {
     color: #fff;
 }
 
-
 .btn-pdf, .btn-excel {
     font-size: 14px; 
     padding: 5px 10px; 
@@ -404,13 +174,11 @@ body {
     transition: all 0.2s ease-in-out;
 }
 
-
 .btn-pdf {
     background-color: #007bff;
     color: white; 
     border-color: #007bff; 
 }
-
 
 .btn-pdf:hover {
     background-color: #0056b3; 
@@ -430,53 +198,51 @@ body {
 
 /* Container for the form elements */
 .form-container {
- display: flex;
- justify-content: center; /* Center the elements horizontally */
- align-items: center; /* Align items vertically in the center */
- gap: 10px; /* Space between the elements */
- padding: 10px; /* Padding around the container */
+    display: flex;
+    justify-content: center; /* Center the elements horizontally */
+    align-items: center; /* Align items vertically in the center */
+    gap: 10px; /* Space between the elements */
+    padding: 10px; /* Padding around the container */
 }
 
 /* Styling for the date input fields */
-/* Reduce the width of the date input fields */
 input[type="date"] {
- width: 150px; /* Adjust this value to your preference */
- padding: 8px;
- border: 1px solid #ccc;
- border-radius: 4px;
- font-size: 16px;
- background-color: #f8f8f8;
+    width: 150px; /* Adjust this value to your preference */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #f8f8f8;
 }
-
 
 /* Styling for the filter button */
 .btn-filter {
- padding: 10px 20px;
- border: none;
- border-radius: 4px;
- background-color: #0e0e0e;
- color: white;
- font-size: 12px;
- cursor: pointer;
- transition: background-color 0.3s ease;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #0e0e0e;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .btn-filter:hover {
- background-color: #1c1e20;
+    background-color: #1c1e20;
 }
 
 /* Styling for the labels */
 label {
- font-size: 14px;
- color: #333;
- margin-right: 5px; /* Add some space between the label and the input */
+    font-size: 14px;
+    color: #333;
+    margin-right: 5px; /* Add some space between the label and the input */
 }
 
 /* Table Styles */
 .table {
     width: 100%; 
     border-collapse: collapse; 
-    margin-top: 20px; /
+    margin-top: 20px;
 }
 
 .table th,
@@ -495,6 +261,7 @@ label {
 .table tr:nth-child(even) {
     background-color: #f2f2f2; 
 }
+
 .welcome-heading {
     text-align: center; 
     color: #333;
@@ -503,87 +270,34 @@ label {
     text-transform: uppercase; 
     font-weight: bold; 
     letter-spacing: 1px;
-   
 }
+
 .move-right {
     padding-left: 130px;
 }
 
+@media screen and (max-width: 768px) {
+    .main-content {
+        margin-left: 200px; /* Adjust main content margin */
+    }
 
+    .content {
+        padding-left: 20px; /* Add padding to content to compensate for hidden sidebar */
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .main-content {
+        margin-left: 0; /* Adjust main content margin */
+    }
+}
   
   </style>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <div class="toggle-sidebar">
         <i class="bx bx-menu toggle-icon"></i>
     </div>
-    <nav class="sidebar">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="/img/logo.png" alt="logo" />
-                </span>
-                <div class="text header-text">
-                    <span class="main">ELAVATE</span>
-                    <br>
-                    <span class="sub">make your smell</span>
-                </div>
-            </div>
-        </header>
-        <div class="menu-bar">
-            <div class="menu">
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <a href="/admin/home">
-                            <i class="bx bx-home-alt icons"></i>
-                            <span class="text nav-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/customers">
-                            <i class="bx bx-bell icons"></i>
-                            <span class="text nav-text">User</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/productlist">
-                            <i class="bx bx-bar-chart-alt-2 icons"></i>
-                            <span class="text nav-text">Product</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/order">
-                            <i class="bx bx-pie-chart-alt icons"></i>
-                            <span class="text nav-text">Order</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/category">
-                            <i class="bx bx-heart icons"></i>
-                            <span class="text nav-text">Category</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/coupon">
-                            <i class="bx bx-wallet-alt icons"></i>
-                            <span class="text nav-text">Coupon</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/admin/sales">
-                            <i class="bx bx-wallet-alt icons"></i>
-                            <span class="text nav-text">Sales Report</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <li class="nav-link">
-                <a href="/admin/logout">
-                    <i class="bx bx-log-out icons"></i>
-                    <span class="text nav-text">Log Out</span>
-                </a>
-            </li>
-        </div>
-    </nav>
+     <%- include('sidebar') %>
     <div class="containerfirst">
         <h1 class="welcome-heading move-right">Welcome to Report Page</h1>
         <div class="space" style="margin-left: 250px;">

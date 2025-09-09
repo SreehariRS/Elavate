@@ -62,6 +62,59 @@ const getAvailableCoupons = async (req, res) => {
     }
 };
 
+const getCouponById = async (req, res) => {
+    const couponId = req.params.id;
+
+    try {
+        const coupon = await AdminCoupon.findById(couponId);
+
+        if (!coupon) {
+            return res.status(404).json({ error: "Coupon not found" });
+        }
+
+        res.json(coupon);
+    } catch (error) {
+        console.error("Error fetching coupon:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+const updateCoupon = async (req, res) => {
+    const couponId = req.params.id;
+    const { code, discountValue, expirationDate, minPurchaseAmount, maxApplicableAmount } = req.body;
+
+    try {
+        if (!code || !discountValue || !expirationDate) {
+            return res.status(400).json({ error: "All required fields must be filled" });
+        }
+
+        const updatedCoupon = await AdminCoupon.findByIdAndUpdate(
+            couponId,
+            {
+                code,
+                discountValue: parseFloat(discountValue),
+                expirationDate: new Date(expirationDate),
+                minPurchaseAmount: parseFloat(minPurchaseAmount) || 0,
+                maxApplicableAmount: parseFloat(maxApplicableAmount) || Infinity,
+            },
+            { new: true }
+        );
+
+        if (!updatedCoupon) {
+            return res.status(404).json({ error: "Coupon not found" });
+        }
+
+        res.json({ message: "Coupon updated successfully", coupon: updatedCoupon });
+    } catch (error) {
+        console.error("Error updating coupon:", error);
+        if (error.code === 11000) {
+            res.status(400).json({ error: "Coupon code already exists" });
+        } else {
+            res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+};
+
 const validateCoupon = async (req, res) => {
     const { code, cartTotal } = req.body;
     const userId = req.session.user;
@@ -129,4 +182,4 @@ const deleteCoupon = async (req, res) => {
     }
 };
 
-module.exports = { deleteCoupon, getAvailableCoupons, createCoupon, renderCreateCouponPage, validateCoupon };
+module.exports = { deleteCoupon, getAvailableCoupons, getCouponById, updateCoupon, createCoupon, renderCreateCouponPage, validateCoupon };

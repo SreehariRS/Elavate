@@ -1,0 +1,129 @@
+<link rel="stylesheet" href="/stylesheet/admin/sidebar.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>  
+
+<nav class="sidebar">
+    <header class="sidebar-header">
+        <div class="logo-container">
+            <div class="logo-image">
+                <img src="/img/logo.png" alt="logo" />
+            </div>
+            <div class="logo-text">
+                <h2 class="brand-name">ELAVATE</h2>
+                <p class="brand-tagline">make your smell</p>
+            </div>
+        </div>
+        <div class="toggle-btn">
+            <i class="bx bx-menu"></i>
+        </div>
+    </header>
+
+    <div class="sidebar-content">
+        <div class="menu-section">
+            <h3 class="menu-title">Main Menu</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="/admin/home" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-home-alt"></i>
+                        </div>
+                        <span class="link-text">Dashboard</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/customers" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-user-circle"></i>
+                        </div>
+                        <span class="link-text">Users</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/productlist" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-package"></i>
+                        </div>
+                        <span class="link-text">Products</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/order" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-shopping-bag"></i>
+                        </div>
+                        <span class="link-text">Orders</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="menu-section">
+            <h3 class="menu-title">Management</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="/admin/category" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-category"></i>
+                        </div>
+                        <span class="link-text">Categories</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/coupon" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-gift"></i>
+                        </div>
+                        <span class="link-text">Coupons</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/sales" class="menu-link">
+                        <div class="icon-wrapper">
+                            <i class="bx bx-line-chart"></i>
+                        </div>
+                        <span class="link-text">Sales Report</span>
+                        <div class="link-indicator"></div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="logout-section">
+                <a href="/admin/logout" class="logout-btn">
+                    <div class="icon-wrapper">
+                        <i class="bx bx-log-out"></i>
+                    </div>
+                    <span class="link-text">Log Out</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Toggle sidebar functionality
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.toggle-btn');
+    
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    // Active link highlighting
+    const currentPath = window.location.pathname;
+    const menuLinks = document.querySelectorAll('.menu-link');
+    
+    menuLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>

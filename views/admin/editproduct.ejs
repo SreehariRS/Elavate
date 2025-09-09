@@ -304,201 +304,201 @@ button {
         <% } %>
     </div>
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script>
-        // Sidebar toggle functionality
-        const toggleButton = document.querySelector('.toggle-sidebar');
-        const sidebar = document.querySelector('.sidebar');
+   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    // Sidebar toggle functionality
+    const toggleButton = document.querySelector('.toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('hidden');
-            toggleButton.classList.toggle('active');
+    function toggleSidebar() {
+        sidebar.classList.toggle('hidden');
+        toggleButton.classList.toggle('active');
+    }
+
+    function checkViewportWidth() {
+        if (window.innerWidth <= 1300) {
+            sidebar.classList.add('hidden');
+            toggleButton.style.display = 'block';
+        } else {
+            sidebar.classList.remove('hidden');
+            toggleButton.style.display = 'none';
+        }
+    }
+
+    toggleButton.addEventListener('click', toggleSidebar);
+    checkViewportWidth();
+    window.addEventListener('resize', checkViewportWidth);
+
+    // Offer price and form validation
+    document.getElementById('offerprice').addEventListener('change', validateOfferPrice);
+    document.getElementById('editProductForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const nameInput = document.getElementById('productName');
+        const descriptionInput = document.getElementById('productDescription');
+        const priceInput = document.getElementById('productPrice');
+        const stockInput = document.getElementById('productStock');
+        const existingImagesInput = document.getElementById('existingImages');
+        const fileInput = document.getElementById('productImages');
+
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const stock = parseInt(stockInput.value);
+        const existingImages = JSON.parse(existingImagesInput.value || "[]");
+        const newFiles = fileInput.files;
+
+        const nameRegex = /^[a-zA-Z ]+$/;
+        const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/;
+
+        if (!nameRegex.test(name)) {
+            swal("Error!", "Product name should contain only letters and spaces.", "error");
+            return;
         }
 
-        function checkViewportWidth() {
-            if (window.innerWidth <= 1300) {
-                sidebar.classList.add('hidden');
-                toggleButton.style.display = 'block';
+        if (!description || !descriptionRegex.test(description)) {
+            swal("Error!", "Please enter a valid product description.", "error");
+            return;
+        }
+
+        if (price <= 0 || stock < 0) {
+            swal("Error!", "Price and stock should be positive numbers.", "error");
+            return;
+        }
+
+        if (!validateOfferPrice()) {
+            return;
+        }
+
+        // Check if there is at least one image
+        if (existingImages.length === 0 && newFiles.length === 0) {
+            swal("Error!", "At least one product image is required.", "error");
+            return;
+        }
+
+        const form = this;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                swal("Success!", data.message || "Product updated successfully", "success").then(() => {
+                    window.location.href = '/admin/productlist';
+                });
             } else {
-                sidebar.classList.remove('hidden');
-                toggleButton.style.display = 'none';
+                swal("Error!", data.error || "Failed to update product.", "error");
             }
-        }
-
-        toggleButton.addEventListener('click', toggleSidebar);
-        checkViewportWidth();
-        window.addEventListener('resize', checkViewportWidth);
-
-        // Offer price and form validation
-        document.getElementById('offerprice').addEventListener('change', validateOfferPrice);
-        document.getElementById('editProductForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const nameInput = document.getElementById('productName');
-            const descriptionInput = document.getElementById('productDescription');
-            const priceInput = document.getElementById('productPrice');
-            const stockInput = document.getElementById('productStock');
-            const existingImagesInput = document.getElementById('existingImages');
-            const fileInput = document.getElementById('productImages');
-
-            const name = nameInput.value.trim();
-            const description = descriptionInput.value.trim();
-            const price = parseFloat(priceInput.value);
-            const stock = parseInt(stockInput.value);
-            const existingImages = JSON.parse(existingImagesInput.value || "[]");
-            const newFiles = fileInput.files;
-
-            const nameRegex = /^[a-zA-Z ]+$/;
-            const descriptionRegex = /^[a-zA-Z0-9\s,'.]+$/;
-
-            if (!nameRegex.test(name)) {
-                swal("Error!", "Product name should contain only letters and spaces.", "error");
-                return;
-            }
-
-            if (!description || !descriptionRegex.test(description)) {
-                swal("Error!", "Please enter a valid product description.", "error");
-                return;
-            }
-
-            if (price <= 0 || stock < 0) {
-                swal("Error!", "Price and stock should be positive numbers.", "error");
-                return;
-            }
-
-            if (!validateOfferPrice()) {
-                return;
-            }
-
-            // Check if there is at least one image
-            if (existingImages.length === 0 && newFiles.length === 0) {
-                swal("Error!", "At least one product image is required.", "error");
-                return;
-            }
-
-            const form = this;
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    swal("Success!", data.message, "success").then(() => {
-                        window.location.href = '/admin/productlist';
-                    });
-                } else {
-                    swal("Error!", data.error || "Failed to update product.", "error");
-                }
-            })
-            .catch(error => {
-                console.error('Error editing product:', error);
-                swal("Error!", "An error occurred while updating the product.", "error");
-            });
+        })
+        .catch(error => {
+            console.error('Error editing product:', error);
+            swal("Error!", "An error occurred while updating the product.", "error");
         });
+    });
 
-        function validateOfferPrice() {
-            const offerPriceInput = document.getElementById('offerprice');
-            const productPriceInput = document.getElementById('productPrice');
-            const offerPrice = parseFloat(offerPriceInput.value) || 0;
-            const productPrice = parseFloat(productPriceInput.value);
+    function validateOfferPrice() {
+        const offerPriceInput = document.getElementById('offerprice');
+        const productPriceInput = document.getElementById('productPrice');
+        const offerPrice = parseFloat(offerPriceInput.value) || 0;
+        const productPrice = parseFloat(productPriceInput.value);
 
-            if (offerPrice > productPrice) {
-                swal("Error!", "Offer Price cannot be greater than Product Price.", "error");
-                return false;
-            }
-            return true;
+        if (offerPrice > productPrice) {
+            swal("Error!", "Offer Price cannot be greater than Product Price.", "error");
+            return false;
         }
+        return true;
+    }
 
-        // Image preview and management
-        let selectedFiles = [];
+    // Image preview and management
+    let selectedFiles = [];
 
-        function previewImages() {
-            const input = document.getElementById("productImages");
-            const container = document.getElementById("imagePreviews");
-            const placeholder = document.getElementById("selectedImagesPlaceholder");
+    function previewImages() {
+        const input = document.getElementById("productImages");
+        const container = document.getElementById("imagePreviews");
+        const placeholder = document.getElementById("selectedImagesPlaceholder");
 
-            if (input.files && input.files.length > 0) {
-                selectedFiles = Array.from(input.files);
-                placeholder.textContent = `${selectedFiles.length} file(s) selected`;
+        if (input.files && input.files.length > 0) {
+            selectedFiles = Array.from(input.files);
+            placeholder.textContent = `${selectedFiles.length} file(s) selected`;
 
-                // Append new previews without clearing existing ones
-                for (const file of input.files) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const imgContainer = document.createElement("div");
-                        imgContainer.className = "image-preview";
-                        const index = selectedFiles.indexOf(file) + (container.childElementCount - prod.productImages.length);
-                        imgContainer.setAttribute("data-index", `new-${index}`);
+            // Append new previews without clearing existing ones
+            for (const file of input.files) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgContainer = document.createElement("div");
+                    imgContainer.className = "image-preview";
+                    const index = selectedFiles.indexOf(file) + (container.childElementCount - prod.productImages.length);
+                    imgContainer.setAttribute("data-index", `new-${index}`);
 
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.alt = "Product Image";
-                        img.className = "preview-image";
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.alt = "Product Image";
+                    img.className = "preview-image";
 
-                        const deleteButton = document.createElement("button");
-                        deleteButton.type = "button";
-                        deleteButton.className = "delete-button";
-                        deleteButton.textContent = "✖";
-                        deleteButton.onclick = function () {
-                            container.removeChild(imgContainer);
-                            selectedFiles = selectedFiles.filter(f => f !== file);
-                            placeholder.textContent = selectedFiles.length > 0 ? `${selectedFiles.length} file(s) selected` : "No files selected";
-                        };
-
-                        imgContainer.appendChild(img);
-                        imgContainer.appendChild(deleteButton);
-                        container.appendChild(imgContainer);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            } else {
-                selectedFiles = [];
-                placeholder.textContent = "No files selected";
-            }
-        }
-
-        function deleteImage(productId, index) {
-            fetch(`/admin/deleteimage/${productId}/${index}`, {
-                method: 'DELETE',
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    const container = document.getElementById("imagePreviews");
-                    const imgContainer = container.querySelector(`[data-index='${index}']`);
-                    if (imgContainer) {
+                    const deleteButton = document.createElement("button");
+                    deleteButton.type = "button";
+                    deleteButton.className = "delete-button";
+                    deleteButton.textContent = "✖";
+                    deleteButton.onclick = function () {
                         container.removeChild(imgContainer);
-                    }
+                        selectedFiles = selectedFiles.filter(f => f !== file);
+                        placeholder.textContent = selectedFiles.length > 0 ? `${selectedFiles.length} file(s) selected` : "No files selected";
+                    };
 
-                    // Update existingImages hidden input
-                    const existingImagesInput = document.getElementById("existingImages");
-                    let existingImages = JSON.parse(existingImagesInput.value || "[]");
-                    existingImages.splice(index, 1);
-                    existingImagesInput.value = JSON.stringify(existingImages);
-
-                    swal("Success!", data.message, "success");
-                } else {
-                    swal("Error!", data.error || "Failed to delete image.", "error");
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting image:', error);
-                swal("Error!", "Failed to delete image.", "error");
-            });
+                    imgContainer.appendChild(img);
+                    imgContainer.appendChild(deleteButton);
+                    container.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            selectedFiles = [];
+            placeholder.textContent = "No files selected";
         }
-    </script>
+    }
+
+    function deleteImage(productId, index) {
+        fetch(`/admin/deleteimage/${productId}/${index}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const container = document.getElementById("imagePreviews");
+                const imgContainer = container.querySelector(`[data-index='${index}']`);
+                if (imgContainer) {
+                    container.removeChild(imgContainer);
+                }
+
+                // Update existingImages hidden input
+                const existingImagesInput = document.getElementById("existingImages");
+                let existingImages = JSON.parse(existingImagesInput.value || "[]");
+                existingImages.splice(index, 1);
+                existingImagesInput.value = JSON.stringify(existingImages);
+
+                swal("Success!", data.message, "success");
+            } else {
+                swal("Error!", data.error || "Failed to delete image.", "error");
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting image:', error);
+            swal("Error!", "Failed to delete image.", "error");
+        });
+    }
+</script>
 </body>
 </html>

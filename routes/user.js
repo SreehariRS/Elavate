@@ -8,8 +8,13 @@ const userOrderController = require("../controllers/userOrderController");
 const userWalletController = require("../controllers/userWalletController");
 const userPaymentController = require("../controllers/userPaymentController");
 const checkblock = require("../middleware/checkblock");
-const couponController = require("../controllers/couponcontroller"); 
-const { checkPaymentLock ,releasePaymentLock} = require("../controllers/userPaymentController"); // Import checkPaymentLock
+const couponController = require("../controllers/couponcontroller");
+const {
+    checkPaymentLock,
+    releasePaymentLock,
+    releasePaymentLockEndpoint,
+    checkPaymentLockEndpoint,
+} = require("../controllers/userPaymentController"); // Import checkPaymentLock
 
 // Public routes (no authentication needed)
 router.get("/", userOrderController.home);
@@ -56,7 +61,7 @@ router.get("/resendotp", checkblock, userAuthController.resendotp);
 router.post("/logout", checkblock, userAuthController.postLogout);
 router.post("/updateQuantity", checkblock, userCartController.updateQuantity);
 router.post("/removeFromCart/:productId", checkblock, userCartController.removeFromCart);
-router.post("/cancel-order/:orderId", checkblock, userOrderController.cancelOrder); 
+router.post("/cancel-order/:orderId", checkblock, userOrderController.cancelOrder);
 router.post("/changepass", checkblock, userAuthController.changepasspost);
 router.post("/initiate-return/:orderId", checkblock, userOrderController.initiateReturn);
 router.post("/initiate-refund/:orderId", checkblock, userOrderController.initiateRefund);
@@ -75,15 +80,15 @@ router.post("/wishlistRemove", checkblock, userWishlistController.removeProductF
 router.get("/wallet", checkblock, userWalletController.wallet);
 router.post("/generate-razorpay-order", checkblock, userPaymentController.generatewalletRazorpay);
 router.post("/createReferral", checkblock, userProfileController.createReferral);
-router.post("/validate-coupon", checkblock, couponController.validateCoupon); 
+router.post("/validate-coupon", checkblock, couponController.validateCoupon);
 router.get("/check-payment-lock", checkblock, async (req, res) => {
     try {
         const userId = req.session.user;
         const isLocked = await checkPaymentLock(userId);
         res.json({ isLocked });
     } catch (error) {
-        console.error('Error checking payment lock:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error checking payment lock:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 router.post("/release-payment-lock", checkblock, async (req, res) => {
@@ -99,9 +104,11 @@ router.post("/release-payment-lock", checkblock, async (req, res) => {
             res.status(500).json({ success: false, message: "Failed to release payment lock" });
         }
     } catch (error) {
-        console.error('Error releasing payment lock:', error);
+        console.error("Error releasing payment lock:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 });
+router.post("/release-payment-lock", releasePaymentLockEndpoint);
+router.get("/check-payment-lock", checkPaymentLockEndpoint);
 
 module.exports = router;
