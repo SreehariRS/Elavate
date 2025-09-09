@@ -8,78 +8,77 @@ const adminOrderController = require("../controllers/adminOrderController");
 const adminSalesController = require("../controllers/adminSalesController");
 const couponcontroller = require("../controllers/couponcontroller");
 const filtercontroller = require("../controllers/filtercontroller");
+const ROUTES = require("../utils/route"); 
 
 const upload = require("../middleware/upload");
 
-// Middleware to check if admin is authenticated
+
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.admin) {
-        return next(); // Proceed to the next middleware/route handler
+        return next();
     } else {
-        return res.redirect("/admin/login"); // Redirect to login if not authenticated
+        return res.redirect(ROUTES.ADMIN.LOGIN); 
     }
 };
 
-// Middleware to prevent accessing login page when already logged in
+
 const redirectIfAuthenticated = (req, res, next) => {
     if (req.session && req.session.admin) {
-        return res.redirect("/admin/home");
+        return res.redirect(ROUTES.ADMIN.HOME);
     }
     return next();
 };
 
-// Public routes (no authentication required)
-router.get("/login", redirectIfAuthenticated, adminAuthController.login);
-router.post("/login", redirectIfAuthenticated, adminAuthController.loginpost);
-router.get("/logout", adminAuthController.logoutadmin);
-router.get("/signout2", adminAuthController.logoutadmin); // Keep for backward compatibility
 
-// Redirect root admin path to login
-router.get("/", (req, res) => {
+router.get(ROUTES.ADMIN.LOGIN, redirectIfAuthenticated, adminAuthController.login);
+router.post(ROUTES.ADMIN.LOGIN, redirectIfAuthenticated, adminAuthController.loginpost);
+router.get(ROUTES.ADMIN.LOGOUT, adminAuthController.logoutadmin);
+router.get(ROUTES.ADMIN.SIGNOUT2, adminAuthController.logoutadmin);
+
+
+router.get(ROUTES.ADMIN.BASE, (req, res) => {
     if (req.session && req.session.admin) {
-        return res.redirect("/admin/home");
+        return res.redirect(ROUTES.ADMIN.HOME);
     }
-    return res.redirect("/admin/login");
+    return res.redirect(ROUTES.ADMIN.LOGIN);
 });
 
-// Protected routes (require authentication)
-router.get("/home", isAuthenticated, adminSalesController.home);
 
-router.get("/productlist", isAuthenticated, adminProductController.productlist);
-router.get("/productlist/:id", isAuthenticated, adminProductController.deleteproduct);
-router.get("/addproduct", isAuthenticated, adminProductController.addproduct);
-router.get("/editproduct/:Id", isAuthenticated, adminProductController.editproduct);
-router.delete("/deleteimage/:productId/:index", isAuthenticated, adminProductController.deleteImage);
-router.post("/editproduct/:productId", isAuthenticated, upload, adminProductController.editproductpost);
-router.post("/addproduct", isAuthenticated, upload, adminProductController.addproductpost);
+router.get(ROUTES.ADMIN.HOME, isAuthenticated, adminSalesController.home);
 
-router.get("/customers", isAuthenticated, adminUserController.userlist);
-// Changed from GET to POST for better REST practices and AJAX handling
-router.post("/customers/:userId/toggle-block", isAuthenticated, adminUserController.userblock);
+router.get(ROUTES.ADMIN.PRODUCT_LIST, isAuthenticated, adminProductController.productlist);
+router.get(ROUTES.ADMIN.DELETE_PRODUCT, isAuthenticated, adminProductController.deleteproduct);
+router.get(ROUTES.ADMIN.ADD_PRODUCT, isAuthenticated, adminProductController.addproduct);
+router.get(ROUTES.ADMIN.EDIT_PRODUCT, isAuthenticated, adminProductController.editproduct);
+router.delete(ROUTES.ADMIN.DELETE_IMAGE, isAuthenticated, adminProductController.deleteImage);
+router.post(ROUTES.ADMIN.EDIT_PRODUCT_POST, isAuthenticated, upload, adminProductController.editproductpost);
+router.post(ROUTES.ADMIN.ADD_PRODUCT_POST, isAuthenticated, upload, adminProductController.addproductpost);
 
-router.get("/category", isAuthenticated, adminCategoryController.categoryList);
-router.post("/category/:id", isAuthenticated, adminCategoryController.editcateg);
-router.post("/category", isAuthenticated, adminCategoryController.addcateg);
-router.get("/editcategory/:id", isAuthenticated, adminCategoryController.geteditCategory); 
-router.post("/deletecategory/:id", isAuthenticated, adminCategoryController.deletecateg);
+router.get(ROUTES.ADMIN.CUSTOMERS, isAuthenticated, adminUserController.userlist);
+router.post(ROUTES.ADMIN.TOGGLE_BLOCK_USER, isAuthenticated, adminUserController.userblock);
 
-router.get("/order", isAuthenticated, adminOrderController.order);
-router.post("/updateorder", isAuthenticated, adminOrderController.updateOrderStatus);
-router.post("/approve-request", isAuthenticated, adminOrderController.approveRequest);
+router.get(ROUTES.ADMIN.CATEGORY, isAuthenticated, adminCategoryController.categoryList);
+router.post(ROUTES.ADMIN.EDIT_CATEGORY, isAuthenticated, adminCategoryController.editcateg);
+router.post(ROUTES.ADMIN.ADD_CATEGORY, isAuthenticated, adminCategoryController.addcateg);
+router.get(ROUTES.ADMIN.GET_EDIT_CATEGORY, isAuthenticated, adminCategoryController.geteditCategory); 
+router.post(ROUTES.ADMIN.DELETE_CATEGORY, isAuthenticated, adminCategoryController.deletecateg);
 
-router.get("/coupon", isAuthenticated, couponcontroller.renderCreateCouponPage);
-router.post("/coupon", isAuthenticated, couponcontroller.createCoupon);
-router.get("/available", isAuthenticated, couponcontroller.getAvailableCoupons);
-router.get("/coupon/:id", isAuthenticated, couponcontroller.getCouponById);
-router.put("/coupon/:id", isAuthenticated, couponcontroller.updateCoupon);
-router.delete("/coupon/:id", isAuthenticated, couponcontroller.deleteCoupon);
+router.get(ROUTES.ADMIN.ORDER, isAuthenticated, adminOrderController.order);
+router.post(ROUTES.ADMIN.UPDATE_ORDER, isAuthenticated, adminOrderController.updateOrderStatus);
+router.post(ROUTES.ADMIN.APPROVE_REQUEST, isAuthenticated, adminOrderController.approveRequest);
 
+router.get(ROUTES.ADMIN.COUPON, isAuthenticated, couponcontroller.renderCreateCouponPage);
+router.post(ROUTES.ADMIN.COUPON, isAuthenticated, couponcontroller.createCoupon);
+router.get(ROUTES.ADMIN.AVAILABLE_COUPONS, isAuthenticated, couponcontroller.getAvailableCoupons);
+router.get(ROUTES.ADMIN.GET_COUPON_BY_ID, isAuthenticated, couponcontroller.getCouponById);
+router.put(ROUTES.ADMIN.UPDATE_COUPON, isAuthenticated, couponcontroller.updateCoupon);
+router.delete(ROUTES.ADMIN.DELETE_COUPON, isAuthenticated, couponcontroller.deleteCoupon);
 
-router.get("/sales", isAuthenticated, adminSalesController.sales);
-router.get("/pdf", isAuthenticated, adminSalesController.generatePDF);
-router.post("/excel", isAuthenticated, adminSalesController.downloadExcel);
+router.get(ROUTES.ADMIN.SALES, isAuthenticated, adminSalesController.sales);
+router.get(ROUTES.ADMIN.PDF, isAuthenticated, adminSalesController.generatePDF);
+router.post(ROUTES.ADMIN.EXCEL, isAuthenticated, adminSalesController.downloadExcel);
 
-router.post("/doughnut-graph", isAuthenticated, filtercontroller.doughnutGraph);
-router.post("/doughnut-category-graph", isAuthenticated, filtercontroller.doughnutGraph2);
+router.post(ROUTES.ADMIN.DOUGHNUT_GRAPH, isAuthenticated, filtercontroller.doughnutGraph);
+router.post(ROUTES.ADMIN.DOUGHNUT_CATEGORY_GRAPH, isAuthenticated, filtercontroller.doughnutGraph2);
 
 module.exports = router;

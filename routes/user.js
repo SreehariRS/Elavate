@@ -9,79 +9,80 @@ const userWalletController = require("../controllers/userWalletController");
 const userPaymentController = require("../controllers/userPaymentController");
 const checkblock = require("../middleware/checkblock");
 const couponController = require("../controllers/couponcontroller");
+const ROUTES = require("../utils/route"); 
 const {
     checkPaymentLock,
     releasePaymentLock,
     releasePaymentLockEndpoint,
     checkPaymentLockEndpoint,
-} = require("../controllers/userPaymentController"); // Import checkPaymentLock
+} = require("../controllers/userPaymentController"); 
 
-// Public routes (no authentication needed)
-router.get("/", userOrderController.home);
-router.get("/login", checkblock, userAuthController.getLogin);
-router.get("/getRegister", userAuthController.getRegister);
-router.post("/login", checkblock, userAuthController.postLogin);
-router.post("/register", userAuthController.postRegister);
-router.get("/forgotpassword", userAuthController.forgotpassword);
-router.post("/forgotpassword", userAuthController.forgotpasswordpost);
-router.get("/verifyforgototp", userAuthController.getVerifyForgotOtp);
-router.post("/verifyforgototp", userAuthController.postVerifyForgotOtp);
-router.get("/resendforgototp", userAuthController.resendforgototp);
-router.get("/changeCpassword", userAuthController.changeCpassword);
-router.post("/changeCpassword", userAuthController.changepasswordpost);
 
-// Protected routes (require authentication and block check)
-router.get("/category/:id", checkblock, userOrderController.getProductsByCategory);
-router.post("/checkReferralCode", checkblock, userProfileController.checkReferralCode);
-router.get("/logout", checkblock, userAuthController.logout);
-router.get("/home", checkblock, userOrderController.home);
-router.get("/forher", checkblock, userOrderController.forher);
-router.get("/forhim", checkblock, userOrderController.forhim);
-router.get("/display/:id", checkblock, userOrderController.display);
-router.get("/cartView", checkblock, userCartController.cartView);
-router.get("/cart", checkblock, userCartController.addToCart);
-router.get("/getcart/:userId", checkblock, userCartController.getCartPage);
-router.get("/getcartnumber/:userId", checkblock, userCartController.getcartnumber);
-router.get("/checkout", checkblock, userOrderController.checkout);
-router.post("/checkout", checkblock, userOrderController.checkoutpost);
-router.post("/checkouterror", checkblock, userOrderController.checkouterrorpost);
-router.post("/retry-checkout", checkblock, userOrderController.retryCheckout);
-router.post("/create-razorpay-order", checkblock, userPaymentController.createrazorpayorder);
-router.post("/verify-razorpay-payment", checkblock, userPaymentController.verifyRazorpayPayment);
-router.post("/update-order-status", checkblock, userPaymentController.updateOrderStatus);
-router.get("/check-wallet", checkblock, userWalletController.getWalletBalance);
-router.post("/update-wallet", checkblock, userWalletController.addToWallet);
-router.get("/order", checkblock, userOrderController.order);
-router.get("/orderhistory", checkblock, userOrderController.orderhistory);
-router.get("/generate-invoice/:orderId", checkblock, userOrderController.generateInvoice);
-router.get("/signout", checkblock, userAuthController.logout);
-router.get("/changepass", checkblock, userAuthController.changepass);
-router.get("/otpget", checkblock, userAuthController.mailsender);
-router.get("/resendotp", checkblock, userAuthController.resendotp);
-router.post("/logout", checkblock, userAuthController.postLogout);
-router.post("/updateQuantity", checkblock, userCartController.updateQuantity);
-router.post("/removeFromCart/:productId", checkblock, userCartController.removeFromCart);
-router.post("/cancel-order/:orderId", checkblock, userOrderController.cancelOrder);
-router.post("/changepass", checkblock, userAuthController.changepasspost);
-router.post("/initiate-return/:orderId", checkblock, userOrderController.initiateReturn);
-router.post("/initiate-refund/:orderId", checkblock, userOrderController.initiateRefund);
-router.post("/verifyotp", checkblock, userAuthController.otpvalidation);
-router.get("/address", checkblock, userProfileController.getaddress);
-router.get("/profile", checkblock, userProfileController.getprofile);
-router.post("/Address", checkblock, userProfileController.postaddress);
-router.post("/delete/:id", checkblock, userProfileController.deleteaddress);
-router.post("/editprofile/:userID", checkblock, userProfileController.editprofile);
-router.post("/addressedit/:id", checkblock, userProfileController.addressedit);
-router.get("/Editaddress/:i", checkblock, userProfileController.geteditAddress);
-router.get("/wishlistPage", checkblock, userWishlistController.wishlistPage);
-router.post("/wishlistPage", checkblock, userWishlistController.wishlistPagePost);
-router.get("/wishlistInfo", checkblock, userWishlistController.wishlistInfo);
-router.post("/wishlistRemove", checkblock, userWishlistController.removeProductFromWishlist);
-router.get("/wallet", checkblock, userWalletController.wallet);
-router.post("/generate-razorpay-order", checkblock, userPaymentController.generatewalletRazorpay);
-router.post("/createReferral", checkblock, userProfileController.createReferral);
-router.post("/validate-coupon", checkblock, couponController.validateCoupon);
-router.get("/check-payment-lock", checkblock, async (req, res) => {
+router.get(ROUTES.USER.BASE, userOrderController.home);
+router.get(ROUTES.USER.LOGIN, checkblock, userAuthController.getLogin);
+router.get(ROUTES.USER.REGISTER, userAuthController.getRegister);
+router.post(ROUTES.USER.LOGIN, checkblock, userAuthController.postLogin);
+router.post(ROUTES.USER.REGISTER, userAuthController.postRegister);
+router.get(ROUTES.USER.FORGOT_PASSWORD, userAuthController.forgotpassword);
+router.post(ROUTES.USER.FORGOT_PASSWORD, userAuthController.forgotpasswordpost);
+router.get(ROUTES.USER.VERIFY_FORGOT_OTP, userAuthController.getVerifyForgotOtp);
+router.post(ROUTES.USER.VERIFY_FORGOT_OTP, userAuthController.postVerifyForgotOtp);
+router.get(ROUTES.USER.RESEND_FORGOT_OTP, userAuthController.resendforgototp);
+router.get(ROUTES.USER.CHANGE_PASSWORD, userAuthController.changeCpassword);
+router.post(ROUTES.USER.CHANGE_PASSWORD, userAuthController.changepasswordpost);
+
+
+router.get(ROUTES.USER.CATEGORY, checkblock, userOrderController.getProductsByCategory);
+router.post(ROUTES.USER.CHECK_REFERRAL_CODE, checkblock, userProfileController.checkReferralCode);
+router.get(ROUTES.USER.LOGOUT, checkblock, userAuthController.logout);
+router.get(ROUTES.USER.HOME, checkblock, userOrderController.home);
+router.get(ROUTES.USER.FOR_HER, checkblock, userOrderController.forher);
+router.get(ROUTES.USER.FOR_HIM, checkblock, userOrderController.forhim);
+router.get(ROUTES.USER.DISPLAY, checkblock, userOrderController.display);
+router.get(ROUTES.USER.CART_VIEW, checkblock, userCartController.cartView);
+router.get(ROUTES.USER.ADD_TO_CART, checkblock, userCartController.addToCart);
+router.get(ROUTES.USER.GET_CART, checkblock, userCartController.getCartPage);
+router.get(ROUTES.USER.GET_CART_NUMBER, checkblock, userCartController.getcartnumber);
+router.get(ROUTES.USER.CHECKOUT, checkblock, userOrderController.checkout);
+router.post(ROUTES.USER.CHECKOUT, checkblock, userOrderController.checkoutpost);
+router.post(ROUTES.USER.CHECKOUT_ERROR, checkblock, userOrderController.checkouterrorpost);
+router.post(ROUTES.USER.RETRY_CHECKOUT, checkblock, userOrderController.retryCheckout);
+router.post(ROUTES.USER.CREATE_RAZORPAY_ORDER, checkblock, userPaymentController.createrazorpayorder);
+router.post(ROUTES.USER.VERIFY_RAZORPAY_PAYMENT, checkblock, userPaymentController.verifyRazorpayPayment);
+router.post(ROUTES.USER.UPDATE_ORDER_STATUS, checkblock, userPaymentController.updateOrderStatus);
+router.get(ROUTES.USER.CHECK_WALLET, checkblock, userWalletController.getWalletBalance);
+router.post(ROUTES.USER.UPDATE_WALLET, checkblock, userWalletController.addToWallet);
+router.get(ROUTES.USER.ORDER, checkblock, userOrderController.order);
+router.get(ROUTES.USER.ORDER_HISTORY, checkblock, userOrderController.orderhistory);
+router.get(ROUTES.USER.GENERATE_INVOICE, checkblock, userOrderController.generateInvoice);
+router.get(ROUTES.USER.SIGNOUT, checkblock, userAuthController.logout);
+router.get(ROUTES.USER.CHANGE_PASS, checkblock, userAuthController.changepass);
+router.get(ROUTES.USER.OTP_GET, checkblock, userAuthController.mailsender);
+router.get(ROUTES.USER.RESEND_OTP, checkblock, userAuthController.resendotp);
+router.post(ROUTES.USER.LOGOUT, checkblock, userAuthController.postLogout);
+router.post(ROUTES.USER.UPDATE_QUANTITY, checkblock, userCartController.updateQuantity);
+router.post(ROUTES.USER.REMOVE_FROM_CART, checkblock, userCartController.removeFromCart);
+router.post(ROUTES.USER.CANCEL_ORDER, checkblock, userOrderController.cancelOrder);
+router.post(ROUTES.USER.CHANGE_PASS, checkblock, userAuthController.changepasspost);
+router.post(ROUTES.USER.INITIATE_RETURN, checkblock, userOrderController.initiateReturn);
+router.post(ROUTES.USER.INITIATE_REFUND, checkblock, userOrderController.initiateRefund);
+router.post(ROUTES.USER.VERIFY_OTP, checkblock, userAuthController.otpvalidation);
+router.get(ROUTES.USER.ADDRESS, checkblock, userProfileController.getaddress);
+router.get(ROUTES.USER.PROFILE, checkblock, userProfileController.getprofile);
+router.post(ROUTES.USER.ADD_ADDRESS, checkblock, userProfileController.postaddress);
+router.post(ROUTES.USER.DELETE_ADDRESS, checkblock, userProfileController.deleteaddress);
+router.post(ROUTES.USER.EDIT_PROFILE, checkblock, userProfileController.editprofile);
+router.post(ROUTES.USER.EDIT_ADDRESS, checkblock, userProfileController.addressedit);
+router.get(ROUTES.USER.GET_EDIT_ADDRESS, checkblock, userProfileController.geteditAddress);
+router.get(ROUTES.USER.WISHLIST_PAGE, checkblock, userWishlistController.wishlistPage);
+router.post(ROUTES.USER.WISHLIST_PAGE, checkblock, userWishlistController.wishlistPagePost);
+router.get(ROUTES.USER.WISHLIST_INFO, checkblock, userWishlistController.wishlistInfo);
+router.post(ROUTES.USER.REMOVE_FROM_WISHLIST, checkblock, userWishlistController.removeProductFromWishlist);
+router.get(ROUTES.USER.WALLET, checkblock, userWalletController.wallet);
+router.post(ROUTES.USER.GENERATE_WALLET_RAZORPAY, checkblock, userPaymentController.generatewalletRazorpay);
+router.post(ROUTES.USER.CREATE_REFERRAL, checkblock, userProfileController.createReferral);
+router.post(ROUTES.USER.VALIDATE_COUPON, checkblock, couponController.validateCoupon);
+router.get(ROUTES.USER.CHECK_PAYMENT_LOCK, checkblock, async (req, res) => {
     try {
         const userId = req.session.user;
         const isLocked = await checkPaymentLock(userId);
@@ -91,7 +92,7 @@ router.get("/check-payment-lock", checkblock, async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-router.post("/release-payment-lock", checkblock, async (req, res) => {
+router.post(ROUTES.USER.RELEASE_PAYMENT_LOCK, checkblock, async (req, res) => {
     try {
         const { userId } = req.body;
         if (!userId || userId !== req.session.user) {
@@ -108,7 +109,7 @@ router.post("/release-payment-lock", checkblock, async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 });
-router.post("/release-payment-lock", releasePaymentLockEndpoint);
-router.get("/check-payment-lock", checkPaymentLockEndpoint);
+router.post(ROUTES.USER.RELEASE_PAYMENT_LOCK, releasePaymentLockEndpoint);
+router.get(ROUTES.USER.CHECK_PAYMENT_LOCK, checkPaymentLockEndpoint);
 
 module.exports = router;
